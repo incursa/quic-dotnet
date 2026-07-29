@@ -139,12 +139,17 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   `ARC-QUIC-CRT-0119`, `WI-QUIC-CRT-0120`, and
   `VER-QUIC-CRT-0121`. The current slice reconciles the retained admission
   factor space to family catalog v5, permits only an exact manifest-bound
-  offline A0 through A7 measurement capability, and prepares deterministic
-  campaign compilation without collecting timings. On 2026-07-28 the user
-  selected the ProtocolLab rack and the four-cell A0/A3/A4/A7 pilot. The
-  selected execution remains additive to the retained timing-disabled campaign
-  and uses the package-backed raw QUIC boundary; exact rack topology, job,
-  runtime-evidence, and effect-analysis results remain the active closeout.
+  offline A0 through A7 measurement capability, and preserves deterministic
+  campaign compilation without collecting timings. The four-cell A0/A3/A4/A7
+  pilot completed on 2026-07-28 through the package-backed raw QUIC boundary
+  using independently hosted `plab-worker-x64-02` and
+  `plab-worker-x64-03`; its two-repetition results remain directional. On
+  2026-07-29 the user authorized an additive all-eight follow-on on the same
+  worker pair. It uses eight deterministic Williams-counterbalanced blocks,
+  one repetition per job, one reusable exact package per cell, bounded
+  aggregate server evidence, required sampled load-process metrics, requested
+  target counters, and exact-identity resumability. Its 64-job rack execution
+  and full-factorial analysis remain the active closeout.
   `bounded_multi_fragment`, covering-array generation, performance
   acceptance, adaptive-rule activation, active behavior, CI changes, and
   push remain blocked.

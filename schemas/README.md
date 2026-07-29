@@ -78,6 +78,8 @@ repository-config tooling.
 - [`adaptive-runtime-operation-evidence-v1.schema.json`](adaptive-runtime-operation-evidence-v1.schema.json)
 - [`adaptive-runtime-effective-behavior-materialization-v1.schema.json`](adaptive-runtime-effective-behavior-materialization-v1.schema.json)
 - [`adaptive-runtime-experiment-evidence-projection-v1.schema.json`](adaptive-runtime-experiment-evidence-projection-v1.schema.json)
+- [`adaptive-runtime-send-admission-performance-balanced-campaign-v1.schema.json`](adaptive-runtime-send-admission-performance-balanced-campaign-v1.schema.json)
+- [`adaptive-runtime-send-admission-performance-balanced-manifest-v1.schema.json`](adaptive-runtime-send-admission-performance-balanced-manifest-v1.schema.json)
 
 ## Notes
 

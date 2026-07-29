@@ -15,8 +15,8 @@
     "WI-QUIC-CRT-0120",
     "VER-QUIC-CRT-0121"
   ],
-  "purpose": "Reconcile the reviewed send-admission factor space and authorize one bounded, exact, offline performance program whose first selected execution is the A0, A3, A4, and A7 pilot on the ProtocolLab rack, without authorizing bounded_multi_fragment, covering-array generation, performance acceptance, adaptive selection, or production behavior.",
-  "scope": "This specification applies only to the eight configured cells formed by oversized_write_admission_quantum values legacy_current and single_fragment, application_send_batch_formation values legacy_current and single_eligible, and buffer_copy_coalescing values legacy_current and memory_conservative. It governs exact catalog reconciliation, a manifest-bound internal measurement token, deterministic dry-run campaign compilation, an additive selected-pilot authorization, package-backed ProtocolLab execution through production seams, immutable evidence, and analysis that remains non-accepting and offline.",
+  "purpose": "Reconcile the reviewed send-admission factor space and authorize one bounded, exact, offline performance program whose selected executions are the completed A0, A3, A4, and A7 pilot and an additive counterbalanced A0 through A7 follow-on on the ProtocolLab rack, without authorizing bounded_multi_fragment, covering-array generation, performance acceptance, adaptive selection, or production behavior.",
+  "scope": "This specification applies only to the eight configured cells formed by oversized_write_admission_quantum values legacy_current and single_fragment, application_send_batch_formation values legacy_current and single_eligible, and buffer_copy_coalescing values legacy_current and memory_conservative. It governs exact catalog reconciliation, a manifest-bound internal measurement token, deterministic dry-run campaign compilation, additive selected-execution authorization, package-backed ProtocolLab execution through production seams, immutable bounded evidence, counterbalanced offline analysis, and results that remain non-accepting and offline.",
   "requirements": [
     {
       "id": "REQ-QUIC-CRT-0247",
@@ -51,37 +51,42 @@
     {
       "id": "REQ-QUIC-CRT-0249",
       "title": "Compile one deterministic exhaustive campaign before execution",
-      "statement": "The repository MUST compile a deterministic dry-run campaign for exactly A0 through A7 from current canonical inputs; permit an additive timing-authorized pilot only after exact host, workload, and cell-scope selection; preserve exact source-document hashes, cell order, workload definitions, treatment order, seed, repetitions, warmup, duration, correctness gates, metric definitions, environment requirements, and stopping rules; reject a stale catalog, blocked value, outside axis, covering-array request, performance-acceptance intent, active intent, or non-clean source requirement; and emit no timing observation during compilation or validation.",
+      "statement": "The repository MUST compile a deterministic dry-run campaign for exactly A0 through A7 from current canonical inputs; permit additive timing-authorized executions only after exact host, workload, cell scope, repetition count, and execution-order design are selected; preserve exact source-document hashes, cell order, workload definitions, treatment order, block and position identity, seed when applicable, repetitions, warmup, duration, correctness gates, metric definitions, environment requirements, and stopping rules; reject a stale catalog, blocked value, outside axis, covering-array request, performance-acceptance intent, active intent, or non-clean source requirement; and emit no timing observation during compilation or validation.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
         "x_test_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
-          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1"
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1"
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
           "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
           "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json",
-          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json"
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-campaign-v1.json"
         ]
       }
     },
     {
       "id": "REQ-QUIC-CRT-0250",
       "title": "Execute production seams with exact activation accounting",
-      "statement": "An authorized admission performance runner MUST execute cells serially through the production oversized-write admission, application-send batch, buffer-coalescing, ownership, and terminal-release seams; use separate identity-bound opportunities when the three seams cannot co-actuate on one operation; require every configured nonlegacy value to actuate in its own run context; retain inactive and failed runs with exact reasons; and bind every raw observation to source, binary, host, manifest, cell, workload, repetition, runtime evidence, correctness, and checksum identity.",
+      "statement": "An authorized admission performance runner MUST execute cells serially through the production oversized-write admission, application-send batch, buffer-coalescing, ownership, and terminal-release seams; use separate identity-bound opportunities when the three seams cannot co-actuate on one operation; require every configured nonlegacy value to actuate in its own run context; preserve declared block, position, and cell-repetition identity; retain inactive and failed attempts with exact reasons; keep runtime output within the declared bounded aggregate limit; and bind every observation to source, binary, host, manifest, cell, workload, repetition, runtime evidence, correctness, resource telemetry, and checksum identity.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
         "x_test_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
           "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs"
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
           "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
           "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"
         ]
@@ -90,14 +95,18 @@
     {
       "id": "REQ-QUIC-CRT-0251",
       "title": "Analyze configured and effective effects reproducibly",
-      "statement": "Offline analysis MUST preserve all eight configured cells, derive effective activation signatures from runtime evidence, report oversized-admission, batch, buffer, and interaction effects without attributing operation-local noncoactivation as whole-cell inactivity, use predeclared practical thresholds and guardrails, prevent workload and repetition leakage, reserve independent host and workload contexts for validation, and emit no adaptive rule unless a later trace-owned review accepts stable held-out evidence.",
+      "statement": "Offline analysis MUST preserve all eight configured cells and their block and position identities; derive effective activation signatures from runtime evidence; report cell summaries plus oversized-admission, batch, buffer, two-factor, and three-factor effects without attributing operation-local noncoactivation as whole-cell inactivity; retain resource-telemetry availability and saturation caveats; use predeclared practical thresholds and guardrails; prevent workload and repetition leakage; reserve independent host and workload contexts for validation; and emit no adaptive rule unless a later trace-owned review accepts stable held-out evidence.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
-        "x_test_refs": ["eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1"],
+        "x_test_refs": [
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1"
+        ],
         "upstream_refs": [
           "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
           "docs/design/adaptive-runtime-send-composition-performance.md"
         ]
       }
@@ -105,13 +114,14 @@
     {
       "id": "REQ-QUIC-CRT-0252",
       "title": "Preserve the measurement stopping boundary",
-      "statement": "The milestone MUST finish campaign reconciliation, exact authorization, dry-run compilation, schema validation, focused positive and negative tests, Release builds, direct touched-artifact SpecTrace validation, and diff hygiene before a host-sensitive timing run; require an explicit selected execution environment and workload scope before measurement; and finish without covering-array generation, bounded_multi_fragment authorization, performance acceptance, adaptive-rule activation, active_internal, production activation, CI modification, push, or deletion of retained evidence.",
+      "statement": "Before each host-sensitive timing run, the milestone MUST finish campaign reconciliation, exact authorization, deterministic compilation, schema validation, focused positive and negative tests, Release builds, direct touched-artifact SpecTrace validation, and diff hygiene; require an explicit selected execution environment, workload scope, repetition count, and execution-order design before measurement; retain resumable failure evidence; and finish without covering-array generation, bounded_multi_fragment authorization, performance acceptance, adaptive-rule activation, active_internal, production activation, CI modification, push, or deletion of retained evidence.",
       "trace": {
         "satisfied_by": ["ARC-QUIC-CRT-0119"],
         "implemented_by": ["WI-QUIC-CRT-0120"],
         "verified_by": ["VER-QUIC-CRT-0121"],
         "x_test_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
           "scripts/Validate-SpecTraceJson.ps1"
         ],
         "upstream_refs": ["docs/protocol-lab/rack-lab-controller.md"]

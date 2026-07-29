@@ -1,0 +1,401 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-send-admission-performance-balanced-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Send Admission Performance Balanced Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "control_ref",
+    "campaign_ref",
+    "factor_space_ref",
+    "pilot_result_ref",
+    "controller_uri",
+    "host_selection",
+    "package_selection",
+    "design",
+    "selected_cells",
+    "execution_sequence",
+    "cell_bindings",
+    "resource_metrics",
+    "excluded_values",
+    "planned_runs",
+    "measurement_capability_authorized",
+    "timing_execution_authorized",
+    "no_measurements",
+    "performance_acceptance_authorization",
+    "adaptive_rule_derivation_authorization",
+    "active_behavior_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "adaptive-runtime-send-admission-performance-balanced-manifest-v1"
+    },
+    "document_id": {
+      "const": "manifest.send_admission_composition.performance.balanced.v1"
+    },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "control_ref": { "$ref": "#/$defs/documentRef" },
+    "campaign_ref": { "$ref": "#/$defs/documentRef" },
+    "factor_space_ref": { "$ref": "#/$defs/documentRef" },
+    "pilot_result_ref": { "$ref": "#/$defs/documentRef" },
+    "controller_uri": { "const": "http://10.10.99.176:5088" },
+    "host_selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placement_policy",
+        "worker_selection_owner",
+        "required_capabilities"
+      ],
+      "properties": {
+        "placement_policy": { "const": "isolated-pair" },
+        "worker_selection_owner": { "const": "controller-owned" },
+        "required_capabilities": {
+          "const": ["evidenceTier=offline-ml-two-host-vm"]
+        }
+      }
+    },
+    "package_selection": { "$ref": "#/$defs/packageSelection" },
+    "design": { "$ref": "#/$defs/design" },
+    "selected_cells": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/cellId" }
+    },
+    "execution_sequence": {
+      "type": "array",
+      "minItems": 64,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/cellId" }
+    },
+    "cell_bindings": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/cellBinding" }
+    },
+    "resource_metrics": { "$ref": "#/$defs/resourceMetrics" },
+    "excluded_values": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oversized_write_admission_quantum"],
+      "properties": {
+        "oversized_write_admission_quantum": {
+          "const": ["bounded_multi_fragment"]
+        }
+      }
+    },
+    "planned_runs": {
+      "type": "array",
+      "minItems": 64,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/plannedRun" }
+    },
+    "measurement_capability_authorized": { "const": true },
+    "timing_execution_authorized": { "const": true },
+    "no_measurements": { "const": true },
+    "performance_acceptance_authorization": { "const": false },
+    "adaptive_rule_derivation_authorization": { "const": false },
+    "active_behavior_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "documentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "packageRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package_id", "package_version", "sha256"],
+      "properties": {
+        "package_id": { "type": "string", "minLength": 1 },
+        "package_version": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "packageSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_package_references",
+        "package_target",
+        "implementation_id",
+        "suite_id",
+        "scenario_id",
+        "protocol",
+        "test_executor_id",
+        "load_profile_id",
+        "package_backed_execution"
+      ],
+      "properties": {
+        "component_package_references": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/packageRef" }
+        },
+        "package_target": { "const": "RawQuic" },
+        "implementation_id": { "const": "quic-dotnet-raw-dev" },
+        "suite_id": { "const": "quic-transport-v1-comparison" },
+        "scenario_id": {
+          "const": "quic.transport.multiplex.100x64kb"
+        },
+        "protocol": { "const": "quic" },
+        "test_executor_id": { "const": "quic-go-raw-load" },
+        "load_profile_id": { "const": "raw-quic-peer-confidence" },
+        "package_backed_execution": { "const": true }
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "deterministic",
+        "cell_count",
+        "block_count",
+        "repetitions_per_cell",
+        "repetitions_per_job",
+        "total_job_count",
+        "position_balanced",
+        "first_order_carryover_balanced"
+      ],
+      "properties": {
+        "kind": { "const": "williams_balanced_latin_square" },
+        "deterministic": { "const": true },
+        "cell_count": { "const": 8 },
+        "block_count": { "const": 8 },
+        "repetitions_per_cell": { "const": 8 },
+        "repetitions_per_job": { "const": 1 },
+        "total_job_count": { "const": 64 },
+        "position_balanced": { "const": true },
+        "first_order_carryover_balanced": { "const": true }
+      }
+    },
+    "resourceMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_runtime_counters_requested",
+        "load_process_metrics_required",
+        "bounded_server_stdout_max_bytes"
+      ],
+      "properties": {
+        "target_runtime_counters_requested": { "const": true },
+        "load_process_metrics_required": { "const": true },
+        "bounded_server_stdout_max_bytes": { "const": 65536 }
+      }
+    },
+    "cellId": {
+      "type": "string",
+      "enum": ["a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7"]
+    },
+    "cellBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "content_sha256",
+        "oversized_write_admission_quantum",
+        "application_send_batch_formation",
+        "buffer_copy_coalescing"
+      ],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/cellId" },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "oversized_write_admission_quantum": {
+          "enum": ["legacy_current", "single_fragment"]
+        },
+        "application_send_batch_formation": {
+          "enum": ["legacy_current", "single_eligible"]
+        },
+        "buffer_copy_coalescing": {
+          "enum": ["legacy_current", "memory_conservative"]
+        }
+      }
+    },
+    "plannedRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_index",
+        "block_index",
+        "position_index",
+        "cell_id",
+        "cell_repetition",
+        "repetitions",
+        "state",
+        "job_id",
+        "package_ref",
+        "run_id",
+        "topology",
+        "outcome",
+        "controller_artifact_index_path",
+        "controller_artifact_downloads",
+        "policy_controls"
+      ],
+      "properties": {
+        "execution_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "block_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "position_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "cell_id": { "$ref": "#/$defs/cellId" },
+        "cell_repetition": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "repetitions": { "const": 1 },
+        "state": {
+          "enum": ["planned", "executing", "completed", "failed"]
+        },
+        "job_id": { "type": ["string", "null"] },
+        "package_ref": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["packageId", "packageVersion", "sha256"],
+              "properties": {
+                "packageId": { "type": "string", "minLength": 1 },
+                "packageVersion": { "type": "string", "minLength": 1 },
+                "sha256": { "$ref": "#/$defs/hash" }
+              }
+            }
+          ]
+        },
+        "run_id": { "type": ["string", "null"] },
+        "topology": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sutNodeId",
+                "loadNodeId",
+                "sutPhysicalHostId",
+                "loadPhysicalHostId",
+                "classification"
+              ],
+              "properties": {
+                "sutNodeId": { "type": ["string", "null"] },
+                "loadNodeId": { "type": ["string", "null"] },
+                "sutPhysicalHostId": { "type": ["string", "null"] },
+                "loadPhysicalHostId": { "type": ["string", "null"] },
+                "classification": {
+                  "enum": [
+                    "topology_unverified",
+                    "physical_host_unverified",
+                    "shared_physical_host",
+                    "independent_physical_hosts"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "outcome": { "type": ["string", "null"] },
+        "controller_artifact_index_path": {
+          "type": ["string", "null"]
+        },
+        "controller_artifact_downloads": { "type": "array" },
+        "policy_controls": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "oversized_write_admission_quantum",
+            "application_send_batch_formation",
+            "buffer_copy_coalescing"
+          ],
+          "properties": {
+            "oversized_write_admission_quantum": {
+              "enum": ["legacy_current", "single_fragment"]
+            },
+            "application_send_batch_formation": {
+              "enum": ["legacy_current", "single_eligible"]
+            },
+            "buffer_copy_coalescing": {
+              "enum": ["legacy_current", "memory_conservative"]
+            }
+          }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "architecture_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "work_item_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "verification_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

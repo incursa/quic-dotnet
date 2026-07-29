@@ -6,7 +6,7 @@
   "title": "Exact admission-family offline performance readiness",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, and a separately authorized package-backed A0/A3/A4/A7 ProtocolLab rack pilot.",
+  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, the completed package-backed A0/A3/A4/A7 ProtocolLab rack pilot, and a separately authorized counterbalanced A0-A7 follow-on.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
     "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
@@ -32,9 +32,13 @@
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceCampaign.ps1",
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-campaign-v1.json",
     "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
     "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
     "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
@@ -42,27 +46,33 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs"
   ],
-  "design_summary": "The retained v2 cell space and timing-disabled campaign v1 remain immutable. Factor-space v3 identifies A0 through A7 as the reviewed exact exhaustive subset and keeps the four bounded cells blocked. An internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. The dry-run compiler continues to expand all eight cells without running a clock. A new additive pilot document selects the ProtocolLab rack, isolated-pair controller-owned placement, package-backed raw QUIC, the existing multiplex.100x64kb workload, and exactly A0, A3, A4, and A7. Its execution order is A0, A4, A3, A7 so the baseline precedes the oversized-only and combined cells. The package builder embeds the three exact policy values and authorization identity, the adapter forwards them to the raw server, and the server attaches the reviewed admission token before the runtime gate. The controller owns worker selection and records immutable package, topology, run, and artifact identities.",
-  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. Both compilers emit deterministic manifests without collecting timing data. Pilot runs are append-only external evidence under the temporary evidence root and bind source, package binary, controller, topology, manifest, cell, workload, repetition, job, run, runtime evidence, outcome, and checksums.",
+  "design_summary": "The retained v2 cell space and timing-disabled campaign v1 remain immutable. Factor-space v3 identifies A0 through A7 as the reviewed exact exhaustive subset and keeps the four bounded cells blocked. An internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. The dry-run compiler continues to expand all eight cells without running a clock. The completed additive pilot selected A0, A3, A4, and A7. The additive follow-on selects all eight reviewed cells and expands an eight-block even-order Williams balanced Latin square into 64 one-repetition jobs. Every cell occupies every execution position once and every ordered first-order predecessor/successor pair occurs once. Eight implementation packages are built once from clean source and reused by exact cell identity. The controller retains isolated-pair worker selection, while the runner checkpoints every attempt for safe resume, requests target runtime counters, requires sampled load-process telemetry, downloads only bounded summaries, and rejects topology, payload, failure, timeout, saturation, or runtime-evidence mismatches.",
+  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. All compilers emit deterministic manifests without collecting timing data. Pilot and balanced-campaign runs are append-only external evidence under temporary evidence roots and bind source, package binary, controller, topology, manifest, block, position, cell, workload, repetition, job, run, runtime evidence, resource telemetry, outcome, and checksums. The balanced campaign state is rewritten after every attempt and resume requires the exact source, control, manifest, and package identities.",
   "edge_cases_and_constraints": [
     "The eight reviewed cells are exhaustive, so covering arrays would reduce evidence without reducing a large search space.",
     "The four bounded_multi_fragment cells remain present but blocked on shadow_recommendation_value_mismatch.",
     "Oversized fragments can prevent batch and buffer distinctness on the same operation; separate run-local operations preserve attribution.",
     "The older send_composition performance authorization and every correctness authorization are mutually exclusive with this token.",
-    "A clean local dry run does not establish a stable performance result."
-    ,"The four-cell pilot estimates oversized and combined batch-plus-buffer effects; it cannot isolate batch from buffer without additional cells."
+    "A clean local dry run does not establish a stable performance result.",
+    "The four-cell pilot estimates oversized and combined batch-plus-buffer effects; it cannot isolate batch from buffer without additional cells.",
+    "The balanced follow-on includes all eight cells and can estimate the three main effects and their interactions, but eight blocks on one worker pair remain characterization rather than held-out acceptance evidence.",
+    "Target runtime counters are requested through the existing controller contract; sampled load-process telemetry is required, while missing target counter samples remain an explicit availability result rather than permission to invent resource data."
   ],
   "alternatives_considered": [
     "Modify factor-cell-space v2 in place; rejected because retained canonical versions are immutable.",
     "Generalize the old two-axis token; rejected because family, proof, and cell boundaries must remain exact.",
     "Implement a covering-array generator now; rejected because eight effective reviewed cells are below the trigger of 65.",
     "Run local timings immediately; rejected because the ProtocolLab rack provides the selected credible execution environment.",
-    "Rewrite the timing-disabled campaign v1 in place; rejected because retained canonical controls are immutable and the selected pilot is additive."
+    "Rewrite the timing-disabled campaign v1 in place; rejected because retained canonical controls are immutable and the selected pilot is additive.",
+    "Cluster eight repetitions inside one job per cell; rejected because it would preserve serial cell clustering and leave execution-order drift confounded with treatment.",
+    "Use unconstrained random ordering; rejected because the deterministic Williams design provides auditable position and first-order carryover balance with the same 64-job budget."
   ],
   "risks": [
     "A stale catalog binding could authorize the wrong proof set unless all hashes are exact.",
     "A generic multi-axis escape hatch could unintentionally admit blocked cells.",
     "Rack timings could be overinterpreted if topology, package identity, or artifact readability is incomplete.",
-    "Operation-local noncoactivation could be misclassified as whole-cell inactivity without separate evidence identities."
+    "Operation-local noncoactivation could be misclassified as whole-cell inactivity without separate evidence identities.",
+    "A 64-job campaign can be interrupted; resumable identity checks must not skip failed attempts or mix packages from another source commit.",
+    "One physical worker pair and one workload do not provide independent validation even when within-campaign order is balanced."
   ]
 }

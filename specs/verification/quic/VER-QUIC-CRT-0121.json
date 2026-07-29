@@ -19,13 +19,14 @@
     "REQ-QUIC-CRT-0251",
     "REQ-QUIC-CRT-0252"
   ],
-  "scope": "Verify additive factor-space reconciliation, exact A0-A7 offline measurement authority, deterministic no-timing campaign compilation, the additive ProtocolLab rack A0/A3/A4/A7 pilot, fail-closed negative cases, package-backed production-seam execution, immutable raw evidence, and non-accepting pilot analysis. This artifact does not claim a stable rule, performance acceptance, active behavior, production readiness, or publishable provenance.",
-  "verification_method": "Canonical JSON schema and hash validation; exact catalog, proof, campaign, pilot, manifest, cell, policy-tuple, package, controller, topology, job, run, artifact, runtime-evidence, correctness, and checksum checks; focused positive and negative runtime/package authorization tests; deterministic compiler replay; ProtocolLab isolated-pair execution; Release builds; direct touched-artifact SpecTrace validation; and diff hygiene.",
+  "scope": "Verify additive factor-space reconciliation, exact A0-A7 offline measurement authority, deterministic no-timing campaign compilation, the completed ProtocolLab rack A0/A3/A4/A7 pilot, the additive counterbalanced A0-A7 follow-on, fail-closed negative cases, package-backed production-seam execution, bounded immutable evidence, resumable attempt accounting, resource-telemetry availability, and non-accepting analysis. This artifact does not claim a stable rule, performance acceptance, active behavior, production readiness, or publishable provenance.",
+  "verification_method": "Canonical JSON schema and hash validation; exact catalog, proof, campaign, pilot, balanced design, manifest, block, position, cell, policy-tuple, package, controller, topology, job, run, artifact, runtime-evidence, resource-telemetry, correctness, resume-state, and checksum checks; focused positive and negative runtime/package authorization tests; deterministic compiler replay; ProtocolLab isolated-pair execution; Release builds; direct touched-artifact SpecTrace validation; and diff hygiene.",
   "preconditions": [
     "The passed A0 through A7 correctness result and its current reviewed proof catalog remain present.",
     "bounded_multi_fragment remains blocked on shadow_recommendation_value_mismatch.",
     "The selected execution host is the ProtocolLab rack with controller-owned isolated-pair placement.",
-    "The selected initial scope is A0, A3, A4, and A7 using the existing raw QUIC multiplex.100x64kb workload.",
+    "The selected A0, A3, A4, and A7 pilot completed on plab-worker-x64-02 and plab-worker-x64-03 using the raw QUIC multiplex.100x64kb workload.",
+    "The authorized additive follow-on covers A0 through A7 in eight counterbalanced blocks with one repetition per job on the same x64-02 and x64-03 worker pair.",
     "Performance acceptance, adaptive selection, active behavior, and production activation remain false."
   ],
   "procedure": [
@@ -34,16 +35,20 @@
     "Create an exact admission performance authorization for each A0-A7 tuple and reject mismatched hashes, cells, values, adjacent axes, or concurrent authorization tokens.",
     "Compile the campaign twice and prove byte-identical canonical output without collecting timing observations.",
     "Compile the additive selected-pilot manifest twice and prove byte-identical output for ProtocolLab rack, exact A0/A3/A4/A7 cells, and the existing package-backed raw QUIC workload.",
+    "Compile the additive balanced manifest twice and prove byte-identical output for all eight cells, eight blocks, 64 one-repetition jobs, every cell in every position once, and all 56 ordered first-order predecessor pairs once.",
     "Reject covering-array requests, blocked values, stale inputs, outside axes, correctness intent, performance-acceptance intent, and active intent.",
     "Build the raw QUIC implementation package for each exact cell from clean committed source and prove the package manifest carries the exact policy tuple and authorization identity.",
     "Submit the four cells serially through the ProtocolLab controller with isolated-pair placement, two repetitions per cell, and no explicit worker IDs.",
     "Retain job, run, package, topology, aggregate result, runtime evidence, artifact index, and checksum identities; reject failed requests, timeouts, unsupported outcomes, wrong cells, wrong packages, shared topology, or unreadable required artifacts.",
     "Analyze A4 minus A0, A3 minus A0, A7 minus A4, A7 minus A3, and A7 minus A0 while labeling batch and buffer as a combined effect in the four-cell pilot.",
+    "Build exactly eight follow-on packages once, reuse each exact package across its eight blocks, and prove an operator-paused run resumes only with matching source, control, manifest, and package identities.",
+    "Submit the 64 balanced jobs through isolated-pair placement, require exact bytes, zero request failures and timeouts, bounded server output, sampled load-process telemetry, and declared runtime activation and release accounting, and record target-counter availability without fabricating missing samples.",
+    "Analyze all eight cells by block and position and derive oversized-admission, batch, buffer, three two-factor, and one three-factor contrast while preserving host, workload, resource, and sample-size caveats.",
     "Run focused source tests and Release builds with the repository's documented analyzer floor.",
     "Validate SPEC-QUIC-CRT-ADMISSION-PERFORMANCE, ARC-QUIC-CRT-0119, WI-QUIC-CRT-0120, and VER-QUIC-CRT-0121 directly.",
     "Run git diff --check and confirm no covering-array generation, performance acceptance, CI change, push, or production activation occurred."
   ],
-  "expected_result": "The current factor space is reconciled additively; only the exact reviewed A0 through A7 family can receive internal offline measurement authorization; the retained dry run and selected four-cell pilot compile deterministically and fail closed; exact package-backed rack jobs run on credible isolated topology with readable immutable evidence; the pilot reports bounded comparisons without isolating batch from buffer or accepting a rule; and focused tests and builds pass or retain a precise inherited blocker.",
+  "expected_result": "The current factor space is reconciled additively; only the exact reviewed A0 through A7 family can receive internal offline measurement authorization; the retained dry run, completed four-cell pilot, and additive balanced follow-on compile deterministically and fail closed; exact package-backed rack jobs run on credible isolated topology with readable bounded evidence; the balanced result reports all declared factorial contrasts and resource caveats without accepting a rule; and focused tests and builds pass or retain a precise inherited blocker.",
   "evidence": [
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-factor-cell-space-v3.json",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-campaign-v1.json",
@@ -51,10 +56,14 @@
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-campaign-v1.json",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
     "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs",
     "scripts/Validate-SpecTraceJson.ps1"
   ],
-  "status_summary": "Local pilot implementation and rack admission reached the measurement boundary on 2026-07-28. The retained readiness path passed 21 assertions; the additive rack pilot passed 21 assertions with four planned cells; focused REQ-QUIC-CRT-0248 and REQ-QUIC-CRT-0177 tests passed 51 of 51; and the raw QUIC server and adapter Release builds passed without warnings or errors. Commit 808c4725 reconciled the exact reviewed admission-performance authorization with the Stage 1 snapshot gate after the first A0 package reproduced the prior single-axis rejection. The two subsequent A0 jobs, job-90b0886c96a84068accdef088cacc507 and job-15395b8ca35846fbb8473c05eaaa96fd, started the repaired runtime but failed benchmark validation with truncated 65,536-byte responses. Both used plab-worker-sut-01 and plab-worker-load-01, whose exact physicalHostId is lenovo-p620, so their topology is shared_physical_host and cannot provide credible evidence. Their adaptive server output reached 1,729,303,814 and 645,052,203 stdout bytes, plus 14,222,722 and 4,513,664 stderr bytes, with dropped buffer-release evidence. A pinned-package control without adaptive evidence, job-e379923dcfc640a698e53defc8f61537, completed both repetitions with zero request failures and only 571 stdout bytes and 77 stderr bytes, but remains diagnostic because it used the same shared host. A4, A3, and A7 remain planned. Credible measurements remain zero; compact aggregate evidence and independent physical-host placement are unresolved; performance acceptance and activation remain false."
+  "status_summary": "The bounded four-cell pilot completed on 2026-07-28 from clean source fc82651ce20ec2cdd55a5ea6c902e9ff285bd13d using plab-worker-x64-02 as SUT and plab-worker-x64-03 as load on independent physical hosts. All A0, A3, A4, and A7 jobs and eight repetitions completed with exact bytes, zero request failures, zero timeouts, no detected load saturation, and compact server evidence between 41,827 and 43,740 bytes. Canonical result 2887fed8f5769acbd90bafaf18418f0de81ed8f969ad2c23705e422f292ff610 records directional midpoint rates of 115.53, 116.37, 118.51, and 117.58 requests per second for A0, A3, A4, and A7 respectively. Two serial repetitions and incomplete resource metrics prevent acceptance or independent batch and buffer attribution. On 2026-07-29 the user authorized an additive eight-block Williams-balanced A0-A7 follow-on on the x64-02/x64-03 pair. Its canonical control hash is cf6cdf6d75b66f6700c0c6b765f1a659e438d1def1b5ef111800367864d87714, its 64-run manifest hash is 19f4b05440e74f3952632eb65dd302ad1b738f0d5d7a04d606cdf3d12aeb1e77, and the focused contract currently passes 29 assertions. Rack execution and full-factorial reconciliation are pending; performance acceptance, rule derivation, and activation remain false."
 }

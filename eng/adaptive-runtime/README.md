@@ -885,3 +885,32 @@ the smaller design and the generator remains intentionally unimplemented. See
 the full
 [pilot closeout](../../docs/design/adaptive-runtime-send-admission-performance-pilot.md)
 for limitations and the next-campaign decision.
+
+The authorized additive follow-on covers A0 through A7 with an eight-block
+even-order Williams balanced Latin square. It expands to 64 one-repetition
+jobs: every cell occupies every execution position once, and every ordered
+first-order predecessor/successor pair occurs once. One exact package is built
+per cell and reused across all eight blocks.
+
+Regenerate, validate, and inspect the plan-only path with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Update-AdaptiveRuntimeAdmissionPerformanceBalancedCampaignFixtures.ps1
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1
+
+pwsh -NoProfile -File eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1 `
+  -OutputRoot C:\shared\temp\quic-dotnet\admission-performance-balanced-plan
+```
+
+Only `-Execute` submits rack work. For a bounded first-job telemetry check, add
+`-StopAfterCompletedRunCount 1`; then use the same output root with `-Execute
+-Resume` to continue. Resume requires the exact source commit, control,
+manifest, and eight package identities. The runner requests target counters,
+requires sampled load-process metrics, checkpoints every attempt, and rejects
+shared topology, wrong payload bytes, failures, timeouts, load saturation,
+runtime-activation mismatch, release-accounting mismatch, or server stdout
+above 65,536 bytes.
+
+The balanced campaign remains characterization on one worker pair and one
+workload. Covering-array generation, performance acceptance, adaptive-rule
+derivation, active behavior, and production activation remain false.
