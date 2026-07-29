@@ -16,6 +16,11 @@ param(
     [switch] $Resume,
     [ValidateRange(1, 64)]
     [int] $StopAfterCompletedRunCount = 64,
+    [string] $ReplayEvidenceJobId,
+    [ValidatePattern('^a[0-7]$')]
+    [string] $ReplayEvidenceCellId = 'a0',
+    [ValidateRange(1, 64)]
+    [int] $ReplayEvidenceExecutionIndex = 1,
     [switch] $PassThru
 )
 
@@ -459,9 +464,11 @@ function Save-CampaignControllerEvidence {
     $adapterPath = Join-Path $DownloadRoot 'target-adapter-metrics.json'
     $adapterText | Set-Content -LiteralPath $adapterPath -Encoding utf8
 
-    $counterArtifacts = Get-OptionalArtifact `
-        -Index $artifactIndex `
-        -Pattern '^sut/implementations/.+/c1-s100-r1/counters-summary\.json$'
+    $counterArtifacts = @(
+        Get-OptionalArtifact `
+            -Index $artifactIndex `
+            -Pattern '^sut/implementations/.+/c1-s100-r1/counters-summary\.json$'
+    )
     $counterStatus = 'unavailable'
     $counterSampleCount = 0
     $counterPath = $null
@@ -602,6 +609,39 @@ $planResult = [pscustomobject][ordered]@{
     completed_run_count = 0
     failed_attempt_count = 0
     actual_measurements_run = 0
+}
+if (-not [string]::IsNullOrWhiteSpace($ReplayEvidenceJobId)) {
+    Assert-Campaign (-not $Execute -and -not $Resume) `
+        'evidence_replay_cannot_execute'
+    $replayDownloadRoot = Join-Path $outputRootFull 'replayed-evidence'
+    $replayedEvidence = Save-CampaignControllerEvidence `
+        -ControllerUri ([string]$control.controller_uri) `
+        -JobId $ReplayEvidenceJobId `
+        -CellId $ReplayEvidenceCellId `
+        -ExecutionIndex $ReplayEvidenceExecutionIndex `
+        -ArtifactIndexPath (
+            Join-Path $outputRootFull 'replayed-artifact-index.json') `
+        -DownloadRoot $replayDownloadRoot `
+        -StdoutMaxBytes (
+            [long]$control.resource_metrics.
+                bounded_server_stdout_max_bytes)
+    $replayResult = [pscustomobject][ordered]@{
+        mode = 'evidence_replay'
+        job_id = $ReplayEvidenceJobId
+        cell_id = $ReplayEvidenceCellId
+        execution_index = $ReplayEvidenceExecutionIndex
+        output_root = $outputRootFull
+        measurement_summary_path =
+            [string]$replayedEvidence.measurement_summary_path
+        actual_measurements_run = 0
+    }
+    if ($PassThru) {
+        $replayResult
+    }
+    else {
+        $replayResult | ConvertTo-Json -Depth 10
+    }
+    return
 }
 if (-not $Execute) {
     if ($PassThru) {

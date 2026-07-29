@@ -912,6 +912,10 @@ shared topology, wrong payload bytes, failures, timeouts, load saturation,
 runtime-activation mismatch, release-accounting mismatch, or server stdout
 above 65,536 bytes.
 
+A completed job whose local extraction was interrupted can be revalidated
+without submitting new work by passing `-ReplayEvidenceJobId`, the exact
+`-ReplayEvidenceCellId`, and its `-ReplayEvidenceExecutionIndex`.
+
 The balanced campaign remains characterization on one worker pair and one
 workload. Covering-array generation, performance acceptance, adaptive-rule
 derivation, active behavior, and production activation remain false.

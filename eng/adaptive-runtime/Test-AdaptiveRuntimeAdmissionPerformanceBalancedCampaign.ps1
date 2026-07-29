@@ -216,6 +216,7 @@ Assert-Ready (
         'AdaptiveRuntimeAdmissionPerformanceManifestContentSha256') -and
     $driverText.Contains('controller_nodes_missing') -and
     $driverText.Contains('failed_evidence_validation') -and
+    $driverText.Contains('evidence_replay') -and
     $driverText.Contains('Write-CampaignState') -and
     -not $driverText.Contains('CaptureCounters = $true') -and
     $driverText.Contains(
