@@ -104,6 +104,34 @@ function Resolve-PathOrThrow {
     return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Path).Path)
 }
 
+function ConvertTo-RequiredCapability {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Capability
+    )
+
+    $trimmed = $Capability.Trim()
+    $separatorIndex = $trimmed.IndexOf('=')
+    if ($separatorIndex -lt 0) {
+        return [ordered]@{
+            name = $trimmed
+            value = "true"
+        }
+    }
+
+    $name = $trimmed.Substring(0, $separatorIndex).Trim()
+    $value = $trimmed.Substring($separatorIndex + 1).Trim()
+    if ([string]::IsNullOrWhiteSpace($name) -or
+        [string]::IsNullOrWhiteSpace($value)) {
+        throw "RequiredCapability must be a non-empty name or name=value pair: '$Capability'."
+    }
+
+    return [ordered]@{
+        name = $name
+        value = $value
+    }
+}
+
 function Resolve-OptionalProtocolLabExecutionRoot {
     param(
         [Parameter(Mandatory = $true)]
@@ -551,10 +579,7 @@ $allPackageReferences += @($PackageReference | ForEach-Object { ConvertFrom-Pack
 $requiredCapabilities = @()
 if ($requiredCapabilityWasSpecified) {
     $requiredCapabilities = @($RequiredCapability | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object {
-            [ordered]@{
-                name = $_
-                value = "true"
-            }
+            ConvertTo-RequiredCapability -Capability $_
         })
 }
 

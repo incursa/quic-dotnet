@@ -295,6 +295,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_CONTENT_SHA256", builderScript);
+        Assert.Contains(
+            "PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE: bounded_aggregate",
+            builderScript);
         Assert.Contains("admissionPerformancePackagePathSelected", builderScript);
         Assert.Contains("admissionPerformanceManifestContentSha256", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a0", builderScript);
@@ -316,6 +319,18 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY", rawQuicServer);
+        Assert.Contains(
+            "Bounded aggregate adaptive-runtime evidence requires an exact admission-performance package-path authorization.",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_CONTRACT=adaptive-runtime-bounded-aggregate-epoch-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "Interlocked.Increment(ref bufferReleaseCount)",
+            rawQuicServer);
         Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);

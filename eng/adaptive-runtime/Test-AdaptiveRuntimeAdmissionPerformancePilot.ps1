@@ -171,6 +171,23 @@ Assert-Ready (
     $driverText.Contains('$nodeResponse = Invoke-ControllerJson') -and
     $driverText.Contains('$nodes = @(foreach ($node in $nodeResponse)')
 ) 'driver_controller_node_response_flattening_missing'
+Assert-Ready (
+    $driverText.Contains(
+        "'evidenceTier=offline-ml-two-host-vm'")
+) 'driver_x64_worker_pair_capability_missing'
+$packageBuilderText = Get-Content -LiteralPath (
+    Join-Path $PSScriptRoot '..\protocol-lab\New-QuicDotNetProtocolLabPackage.ps1') -Raw
+Assert-Ready (
+    $packageBuilderText.Contains(
+        'PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE: bounded_aggregate')
+) 'driver_bounded_aggregate_evidence_missing'
+$runHelperText = Get-Content -LiteralPath (
+    Join-Path $PSScriptRoot '..\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1') -Raw
+Assert-Ready (
+    $runHelperText.Contains('function ConvertTo-RequiredCapability') -and
+    $runHelperText.Contains('$trimmed.IndexOf(''='')') -and
+    $runHelperText.Contains('ConvertTo-RequiredCapability -Capability $_')
+) 'run_helper_valued_capability_missing'
 $driverRoot = Join-Path $TemporaryRoot 'driver'
 $planOnly = & $driverPath `
     -RepositoryRoot $RepositoryRoot `

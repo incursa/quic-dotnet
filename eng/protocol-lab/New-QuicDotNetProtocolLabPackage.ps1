@@ -628,6 +628,7 @@ if ($adaptiveRuntimeEnvironmentRequested) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG: 1"
     }
     if ($admissionPerformanceCell -ne $null) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE: bounded_aggregate"
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID: $($admissionPerformanceCell.campaignId)"
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256: $($admissionPerformanceCell.manifestContentSha256)"
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID: $($admissionPerformanceCell.cellId)"

@@ -517,6 +517,9 @@ foreach ($runInput in $expectedRunInputs) {
         ResultRoot = $cellOutputRoot
         TimeoutSeconds = 3600
         UsePackageReferenceOnly = $true
+        RequiredCapability = @(
+            'evidenceTier=offline-ml-two-host-vm'
+        )
         PackageReference = @(
             ("{0}|{1}|{2}" -f $packageRef.packageId, $packageRef.packageVersion, $packageRef.sha256)
         ) + $componentPackageReferenceStrings
