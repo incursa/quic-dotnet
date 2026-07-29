@@ -177,6 +177,16 @@ Assert-Ready (
     $driverText.Contains(
         "'evidenceTier=offline-ml-two-host-vm'")
 ) 'driver_x64_worker_pair_capability_missing'
+Assert-Ready (
+    $driverText.Contains('function Save-PilotControllerEvidence') -and
+    $driverText.Contains(
+        '/api/lab/jobs/$JobId/artifacts/$($artifact.artifactId)') -and
+    $driverText.Contains('measurement-summary.json') -and
+    $driverText.Contains(
+        'controller_bounded_aggregate_epoch_missing') -and
+    $driverText.Contains(
+        'controller_result_invariant_failed')
+) 'driver_bounded_controller_evidence_reconciliation_missing'
 $packageBuilderText = Get-Content -LiteralPath (
     Join-Path $PSScriptRoot '..\protocol-lab\New-QuicDotNetProtocolLabPackage.ps1') -Raw
 Assert-Ready (

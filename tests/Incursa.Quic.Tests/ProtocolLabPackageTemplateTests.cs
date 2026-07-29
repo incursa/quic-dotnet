@@ -329,7 +329,19 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=",
             rawQuicServer);
         Assert.Contains(
-            "Interlocked.Increment(ref bufferReleaseCount)",
+            "new(TimeSpan.FromSeconds(1))",
+            rawQuicServer);
+        Assert.Contains(
+            "RecordBoundedOversizedWrite(in evidence)",
+            rawQuicServer);
+        Assert.Contains(
+            "RecordBoundedBufferRelease(in observation)",
+            rawQuicServer);
+        Assert.Contains(
+            "long OwnerReleaseCount",
+            rawQuicServer);
+        Assert.DoesNotContain(
+            "Channel<BoundedAdaptiveRuntimeEpochRecord>",
             rawQuicServer);
         Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
         Assert.Contains("streamTasks.Add(", rawQuicServer);

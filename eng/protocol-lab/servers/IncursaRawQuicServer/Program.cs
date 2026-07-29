@@ -1536,9 +1536,6 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         CreateEvidenceChannel<Stage1UnifiedEpochRecord>();
     private readonly Channel<UnifiedAdaptiveRuntimeEpochRecord> unifiedEpochs =
         CreateEvidenceChannel<UnifiedAdaptiveRuntimeEpochRecord>();
-    private readonly Channel<BoundedAdaptiveRuntimeEpochRecord>
-        boundedAggregateEpochs =
-            CreateEvidenceChannel<BoundedAdaptiveRuntimeEpochRecord>();
     private readonly Channel<ActorServiceEvidenceRecord> actorServiceObservations =
         CreateEvidenceChannel<ActorServiceEvidenceRecord>();
     private readonly Channel<BufferCopyEvidenceRecord> bufferCopies =
@@ -1555,6 +1552,30 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         receiveDeliveryQuantumObservations =
             CreateEvidenceChannel<ReceiveDeliveryQuantumEvidenceRecord>();
     private long nextConnectionKey;
+    private long boundedAggregateSequence;
+    private long boundedAggregateActivityCount;
+    private long boundedConnectionCount;
+    private long boundedUnifiedEpochCount;
+    private long boundedApplicationSendTurnEvidenceCount;
+    private long boundedApplicationSendBatchEvidenceCount;
+    private long boundedApplicationSendBatchAppliedWriteCount;
+    private long boundedQueuedSendBurstEvidenceCount;
+    private long boundedOversizedWriteEvidenceCount;
+    private long boundedOversizedCommittedFragments;
+    private long boundedOversizedCommittedBytes;
+    private long boundedOversizedContinuationPosts;
+    private long boundedOversizedCompletionCount;
+    private long boundedActorServiceObservationCount;
+    private long boundedBufferCopyOperationCount;
+    private long boundedBufferLogicalBytes;
+    private long boundedBufferCopiedBytes;
+    private long boundedBufferRetainedCapacityBytes;
+    private long boundedOwnerReleaseCount;
+    private long boundedReleasedCapacityBytes;
+    private long boundedAdaptiveBackpressureObservationCount;
+    private long boundedPacketFlushCadenceObservationCount;
+    private long boundedReceiveDeliveryQuantumObservationCount;
+    private int boundedArithmeticSaturated;
 
     internal AdaptiveRuntimeEpochPublisher(
         QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy,
@@ -1586,7 +1607,11 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         _ = WriteOversizedWriteAdmissionEvidenceAsync();
         _ = WriteStage1UnifiedEpochsAsync();
         _ = WriteUnifiedEpochsAsync();
-        _ = WriteBoundedAggregateEpochsAsync();
+        if (evidenceMode == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
+        {
+            _ = WriteBoundedAggregateEpochsAsync();
+        }
+
         _ = WriteActorServiceObservationsAsync();
         _ = WriteBufferCopiesAsync();
         _ = WriteBufferReleasesAsync();
@@ -1597,6 +1622,11 @@ internal sealed class AdaptiveRuntimeEpochPublisher
 
     internal ConnectionSinks CreateConnectionSinks()
     {
+        if (evidenceMode == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
+        {
+            RecordBoundedCount(ref boundedConnectionCount);
+        }
+
         ConnectionSink sink = new(
             this,
             $"connection-{Interlocked.Increment(ref nextConnectionKey):D4}",
@@ -1766,9 +1796,64 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     {
         try
         {
-            await foreach (BoundedAdaptiveRuntimeEpochRecord epoch
-                in boundedAggregateEpochs.Reader.ReadAllAsync())
+            using PeriodicTimer timer =
+                new(TimeSpan.FromSeconds(1));
+            long lastPublishedActivityCount = 0;
+            while (await timer.WaitForNextTickAsync())
             {
+                long activityCount =
+                    Volatile.Read(ref boundedAggregateActivityCount);
+                if (activityCount == lastPublishedActivityCount)
+                {
+                    continue;
+                }
+
+                lastPublishedActivityCount = activityCount;
+                BoundedAdaptiveRuntimeEpochRecord epoch = new(
+                    "adaptive-runtime-bounded-aggregate-epoch-v1",
+                    Interlocked.Increment(ref boundedAggregateSequence),
+                    DateTimeOffset.UtcNow,
+                    Volatile.Read(ref boundedConnectionCount),
+                    Volatile.Read(ref boundedUnifiedEpochCount),
+                    Volatile.Read(
+                        ref boundedApplicationSendTurnEvidenceCount),
+                    Volatile.Read(
+                        ref boundedApplicationSendBatchEvidenceCount),
+                    Volatile.Read(
+                        ref boundedApplicationSendBatchAppliedWriteCount),
+                    Volatile.Read(
+                        ref boundedQueuedSendBurstEvidenceCount),
+                    Volatile.Read(
+                        ref boundedOversizedWriteEvidenceCount),
+                    Volatile.Read(
+                        ref boundedOversizedCommittedFragments),
+                    Volatile.Read(
+                        ref boundedOversizedCommittedBytes),
+                    Volatile.Read(
+                        ref boundedOversizedContinuationPosts),
+                    Volatile.Read(
+                        ref boundedOversizedCompletionCount),
+                    Volatile.Read(
+                        ref boundedActorServiceObservationCount),
+                    Volatile.Read(
+                        ref boundedBufferCopyOperationCount),
+                    Volatile.Read(
+                        ref boundedBufferLogicalBytes),
+                    Volatile.Read(
+                        ref boundedBufferCopiedBytes),
+                    Volatile.Read(
+                        ref boundedBufferRetainedCapacityBytes),
+                    Volatile.Read(
+                        ref boundedOwnerReleaseCount),
+                    Volatile.Read(
+                        ref boundedReleasedCapacityBytes),
+                    Volatile.Read(
+                        ref boundedAdaptiveBackpressureObservationCount),
+                    Volatile.Read(
+                        ref boundedPacketFlushCadenceObservationCount),
+                    Volatile.Read(
+                        ref boundedReceiveDeliveryQuantumObservationCount),
+                    Volatile.Read(ref boundedArithmeticSaturated) != 0);
                 Console.WriteLine(
                     BoundedAggregateEpochOutputPrefix
                     + JsonSerializer.Serialize(
@@ -1783,6 +1868,163 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                 $"IncursaRawQuicServer bounded aggregate epoch writer stopped: {ex.Message}");
         }
     }
+
+    private void RecordBoundedCount(ref long target)
+    {
+        SaturatingAddBounded(ref target, 1);
+        SaturatingAddBounded(ref boundedAggregateActivityCount, 1);
+    }
+
+    private void RecordBoundedValue(ref long target, ulong value)
+    {
+        if (value == 0)
+        {
+            return;
+        }
+
+        SaturatingAddBounded(
+            ref target,
+            value > long.MaxValue ? long.MaxValue : (long)value);
+    }
+
+    private void RecordBoundedValue(ref long target, long value)
+    {
+        if (value <= 0)
+        {
+            return;
+        }
+
+        SaturatingAddBounded(ref target, value);
+    }
+
+    private void CompleteBoundedEvidenceEvent()
+        => SaturatingAddBounded(
+            ref boundedAggregateActivityCount,
+            1);
+
+    private void SaturatingAddBounded(ref long target, long value)
+    {
+        while (true)
+        {
+            long current = Volatile.Read(ref target);
+            if (current == long.MaxValue)
+            {
+                Volatile.Write(
+                    ref boundedArithmeticSaturated,
+                    1);
+                return;
+            }
+
+            long next = value > long.MaxValue - current
+                ? long.MaxValue
+                : current + value;
+            if (Interlocked.CompareExchange(
+                    ref target,
+                    next,
+                    current)
+                == current)
+            {
+                if (next == long.MaxValue)
+                {
+                    Volatile.Write(
+                        ref boundedArithmeticSaturated,
+                        1);
+                }
+
+                return;
+            }
+        }
+    }
+
+    private void RecordBoundedUnifiedEpoch()
+        => RecordBoundedCount(ref boundedUnifiedEpochCount);
+
+    private void RecordBoundedApplicationSendTurn()
+        => RecordBoundedCount(
+            ref boundedApplicationSendTurnEvidenceCount);
+
+    private void RecordBoundedApplicationSendBatch(
+        in QuicApplicationSendBatchEvidence evidence)
+    {
+        RecordBoundedValue(
+            ref boundedApplicationSendBatchEvidenceCount,
+            1);
+        RecordBoundedValue(
+            ref boundedApplicationSendBatchAppliedWriteCount,
+            evidence.AppliedWriteCount);
+        CompleteBoundedEvidenceEvent();
+    }
+
+    private void RecordBoundedQueuedSendBurst()
+        => RecordBoundedCount(
+            ref boundedQueuedSendBurstEvidenceCount);
+
+    private void RecordBoundedOversizedWrite(
+        in QuicOversizedWriteAdmissionEvidence evidence)
+    {
+        RecordBoundedValue(
+            ref boundedOversizedWriteEvidenceCount,
+            1);
+        RecordBoundedValue(
+            ref boundedOversizedCommittedFragments,
+            evidence.CommittedFragments);
+        RecordBoundedValue(
+            ref boundedOversizedCommittedBytes,
+            evidence.CommittedBytes);
+        RecordBoundedValue(
+            ref boundedOversizedContinuationPosts,
+            evidence.ContinuationPosts);
+        RecordBoundedValue(
+            ref boundedOversizedCompletionCount,
+            evidence.CompletionCount);
+        CompleteBoundedEvidenceEvent();
+    }
+
+    private void RecordBoundedActorService()
+        => RecordBoundedCount(
+            ref boundedActorServiceObservationCount);
+
+    private void RecordBoundedBufferCopy(
+        in QuicBufferCopyObservation observation)
+    {
+        RecordBoundedValue(
+            ref boundedBufferCopyOperationCount,
+            1);
+        RecordBoundedValue(
+            ref boundedBufferLogicalBytes,
+            observation.LogicalBytes);
+        RecordBoundedValue(
+            ref boundedBufferCopiedBytes,
+            observation.CopiedBytes);
+        RecordBoundedValue(
+            ref boundedBufferRetainedCapacityBytes,
+            observation.RetainedCapacityBytes);
+        CompleteBoundedEvidenceEvent();
+    }
+
+    private void RecordBoundedBufferRelease(
+        in QuicBufferReleaseObservation observation)
+    {
+        RecordBoundedValue(
+            ref boundedOwnerReleaseCount,
+            1);
+        RecordBoundedValue(
+            ref boundedReleasedCapacityBytes,
+            observation.ReleasedCapacityBytes);
+        CompleteBoundedEvidenceEvent();
+    }
+
+    private void RecordBoundedAdaptiveBackpressure()
+        => RecordBoundedCount(
+            ref boundedAdaptiveBackpressureObservationCount);
+
+    private void RecordBoundedPacketFlushCadence()
+        => RecordBoundedCount(
+            ref boundedPacketFlushCadenceObservationCount);
+
+    private void RecordBoundedReceiveDeliveryQuantum()
+        => RecordBoundedCount(
+            ref boundedReceiveDeliveryQuantumObservationCount);
 
     private async Task WriteActorServiceObservationsAsync()
     {
@@ -1922,7 +2164,6 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         private readonly string connectionKey;
         private readonly QuicAdaptiveRuntimeUnifiedEpochEvidenceAccumulator
             unifiedAccumulator;
-        private long bufferReleaseCount;
 
         internal ConnectionSink(
             AdaptiveRuntimeEpochPublisher owner,
@@ -1971,12 +2212,8 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
-                return owner.boundedAggregateEpochs.Writer.TryWrite(
-                    new BoundedAdaptiveRuntimeEpochRecord(
-                        "adaptive-runtime-bounded-aggregate-epoch-v1",
-                        connectionKey,
-                        evidence,
-                        Interlocked.Read(ref bufferReleaseCount)));
+                owner.RecordBoundedUnifiedEpoch();
+                return true;
             }
 
             bool rawPublished = owner.epochs.Writer.TryWrite(
@@ -2051,6 +2288,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedApplicationSendTurn();
                 return accumulated;
             }
 
@@ -2069,6 +2307,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedApplicationSendBatch(in evidence);
                 return accumulated;
             }
 
@@ -2085,6 +2324,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedQueuedSendBurst();
                 return accumulated;
             }
 
@@ -2101,6 +2341,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedOversizedWrite(in evidence);
                 return accumulated;
             }
 
@@ -2117,6 +2358,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedActorService();
                 return accumulated;
             }
 
@@ -2142,6 +2384,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedBufferCopy(in observation);
                 return accumulated;
             }
 
@@ -2174,7 +2417,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
-                Interlocked.Increment(ref bufferReleaseCount);
+                owner.RecordBoundedBufferRelease(in observation);
                 return true;
             }
 
@@ -2203,6 +2446,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedAdaptiveBackpressure();
                 return accumulated;
             }
 
@@ -2223,6 +2467,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedPacketFlushCadence();
                 return accumulated;
             }
 
@@ -2243,6 +2488,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
+                owner.RecordBoundedReceiveDeliveryQuantum();
                 return accumulated;
             }
 
@@ -2410,9 +2656,30 @@ internal readonly record struct UnifiedAdaptiveRuntimeEpochRecord(
 
 internal readonly record struct BoundedAdaptiveRuntimeEpochRecord(
     string SchemaVersion,
-    string ConnectionKey,
-    QuicAdaptiveRuntimeUnifiedEpochEvidence Epoch,
-    long OwnerReleaseCount);
+    long Sequence,
+    DateTimeOffset ObservedAtUtc,
+    long ConnectionCount,
+    long UnifiedEpochCount,
+    long ApplicationSendTurnEvidenceCount,
+    long ApplicationSendBatchEvidenceCount,
+    long ApplicationSendBatchAppliedWriteCount,
+    long QueuedSendBurstEvidenceCount,
+    long OversizedWriteEvidenceCount,
+    long OversizedCommittedFragments,
+    long OversizedCommittedBytes,
+    long OversizedContinuationPosts,
+    long OversizedCompletionCount,
+    long ActorServiceObservationCount,
+    long BufferCopyOperationCount,
+    long BufferLogicalBytes,
+    long BufferCopiedBytes,
+    long BufferRetainedCapacityBytes,
+    long OwnerReleaseCount,
+    long ReleasedCapacityBytes,
+    long AdaptiveBackpressureObservationCount,
+    long PacketFlushCadenceObservationCount,
+    long ReceiveDeliveryQuantumObservationCount,
+    bool ArithmeticSaturated);
 
 internal readonly record struct ActorServiceEvidenceRecord(
     string SchemaVersion,

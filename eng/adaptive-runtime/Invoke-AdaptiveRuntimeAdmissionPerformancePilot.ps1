@@ -276,6 +276,163 @@ function ConvertTo-LabPackageReference {
     }
 }
 
+function Save-PilotControllerEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string] $ControllerUri,
+        [Parameter(Mandatory = $true)][string] $JobId,
+        [Parameter(Mandatory = $true)][string] $CellId,
+        [Parameter(Mandatory = $true)][string] $ArtifactIndexPath,
+        [Parameter(Mandatory = $true)][string] $DownloadRoot
+    )
+
+    $artifactIndex = Invoke-ControllerJson `
+        -Uri "$ControllerUri/api/lab/jobs/$JobId/artifacts" `
+        -Method 'GET'
+    Write-JsonFile -Path $ArtifactIndexPath -Value $artifactIndex
+
+    $resultArtifacts = @(
+        $artifactIndex.artifacts |
+            Where-Object {
+                [string]$_.name -match
+                    '(^|/)c1-s100-r([12])/result\.json$' -and
+                $_.readable -eq $true -and
+                $_.inlinePreviewAvailable -eq $true -and
+                $_.previewTruncated -ne $true
+            } |
+            Sort-Object name
+    )
+    Assert-Pilot (
+        $resultArtifacts.Count -eq 2
+    ) "controller_result_artifact_count_invalid:${CellId}:$($resultArtifacts.Count)"
+
+    $measurements = [System.Collections.Generic.List[object]]::new()
+    $downloads = [System.Collections.Generic.List[string]]::new()
+    foreach ($artifact in $resultArtifacts) {
+        $detail = Invoke-ControllerJson `
+            -Uri "$ControllerUri/api/lab/jobs/$JobId/artifacts/$($artifact.artifactId)" `
+            -Method 'GET'
+        Assert-Pilot (
+            -not [string]::IsNullOrWhiteSpace([string]$detail.text)
+        ) "controller_result_artifact_empty:${CellId}:$($artifact.artifactId)"
+        $benchmark = [string]$detail.text | ConvertFrom-Json
+        $repetition = [int]$benchmark.repetition
+        Assert-Pilot (
+            $repetition -in @(1, 2)
+        ) "controller_result_repetition_invalid:${CellId}:$repetition"
+        $metrics = $benchmark.metrics
+        Assert-Pilot (
+            [string]$benchmark.benchmarkExecutionStatus -ceq 'succeeded' -and
+            [string]$benchmark.validationResult.status -ceq 'passed' -and
+            [long]$metrics.totalRequests -gt 0 -and
+            [long]$metrics.successfulRequests -eq
+                [long]$metrics.totalRequests -and
+            [long]$metrics.failedRequests -eq 0 -and
+            [long]$metrics.timeoutRequests -eq 0 -and
+            [long]$metrics.bytesSent -gt 0 -and
+            [long]$metrics.bytesSent -eq
+                [long]$metrics.bytesReceived -and
+            ([long]$metrics.totalRequests % 100) -eq 0
+        ) "controller_result_invariant_failed:$CellId:r$repetition"
+
+        $resultPath = Join-Path $DownloadRoot "result-r$repetition.json"
+        [string]$detail.text |
+            Set-Content -LiteralPath $resultPath -Encoding utf8
+        [void]$downloads.Add($resultPath)
+        [void]$measurements.Add([pscustomobject][ordered]@{
+            repetition = $repetition
+            requests_per_second =
+                [double]$metrics.requestsPerSecond
+            throughput_bytes_per_second =
+                [double]$metrics.throughputBytesPerSecond
+            latency_p50_ms = [double]$metrics.latencyP50Ms
+            latency_p95_ms = [double]$metrics.latencyP95Ms
+            total_requests = [long]$metrics.totalRequests
+            successful_requests =
+                [long]$metrics.successfulRequests
+            failed_requests = [long]$metrics.failedRequests
+            timeout_requests = [long]$metrics.timeoutRequests
+            bytes_sent = [long]$metrics.bytesSent
+            bytes_received = [long]$metrics.bytesReceived
+            load_generator_saturation_status =
+                [string]$benchmark.loadToolSaturationStatus
+        })
+    }
+
+    $serverStdoutArtifacts = @(
+        $artifactIndex.artifacts |
+            Where-Object {
+                [string]$_.name -match
+                    '^sut/.+/adapter-child-artifacts/server\.stdout/server\.stdout\.txt$' -and
+                $_.readable -eq $true -and
+                $_.inlinePreviewAvailable -eq $true -and
+                $_.previewTruncated -ne $true
+            }
+    )
+    Assert-Pilot (
+        $serverStdoutArtifacts.Count -eq 1
+    ) "controller_bounded_stdout_artifact_count_invalid:${CellId}:$($serverStdoutArtifacts.Count)"
+    $serverStdoutDetail = Invoke-ControllerJson `
+        -Uri "$ControllerUri/api/lab/jobs/$JobId/artifacts/$($serverStdoutArtifacts[0].artifactId)" `
+        -Method 'GET'
+    $serverStdout = [string]$serverStdoutDetail.text
+    Assert-Pilot (
+        $serverStdout -match
+            '(?m)^QUIC_ADAPTIVE_RUNTIME_EVIDENCE_MODE=bounded_aggregate$'
+    ) "controller_bounded_evidence_mode_missing:$CellId"
+    $boundedEpochLines = @(
+        $serverStdout -split '\r?\n' |
+            Where-Object {
+                $_ -like
+                    'QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=*'
+            }
+    )
+    Assert-Pilot (
+        $boundedEpochLines.Count -gt 0
+    ) "controller_bounded_aggregate_epoch_missing:$CellId"
+    $lastBoundedEpoch = (
+        [string]$boundedEpochLines[-1] -replace
+            '^QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=',
+            ''
+    ) | ConvertFrom-Json
+    Assert-Pilot (
+        [string]$lastBoundedEpoch.SchemaVersion -ceq
+            'adaptive-runtime-bounded-aggregate-epoch-v1' -and
+        $lastBoundedEpoch.ArithmeticSaturated -eq $false -and
+        [long]$lastBoundedEpoch.ApplicationSendBatchEvidenceCount -gt 0 -and
+        [long]$lastBoundedEpoch.OversizedWriteEvidenceCount -gt 0 -and
+        [long]$lastBoundedEpoch.OversizedCommittedBytes -gt 0 -and
+        [long]$lastBoundedEpoch.BufferCopyOperationCount -gt 0 -and
+        [long]$lastBoundedEpoch.OwnerReleaseCount -gt 0
+    ) "controller_bounded_aggregate_invariant_failed:$CellId"
+    $serverStdoutPath = Join-Path $DownloadRoot 'server.stdout.txt'
+    $serverStdout |
+        Set-Content -LiteralPath $serverStdoutPath -Encoding utf8
+    [void]$downloads.Add($serverStdoutPath)
+
+    $summaryPath = Join-Path $DownloadRoot 'measurement-summary.json'
+    Write-JsonFile -Path $summaryPath -Value ([pscustomobject][ordered]@{
+        schema_version =
+            'adaptive-runtime-admission-performance-pilot-measurement-summary-v1'
+        cell_id = $CellId
+        job_id = $JobId
+        repetitions = @(
+            $measurements | Sort-Object repetition
+        )
+        bounded_aggregate_epoch_count =
+            $boundedEpochLines.Count
+        final_bounded_aggregate = $lastBoundedEpoch
+        performance_acceptance_authorized = $false
+        active_behavior_authorized = $false
+    })
+    [void]$downloads.Add($summaryPath)
+
+    [pscustomobject][ordered]@{
+        artifact_index_path = $ArtifactIndexPath
+        downloads = @($downloads)
+        measurement_summary_path = $summaryPath
+    }
+}
+
 function Publish-PilotPackage {
     param(
         [Parameter(Mandatory = $true)][string] $ControllerUri,
@@ -591,17 +748,16 @@ foreach ($runInput in $expectedRunInputs) {
         }
         $runRecord.topology = Get-PilotTopology -Job $runJson.job -Nodes $nodes
         $runRecord.outcome = if ([string]::IsNullOrWhiteSpace([string]$runJson.job.status)) { 'submitted' } else { [string]$runJson.job.status }
-        $runRecord.controller_artifact_index_path = if (
-            Test-Path -LiteralPath $artifactIndexPath -PathType Leaf) {
-            $artifactIndexPath
-        }
-        else {
-            $null
-        }
-        $runRecord.controller_artifact_downloads = @()
-        if (Test-Path -LiteralPath $artifactIndexPath -PathType Leaf) {
-            $runRecord.controller_artifact_downloads = @(Get-ChildItem -LiteralPath $downloadRoot -File -ErrorAction SilentlyContinue | ForEach-Object FullName)
-        }
+        $controllerEvidence = Save-PilotControllerEvidence `
+            -ControllerUri $controllerUri `
+            -JobId $runRecord.job_id `
+            -CellId $runRecord.cell_id `
+            -ArtifactIndexPath $artifactIndexPath `
+            -DownloadRoot $downloadRoot
+        $runRecord.controller_artifact_index_path =
+            [string]$controllerEvidence.artifact_index_path
+        $runRecord.controller_artifact_downloads =
+            @($controllerEvidence.downloads)
         $preflight.package_identity_status = 'resolved'
     }
     catch {
