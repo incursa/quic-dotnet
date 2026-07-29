@@ -1390,7 +1390,7 @@ static int? ResolveBoundedFinalEchoBytes(bool echoResponses, string? behavior, s
     if (!echoResponses
         || behavior?.StartsWith("duplex-streams", StringComparison.OrdinalIgnoreCase) == true
         || !int.TryParse(payloadSizeText, out var payloadSize)
-        || payloadSize is <= 0 or > SmallApplicationWriteSizeBytes)
+        || payloadSize is <= 0 or > RawQuicEchoBufferBytes)
     {
         return null;
     }

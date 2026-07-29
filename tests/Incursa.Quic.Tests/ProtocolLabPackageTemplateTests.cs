@@ -617,7 +617,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("var trailingBytes = await stream.TryReadTerminalAsync", source);
         Assert.Contains("await stream.WriteFinalAsync(buffer.AsMemory(0, expectedEchoBytes), cancellationToken);", source);
         Assert.Contains("behavior?.StartsWith(\"duplex-streams\"", source);
-        Assert.Contains("payloadSize is <= 0 or > SmallApplicationWriteSizeBytes", source);
+        Assert.Contains("payloadSize is <= 0 or > RawQuicEchoBufferBytes", source);
         Assert.Contains("stream.CanWrite && !completedWrites", source);
         Assert.Contains("await stream.DisposeAsync();", source);
         Assert.DoesNotContain("retainedCompletedStreams", source);
