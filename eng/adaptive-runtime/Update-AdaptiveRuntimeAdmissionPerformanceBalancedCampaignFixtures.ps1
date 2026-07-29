@@ -187,7 +187,7 @@ $control = [pscustomobject][ordered]@{
     execution_sequence = $executionSequence
     cell_bindings = $cellBindings
     resource_metrics = [pscustomobject][ordered]@{
-        target_runtime_counters_requested = $true
+        target_runtime_counters_requested = $false
         load_process_metrics_required = $true
         bounded_server_stdout_max_bytes = 65536
     }

@@ -26,7 +26,7 @@ internal readonly record struct
     private const string PackagePathPilotManifestContentSha256 =
         "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9";
     private const string PackagePathBalancedManifestContentSha256 =
-        "19f4b05440e74f3952632eb65dd302ad1b738f0d5d7a04d606cdf3d12aeb1e77";
+        "a172b8834f025c50a414dd7748b48cafcdae5e1b32e304d557780eb2cbc3d767";
     private const string FamilyCatalogSha256 =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogSha256 =

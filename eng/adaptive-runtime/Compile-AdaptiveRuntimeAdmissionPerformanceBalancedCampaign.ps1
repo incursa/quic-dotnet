@@ -160,7 +160,7 @@ Assert-Compile (
     [int]$control.design.repetitions_per_job -eq 1 -and
     [int]$control.design.total_job_count -eq 64 -and
     $control.resource_metrics.target_runtime_counters_requested -eq
-        $true -and
+        $false -and
     $control.resource_metrics.load_process_metrics_required -eq
         $true -and
     [int]$control.resource_metrics.bounded_server_stdout_max_bytes -eq

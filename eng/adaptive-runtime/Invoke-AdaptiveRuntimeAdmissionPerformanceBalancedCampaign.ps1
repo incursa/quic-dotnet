@@ -133,12 +133,12 @@ function Get-CampaignTopology([object] $Job, [object[]] $Nodes) {
     }
     $sutLease = @(
         $leases |
-            Where-Object roleId -CEQ 'sut' |
+            Where-Object { [string]$_.roleId -ceq 'sut' } |
             Select-Object -First 1
     )
     $loadLease = @(
         $leases |
-            Where-Object roleId -CEQ 'load' |
+            Where-Object { [string]$_.roleId -ceq 'load' } |
             Select-Object -First 1
     )
     $sutNodeId = if ($sutLease.Count -eq 1) {
@@ -155,12 +155,16 @@ function Get-CampaignTopology([object] $Job, [object[]] $Nodes) {
     }
     $sutNode = @(
         $Nodes |
-            Where-Object nodeId -CEQ $sutNodeId |
+            Where-Object {
+                [string]$_.nodeId -ceq $sutNodeId
+            } |
             Select-Object -First 1
     )
     $loadNode = @(
         $Nodes |
-            Where-Object nodeId -CEQ $loadNodeId |
+            Where-Object {
+                [string]$_.nodeId -ceq $loadNodeId
+            } |
             Select-Object -First 1
     )
     $sutPhysicalHostId = if ($sutNode.Count -eq 1) {
@@ -833,7 +837,6 @@ foreach ($plannedRun in @(
         TestExecutorId = 'quic-go-raw-load'
         LoadProfileId = 'raw-quic-peer-confidence'
         Repetitions = 1
-        CaptureCounters = $true
         PlacementPolicy = 'isolated-pair'
         PackageVersion = [string]$packageRef.packageVersion
         RunIdPrefix = $runIdPrefix

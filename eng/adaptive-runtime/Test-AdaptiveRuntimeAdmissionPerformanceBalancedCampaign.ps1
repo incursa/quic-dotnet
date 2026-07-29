@@ -81,7 +81,7 @@ Assert-Ready (
 ) 'balanced_control_design_invalid'
 Assert-Ready (
     $control.resource_metrics.target_runtime_counters_requested -eq
-        $true -and
+        $false -and
     $control.resource_metrics.load_process_metrics_required -eq
         $true -and
     [int]$control.resource_metrics.bounded_server_stdout_max_bytes -eq
@@ -215,7 +215,7 @@ Assert-Ready (
     $driverText.Contains(
         'AdaptiveRuntimeAdmissionPerformanceManifestContentSha256') -and
     $driverText.Contains('Write-CampaignState') -and
-    $driverText.Contains('CaptureCounters = $true') -and
+    -not $driverText.Contains('CaptureCounters = $true') -and
     $driverText.Contains(
         'load-tool-process-metrics-summary\.json') -and
     $driverText.Contains(
@@ -226,8 +226,9 @@ Assert-Ready (
         'adaptive_rule_derivation_authorization = $false')
 ) 'balanced_driver_safety_controls_missing'
 Assert-Ready (
-    -not $driverText.Contains('CaptureTrace = $true')
-) 'balanced_driver_trace_capture_enabled'
+    -not $driverText.Contains('CaptureTrace = $true') -and
+    -not $driverText.Contains('CaptureCounters = $true')
+) 'balanced_driver_intrusive_capture_enabled'
 
 $planRoot = Join-Path $TemporaryRoot 'plan-only'
 $plan = & $driverPath `

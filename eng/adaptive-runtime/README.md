@@ -905,7 +905,8 @@ pwsh -NoProfile -File eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerfor
 Only `-Execute` submits rack work. For a bounded first-job telemetry check, add
 `-StopAfterCompletedRunCount 1`; then use the same output root with `-Execute
 -Resume` to continue. Resume requires the exact source commit, control,
-manifest, and eight package identities. The runner requests target counters,
+manifest, and eight package identities. The runner leaves intrusive target
+counter capture disabled because the target is external and prestarted,
 requires sampled load-process metrics, checkpoints every attempt, and rejects
 shared topology, wrong payload bytes, failures, timeouts, load saturation,
 runtime-activation mismatch, release-accounting mismatch, or server stdout

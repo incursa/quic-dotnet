@@ -147,8 +147,9 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
   2026-07-29 the user authorized an additive all-eight follow-on on the same
   worker pair. It uses eight deterministic Williams-counterbalanced blocks,
   one repetition per job, one reusable exact package per cell, bounded
-  aggregate server evidence, required sampled load-process metrics, requested
-  target counters, and exact-identity resumability. Its 64-job rack execution
+  aggregate server evidence, required sampled load-process metrics, disabled
+  intrusive target counter capture for the external prestarted target, and
+  exact-identity resumability. Its 64-job rack execution
   and full-factorial analysis remain the active closeout.
   `bounded_multi_fragment`, covering-array generation, performance
   acceptance, adaptive-rule activation, active behavior, CI changes, and

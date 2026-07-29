@@ -148,7 +148,7 @@
         "bounded_server_stdout_max_bytes"
       ],
       "properties": {
-        "target_runtime_counters_requested": { "const": true },
+        "target_runtime_counters_requested": { "const": false },
         "load_process_metrics_required": { "const": true },
         "bounded_server_stdout_max_bytes": { "const": 65536 }
       }
