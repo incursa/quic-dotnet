@@ -664,17 +664,26 @@ internal sealed partial class QuicConnectionRuntime
         {
             // Cancellation can remove the request after the actor releases its gate but before this post.
             // Stream-action transitions are request-ID gated, so that unavoidable stale event is a no-op.
-            if (dispatcher is not null
-                && completion.HasPendingOversizedStreamData)
+            if (completion.HasPendingOversizedStreamData)
             {
                 completion.RecordOversizedWriteContinuationPost(
                     continuation.RequestId);
-                posted = dispatcher(
-                    continuation.RequestId,
-                    completion.ActionKind,
-                    completion.StreamId,
-                    completion.GetPendingOversizedStreamData(MaximumStreamWriteChunkBytes),
-                    ReadOnlyMemory<byte>.Empty);
+                ReadOnlyMemory<byte> streamData =
+                    completion.GetPendingOversizedStreamData(
+                        MaximumStreamWriteChunkBytes);
+                posted = dispatcher?.Invoke(
+                        continuation.RequestId,
+                        completion.ActionKind,
+                        completion.StreamId,
+                        streamData,
+                        ReadOnlyMemory<byte>.Empty)
+                    ?? TryPostLocalApiEvent(
+                        new QuicConnectionStreamActionEvent(
+                            clock.Ticks,
+                            continuation.RequestId,
+                            completion.ActionKind,
+                            StreamId: completion.StreamId,
+                            StreamData: streamData));
             }
         }
         catch (Exception caughtException)

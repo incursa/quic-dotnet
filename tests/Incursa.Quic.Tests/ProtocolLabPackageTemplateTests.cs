@@ -338,6 +338,17 @@ public sealed class ProtocolLabPackageTemplateTests
             "_ = HandleStreamAsync(",
             rawQuicServer,
             StringComparison.Ordinal);
+        var runtimeStreams = File.ReadAllText(Path.Combine(
+            repoRoot,
+            "src",
+            "Incursa.Quic",
+            "QuicConnectionRuntime.Streams.cs"));
+        Assert.Contains(
+            "?? TryPostLocalApiEvent(",
+            runtimeStreams);
+        Assert.Contains(
+            "StreamId: completion.StreamId",
+            runtimeStreams);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=", rawQuicServer);
