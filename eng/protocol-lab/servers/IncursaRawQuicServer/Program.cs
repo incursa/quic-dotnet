@@ -1107,6 +1107,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
     try
     {
         var streamIndex = 0;
+        var streamTasks = new List<Task>();
         while (!cancellationToken.IsCancellationRequested)
         {
             var stream = await connection.TryAcceptInboundStreamAsync(cancellationToken);
@@ -1121,7 +1122,33 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                 Console.Error.WriteLine($"IncursaRawQuicServer accepted inbound stream #{acceptedStreamIndex} on connection #{connectionIndex}");
             }
 
-            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
+            streamTasks.Add(
+                HandleStreamAsync(
+                    stream,
+                    connectionIndex,
+                    acceptedStreamIndex,
+                    cancellationToken,
+                    debugLogging,
+                    summaryLogging,
+                    echoResponses,
+                    downloadPayload,
+                    downloadWriteSizeBytes,
+                    boundedFinalEchoBytes));
+            if ((acceptedStreamIndex & 63) == 0)
+            {
+                for (var index = streamTasks.Count - 1; index >= 0; index--)
+                {
+                    if (streamTasks[index].IsCompleted)
+                    {
+                        streamTasks.RemoveAt(index);
+                    }
+                }
+            }
+        }
+
+        if (streamTasks.Count > 0)
+        {
+            await Task.WhenAll(streamTasks);
         }
     }
     catch (OperationCanceledException)

@@ -332,6 +332,12 @@ public sealed class ProtocolLabPackageTemplateTests
             "Interlocked.Increment(ref bufferReleaseCount)",
             rawQuicServer);
         Assert.Contains("connection = await listener.AcceptConnectionAsync(default);", rawQuicServer);
+        Assert.Contains("streamTasks.Add(", rawQuicServer);
+        Assert.Contains("await Task.WhenAll(streamTasks);", rawQuicServer);
+        Assert.DoesNotContain(
+            "_ = HandleStreamAsync(",
+            rawQuicServer,
+            StringComparison.Ordinal);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_JSON=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_POLICY_CONTRACT=", rawQuicServer);
         Assert.Contains("QUIC_APPLICATION_SEND_TURN_EVIDENCE_JSON=", rawQuicServer);
