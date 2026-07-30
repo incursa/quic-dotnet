@@ -341,6 +341,9 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_JSON=",
             rawQuicServer);
         Assert.Contains(
+            "QUIC_RAW_QUIC_BOUNDED_STREAM_ERROR_JSON=",
+            rawQuicServer);
+        Assert.Contains(
             "RawQuicBoundedStreamOutcomePublisher",
             rawQuicServer);
         Assert.Contains(
@@ -351,6 +354,9 @@ public sealed class ProtocolLabPackageTemplateTests
             rawQuicServer);
         Assert.Contains(
             "string FirstErrorStack",
+            rawQuicServer);
+        Assert.Contains(
+            "raw-quic-bounded-stream-error-v1",
             rawQuicServer);
         Assert.Contains(
             "new(TimeSpan.FromSeconds(1))",

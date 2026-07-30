@@ -1494,6 +1494,8 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
 {
     private const string OutputPrefix =
         "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_JSON=";
+    private const string ErrorOutputPrefix =
+        "QUIC_RAW_QUIC_BOUNDED_STREAM_ERROR_JSON=";
     private long activityCount;
     private long sequence;
     private long streamCount;
@@ -1593,6 +1595,18 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
                 ref firstErrorStack,
                 errorStack.Length <= 2048 ? errorStack : errorStack[..2048],
                 comparand: null);
+            Console.Error.WriteLine(
+                ErrorOutputPrefix
+                + JsonSerializer.Serialize(
+                    new RawQuicBoundedStreamErrorRecord(
+                        "raw-quic-bounded-stream-error-v1",
+                        DateTimeOffset.UtcNow,
+                        outcome,
+                        error.Length <= 256 ? error : error[..256],
+                        errorType.Length <= 256 ? errorType : errorType[..256],
+                        errorStack.Length <= 2048 ? errorStack : errorStack[..2048]),
+                    AdaptiveRuntimeEpochJsonContext.Default
+                        .RawQuicBoundedStreamErrorRecord));
             WriteSnapshot();
         }
     }
@@ -2889,6 +2903,14 @@ internal readonly record struct RawQuicBoundedStreamOutcomeRecord(
     string FirstErrorType,
     string FirstErrorStack);
 
+internal readonly record struct RawQuicBoundedStreamErrorRecord(
+    string SchemaVersion,
+    DateTimeOffset ObservedAtUtc,
+    string Outcome,
+    string Message,
+    string ExceptionType,
+    string Stack);
+
 internal readonly record struct ActorServiceEvidenceRecord(
     string SchemaVersion,
     string ConnectionKey,
@@ -2949,6 +2971,7 @@ internal readonly record struct BufferEvidenceExportFailureRecord(
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BoundedAdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(RawQuicBoundedStreamOutcomeRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(RawQuicBoundedStreamErrorRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochExportFailureRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ActorServiceEvidenceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ActorServiceEvidenceExportFailureRecord))]
