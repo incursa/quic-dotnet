@@ -347,6 +347,12 @@ public sealed class ProtocolLabPackageTemplateTests
             "long IncompleteRequestStreamCount",
             rawQuicServer);
         Assert.Contains(
+            "string FirstErrorType",
+            rawQuicServer);
+        Assert.Contains(
+            "string FirstErrorStack",
+            rawQuicServer);
+        Assert.Contains(
             "new(TimeSpan.FromSeconds(1))",
             rawQuicServer);
         Assert.Contains(

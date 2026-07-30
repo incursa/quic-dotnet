@@ -1215,6 +1215,8 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     long bytesSentTotal = 0;
     var outcome = "completed";
     var error = string.Empty;
+    var errorType = string.Empty;
+    var errorStack = string.Empty;
 
     try
     {
@@ -1357,6 +1359,8 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     {
         outcome = "quic-error";
         error = ex.Message;
+        errorType = ex.GetType().FullName ?? ex.GetType().Name;
+        errorStack = ex.StackTrace ?? string.Empty;
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} failed with QUIC error: {ex.Message}");
@@ -1366,6 +1370,8 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     {
         outcome = "error";
         error = ex.Message;
+        errorType = ex.GetType().FullName ?? ex.GetType().Name;
+        errorStack = ex.StackTrace ?? string.Empty;
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} failed: {ex}");
@@ -1379,7 +1385,9 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             reachedEof,
             completedWrites,
             outcome,
-            error);
+            error,
+            errorType,
+            errorStack);
 
         if (summaryLogging)
         {
@@ -1502,6 +1510,8 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
     private long sentBytes;
     private string? firstErrorOutcome;
     private string? firstErrorMessage;
+    private string? firstErrorType;
+    private string? firstErrorStack;
 
     internal RawQuicBoundedStreamOutcomePublisher()
     {
@@ -1514,7 +1524,9 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
         bool reachedEof,
         bool completedWrites,
         string outcome,
-        string error)
+        string error,
+        string errorType,
+        string errorStack)
     {
         Interlocked.Increment(ref streamCount);
         Interlocked.Add(ref readBytes, Math.Max(0, streamReadBytes));
@@ -1573,6 +1585,14 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
                 ref firstErrorMessage,
                 error.Length <= 256 ? error : error[..256],
                 comparand: null);
+            Interlocked.CompareExchange(
+                ref firstErrorType,
+                errorType.Length <= 256 ? errorType : errorType[..256],
+                comparand: null);
+            Interlocked.CompareExchange(
+                ref firstErrorStack,
+                errorStack.Length <= 2048 ? errorStack : errorStack[..2048],
+                comparand: null);
             WriteSnapshot();
         }
     }
@@ -1622,7 +1642,9 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
             Volatile.Read(ref readBytes),
             Volatile.Read(ref sentBytes),
             Volatile.Read(ref firstErrorOutcome) ?? string.Empty,
-            Volatile.Read(ref firstErrorMessage) ?? string.Empty);
+            Volatile.Read(ref firstErrorMessage) ?? string.Empty,
+            Volatile.Read(ref firstErrorType) ?? string.Empty,
+            Volatile.Read(ref firstErrorStack) ?? string.Empty);
         Console.WriteLine(
             OutputPrefix
             + JsonSerializer.Serialize(
@@ -2863,7 +2885,9 @@ internal readonly record struct RawQuicBoundedStreamOutcomeRecord(
     long ReadBytes,
     long SentBytes,
     string FirstErrorOutcome,
-    string FirstErrorMessage);
+    string FirstErrorMessage,
+    string FirstErrorType,
+    string FirstErrorStack);
 
 internal readonly record struct ActorServiceEvidenceRecord(
     string SchemaVersion,
