@@ -297,6 +297,10 @@ var epochPublisher = adaptiveInstrumentationEnabled
         configuredReceiveDeliveryQuantumPolicy,
         evidenceMode)
     : null;
+var streamOutcomePublisher =
+    evidenceMode == AdaptiveRuntimeEvidenceMode.BoundedAggregate
+        ? new RawQuicBoundedStreamOutcomePublisher()
+        : null;
 var echoResponses = string.Equals(payloadDirection, "bidirectional", StringComparison.OrdinalIgnoreCase);
 var downloadPayload = string.Equals(payloadDirection, "server-to-client", StringComparison.OrdinalIgnoreCase)
     ? CreateDownloadPayload(payloadSizeText)
@@ -496,6 +500,8 @@ if (adaptiveInstrumentationEnabled)
     {
         Console.WriteLine(
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_CONTRACT=adaptive-runtime-bounded-aggregate-epoch-v1");
+        Console.WriteLine(
+            "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_CONTRACT=raw-quic-bounded-stream-aggregate-v1");
     }
     else
     {
@@ -563,7 +569,7 @@ try
             Console.Error.WriteLine($"IncursaRawQuicServer accepted connection #{connectionIndex} for ALPN '{alpn}'");
         }
 
-        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, capacitySummaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes);
+        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, capacitySummaryLogging, echoResponses, downloadPayload, downloadWriteSizeBytes, boundedFinalEchoBytes, streamOutcomePublisher);
     }
 }
 catch (OperationCanceledException)
@@ -1102,7 +1108,7 @@ static QuicCongestionPacingProfileObservationMode
         ? QuicCongestionPacingProfileObservationMode.Shadow
         : mode;
 
-static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
+static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool capacitySummaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes, RawQuicBoundedStreamOutcomePublisher? streamOutcomePublisher)
 {
     try
     {
@@ -1133,7 +1139,8 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                     echoResponses,
                     downloadPayload,
                     downloadWriteSizeBytes,
-                    boundedFinalEchoBytes));
+                    boundedFinalEchoBytes,
+                    streamOutcomePublisher));
             if ((acceptedStreamIndex & 63) == 0)
             {
                 for (var index = streamTasks.Count - 1; index >= 0; index--)
@@ -1200,7 +1207,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
     }
 }
 
-static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes)
+static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, byte[]? downloadPayload, int downloadWriteSizeBytes, int? boundedFinalEchoBytes, RawQuicBoundedStreamOutcomePublisher? streamOutcomePublisher)
 {
     var reachedEof = false;
     var completedWrites = false;
@@ -1366,6 +1373,14 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     }
     finally
     {
+        streamOutcomePublisher?.Record(
+            bytesReadTotal,
+            bytesSentTotal,
+            reachedEof,
+            completedWrites,
+            outcome,
+            error);
+
         if (summaryLogging)
         {
             Console.Error.WriteLine(
@@ -1465,6 +1480,156 @@ static int GetFreePort()
     using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
     socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
     return ((IPEndPoint)socket.LocalEndPoint!).Port;
+}
+
+internal sealed class RawQuicBoundedStreamOutcomePublisher
+{
+    private const string OutputPrefix =
+        "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_JSON=";
+    private long activityCount;
+    private long sequence;
+    private long streamCount;
+    private long completedStreamCount;
+    private long canceledStreamCount;
+    private long quicErrorStreamCount;
+    private long errorStreamCount;
+    private long reachedEofCount;
+    private long completedWriteCount;
+    private long zeroReadStreamCount;
+    private long zeroSentStreamCount;
+    private long incompleteRequestStreamCount;
+    private long readBytes;
+    private long sentBytes;
+    private string? firstErrorOutcome;
+    private string? firstErrorMessage;
+
+    internal RawQuicBoundedStreamOutcomePublisher()
+    {
+        _ = WriteSnapshotsAsync();
+    }
+
+    internal void Record(
+        long streamReadBytes,
+        long streamSentBytes,
+        bool reachedEof,
+        bool completedWrites,
+        string outcome,
+        string error)
+    {
+        Interlocked.Increment(ref streamCount);
+        Interlocked.Add(ref readBytes, Math.Max(0, streamReadBytes));
+        Interlocked.Add(ref sentBytes, Math.Max(0, streamSentBytes));
+        if (reachedEof)
+        {
+            Interlocked.Increment(ref reachedEofCount);
+        }
+
+        if (completedWrites)
+        {
+            Interlocked.Increment(ref completedWriteCount);
+        }
+
+        if (streamReadBytes == 0)
+        {
+            Interlocked.Increment(ref zeroReadStreamCount);
+        }
+
+        if (streamSentBytes == 0)
+        {
+            Interlocked.Increment(ref zeroSentStreamCount);
+        }
+
+        switch (outcome)
+        {
+            case "completed":
+                Interlocked.Increment(ref completedStreamCount);
+                break;
+            case "canceled":
+                Interlocked.Increment(ref canceledStreamCount);
+                break;
+            case "quic-error":
+                Interlocked.Increment(ref quicErrorStreamCount);
+                break;
+            default:
+                Interlocked.Increment(ref errorStreamCount);
+                break;
+        }
+
+        if (error.StartsWith(
+                "Raw QUIC request ended after ",
+                StringComparison.Ordinal))
+        {
+            Interlocked.Increment(ref incompleteRequestStreamCount);
+        }
+
+        Interlocked.Increment(ref activityCount);
+        if (!string.Equals(outcome, "completed", StringComparison.Ordinal)
+            && Interlocked.CompareExchange(
+                ref firstErrorOutcome,
+                outcome,
+                comparand: null) is null)
+        {
+            Interlocked.CompareExchange(
+                ref firstErrorMessage,
+                error.Length <= 256 ? error : error[..256],
+                comparand: null);
+            WriteSnapshot();
+        }
+    }
+
+    private async Task WriteSnapshotsAsync()
+    {
+        try
+        {
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
+            long lastPublishedActivityCount = 0;
+            while (await timer.WaitForNextTickAsync())
+            {
+                long currentActivityCount =
+                    Volatile.Read(ref activityCount);
+                if (currentActivityCount == lastPublishedActivityCount)
+                {
+                    continue;
+                }
+
+                lastPublishedActivityCount = currentActivityCount;
+                WriteSnapshot();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                $"IncursaRawQuicServer bounded stream aggregate writer stopped: {ex.Message}");
+        }
+    }
+
+    private void WriteSnapshot()
+    {
+        RawQuicBoundedStreamOutcomeRecord snapshot = new(
+            "raw-quic-bounded-stream-aggregate-v1",
+            Interlocked.Increment(ref sequence),
+            DateTimeOffset.UtcNow,
+            Volatile.Read(ref streamCount),
+            Volatile.Read(ref completedStreamCount),
+            Volatile.Read(ref canceledStreamCount),
+            Volatile.Read(ref quicErrorStreamCount),
+            Volatile.Read(ref errorStreamCount),
+            Volatile.Read(ref reachedEofCount),
+            Volatile.Read(ref completedWriteCount),
+            Volatile.Read(ref zeroReadStreamCount),
+            Volatile.Read(ref zeroSentStreamCount),
+            Volatile.Read(ref incompleteRequestStreamCount),
+            Volatile.Read(ref readBytes),
+            Volatile.Read(ref sentBytes),
+            Volatile.Read(ref firstErrorOutcome) ?? string.Empty,
+            Volatile.Read(ref firstErrorMessage) ?? string.Empty);
+        Console.WriteLine(
+            OutputPrefix
+            + JsonSerializer.Serialize(
+                snapshot,
+                AdaptiveRuntimeEpochJsonContext.Default
+                    .RawQuicBoundedStreamOutcomeRecord));
+    }
 }
 
 internal sealed class AdaptiveRuntimeEpochPublisher
@@ -2681,6 +2846,25 @@ internal readonly record struct BoundedAdaptiveRuntimeEpochRecord(
     long ReceiveDeliveryQuantumObservationCount,
     bool ArithmeticSaturated);
 
+internal readonly record struct RawQuicBoundedStreamOutcomeRecord(
+    string SchemaVersion,
+    long Sequence,
+    DateTimeOffset ObservedAtUtc,
+    long StreamCount,
+    long CompletedStreamCount,
+    long CanceledStreamCount,
+    long QuicErrorStreamCount,
+    long ErrorStreamCount,
+    long ReachedEofCount,
+    long CompletedWriteCount,
+    long ZeroReadStreamCount,
+    long ZeroSentStreamCount,
+    long IncompleteRequestStreamCount,
+    long ReadBytes,
+    long SentBytes,
+    string FirstErrorOutcome,
+    string FirstErrorMessage);
+
 internal readonly record struct ActorServiceEvidenceRecord(
     string SchemaVersion,
     string ConnectionKey,
@@ -2740,6 +2924,7 @@ internal readonly record struct BufferEvidenceExportFailureRecord(
 [System.Text.Json.Serialization.JsonSerializable(typeof(Stage1UnifiedEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(BoundedAdaptiveRuntimeEpochRecord))]
+[System.Text.Json.Serialization.JsonSerializable(typeof(RawQuicBoundedStreamOutcomeRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(UnifiedAdaptiveRuntimeEpochExportFailureRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ActorServiceEvidenceRecord))]
 [System.Text.Json.Serialization.JsonSerializable(typeof(ActorServiceEvidenceExportFailureRecord))]

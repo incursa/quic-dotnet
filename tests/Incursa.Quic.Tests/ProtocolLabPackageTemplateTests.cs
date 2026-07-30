@@ -335,6 +335,18 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=",
             rawQuicServer);
         Assert.Contains(
+            "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_CONTRACT=raw-quic-bounded-stream-aggregate-v1",
+            rawQuicServer);
+        Assert.Contains(
+            "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_JSON=",
+            rawQuicServer);
+        Assert.Contains(
+            "RawQuicBoundedStreamOutcomePublisher",
+            rawQuicServer);
+        Assert.Contains(
+            "long IncompleteRequestStreamCount",
+            rawQuicServer);
+        Assert.Contains(
             "new(TimeSpan.FromSeconds(1))",
             rawQuicServer);
         Assert.Contains(
@@ -648,6 +660,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("behavior?.StartsWith(\"duplex-streams\"", source);
         Assert.Contains("payloadSize is <= 0 or > RawQuicEchoBufferBytes", source);
         Assert.Contains("stream.CanWrite && !completedWrites", source);
+        Assert.Contains("streamOutcomePublisher?.Record(", source);
         Assert.Contains("await stream.DisposeAsync();", source);
         Assert.DoesNotContain("retainedCompletedStreams", source);
         Assert.True(
