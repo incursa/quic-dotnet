@@ -359,6 +359,15 @@ public sealed class ProtocolLabPackageTemplateTests
             "raw-quic-bounded-stream-error-v1",
             rawQuicServer);
         Assert.Contains(
+            "private static readonly TimeSpan SnapshotInterval =",
+            rawQuicServer);
+        Assert.Contains(
+            "TimeSpan.FromSeconds(5)",
+            rawQuicServer);
+        Assert.Contains(
+            "new(SnapshotInterval)",
+            rawQuicServer);
+        Assert.Contains(
             "new(TimeSpan.FromSeconds(1))",
             rawQuicServer);
         Assert.Contains(

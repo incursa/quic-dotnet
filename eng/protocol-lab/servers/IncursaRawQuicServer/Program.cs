@@ -1496,6 +1496,8 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
         "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_JSON=";
     private const string ErrorOutputPrefix =
         "QUIC_RAW_QUIC_BOUNDED_STREAM_ERROR_JSON=";
+    private static readonly TimeSpan SnapshotInterval =
+        TimeSpan.FromSeconds(5);
     private long activityCount;
     private long sequence;
     private long streamCount;
@@ -1615,7 +1617,7 @@ internal sealed class RawQuicBoundedStreamOutcomePublisher
     {
         try
         {
-            using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
+            using PeriodicTimer timer = new(SnapshotInterval);
             long lastPublishedActivityCount = 0;
             while (await timer.WaitForNextTickAsync())
             {
