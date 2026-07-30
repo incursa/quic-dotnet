@@ -2921,7 +2921,7 @@ internal sealed partial class QuicConnectionRuntime
     internal void ObserveApplicationSendWorkItemQueueDelay(double queueDelayMilliseconds)
         => applicationSendPressureClassifier.ObserveQueueDelay(queueDelayMilliseconds);
 
-    private QuicSendPolicySnapshot CaptureQueuedApplicationSendPolicySnapshot()
+    internal QuicSendPolicySnapshot CaptureQueuedApplicationSendPolicySnapshot()
     {
         QuicConnectionPathRecoverySnapshot recoverySnapshot = sendRuntime.CapturePathRecoverySnapshot();
         if (activePath is not { } currentPath)
@@ -3083,12 +3083,14 @@ internal sealed partial class QuicConnectionRuntime
 
     private int GetMaximumApplicationPayloadBytes(int ackHeadroomBytes)
     {
-        if (!activePath.HasValue)
+        QuicConnectionActivePathRecord? activePathSnapshot = activePath;
+        if (activePathSnapshot is not { } currentPath)
         {
             return int.MaxValue;
         }
 
-        ulong maximumDatagramSizeBytes = activePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes;
+        ulong maximumDatagramSizeBytes =
+            currentPath.MaximumDatagramSizeState.MaximumDatagramSizeBytes;
         int shortHeaderOverheadBytes =
             1
             + CurrentPeerDestinationConnectionId.Length
