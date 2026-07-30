@@ -13,7 +13,7 @@ public sealed class REQ_QUIC_CRT_0248
     private const string PackagePathManifestHash =
         "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9";
     private const string BalancedPackagePathManifestHash =
-        "a172b8834f025c50a414dd7748b48cafcdae5e1b32e304d557780eb2cbc3d767";
+        "005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a";
     private const string FamilyCatalogHash =
         "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93";
     private const string RelationshipCatalogHash =

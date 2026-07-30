@@ -5,7 +5,7 @@ title: "Adaptive Runtime Send-Admission Performance Pilot"
 # Adaptive Runtime Send-Admission Performance Pilot
 
 The bounded four-cell ProtocolLab rack pilot completed from clean source commit
-`fc82651ce20ec2cdd55a5ea6c902e9ff285bd13d`. It ran eight measured
+`c9ff68a9811a01902cdc09549f843239f5dd4016`. It ran eight measured
 repetitions on independent physical hosts: `plab-worker-x64-02` hosted the
 system under test and `plab-worker-x64-03` hosted the load generator. All
 repetitions transferred the exact requested bytes with zero request failures,
@@ -14,7 +14,7 @@ zero timeouts, and no detected load-generator saturation.
 The canonical machine-readable result is
 [`adaptive-runtime-send-admission-performance-pilot-result-v1.json`](../../eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-result-v1.json),
 with content SHA-256
-`2887fed8f5769acbd90bafaf18418f0de81ed8f969ad2c23705e422f292ff610`.
+`2bdad29055956afea81f468700dd78602cf8381c35564ce7f5f61ccab5ee4412`.
 
 ## Directional results
 
@@ -23,13 +23,13 @@ the arithmetic mean of the two retained repetitions.
 
 | Cell | R1 requests/s | R2 requests/s | Midpoint requests/s | Midpoint p95 latency | Requests/s versus A0 | p95 versus A0 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| A0 | 112.18 | 118.89 | 115.53 | 909.04 ms | baseline | baseline |
-| A4 | 118.89 | 118.13 | 118.51 | 902.80 ms | +2.57% | -0.69% |
-| A3 | 117.81 | 114.94 | 116.37 | 894.49 ms | +0.73% | -1.60% |
-| A7 | 114.62 | 120.55 | 117.58 | 882.57 ms | +1.77% | -2.91% |
+| A0 | 112.26 | 113.06 | 112.66 | 930.14 ms | baseline | baseline |
+| A4 | 115.53 | 118.78 | 117.16 | 898.88 ms | +3.99% | -3.36% |
+| A3 | 115.42 | 117.73 | 116.58 | 896.05 ms | +3.48% | -3.67% |
+| A7 | 110.56 | 111.81 | 111.18 | 923.28 ms | -1.31% | -0.74% |
 
 The pilot therefore produced usable numbers, but no stable winner or adaptive
-rule. A4 had the highest descriptive requests-per-second midpoint and A7 had
+rule. A4 had the highest descriptive requests-per-second midpoint and A3 had
 the lowest descriptive p95 midpoint. Two repetitions per cell, serial
 nonrandomized execution, worker CPU asymmetry, unavailable target-process
 metrics, and unknown load-generator CPU utilization prevent either observation
@@ -39,12 +39,14 @@ independently.
 
 ## Bounded evidence
 
-Runtime evidence was retained as fixed-memory, once-per-second cumulative
-aggregates. The four compact server stdout artifacts were 41,827, 42,775,
-43,740, and 43,684 bytes, all below the 65,536-byte bound. Every cell retained
-positive batch, oversized-write, buffer-copy, and owner-release counts without
-arithmetic saturation. This replaces the earlier multi-gigabyte raw-output
-failure mode for this pilot.
+Runtime evidence was retained as fixed-memory cumulative aggregates. The
+adaptive-runtime aggregate remained once per second; the additional raw-stream
+outcome aggregate was reduced to a five-second cadence while preserving
+immediate first-error output. The four compact server stdout artifacts were
+46,806, 48,313, 47,792, and 47,738 bytes, all below the 65,536-byte bound.
+Every cell retained positive batch, oversized-write, buffer-copy, and
+owner-release counts without arithmetic saturation. This replaces the earlier
+multi-gigabyte raw-output failure mode for this pilot.
 
 Reproduce and verify the canonical result from a retained execution directory
 with:

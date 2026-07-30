@@ -140,8 +140,8 @@ preference is claimed.
   load-generator saturation. Its result is directional only.
 - The four-cell pilot can attribute the oversized seam and the combined
   batch-plus-buffer effect, but cannot separate batch from buffer.
-- The pilot produced descriptive requests-per-second midpoints of 115.53 for
-  A0, 118.51 for A4, 116.37 for A3, and 117.58 for A7. Two repetitions and
+- The pilot produced descriptive requests-per-second midpoints of 112.66 for
+  A0, 117.16 for A4, 116.58 for A3, and 111.18 for A7. Two repetitions and
   serial nonrandomized order do not authorize a performance preference.
 - Covering arrays do not block the current numbers. Eight effective cells
   remain below the trigger of 65, so the generator is neither implemented nor

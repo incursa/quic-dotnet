@@ -1812,7 +1812,7 @@ over exactly `A0`, `A3`, `A4`, and `A7`, in `A0`, `A4`, `A3`, `A7` execution
 order. All four cells and eight repetitions transferred exact bytes with zero
 failures, zero timeouts, no detected load-generator saturation, and bounded
 aggregate output below 64 KiB per cell. The descriptive requests-per-second
-midpoints were 115.53, 118.51, 116.37, and 117.58 respectively. The retained
+midpoints were 112.66, 117.16, 116.58, and 111.18 respectively. The retained
 `send_admission_composition_performance_v1` dry-run campaign remains immutable
 and timing-disabled; a separate pilot control owns the timing authorization.
 The result is directional only: two repetitions, serial nonrandomized order,

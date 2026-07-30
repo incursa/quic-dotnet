@@ -309,7 +309,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("cell.send_admission_composition.correctness.a6", builderScript);
         Assert.Contains("cell.send_admission_composition.correctness.a7", builderScript);
         Assert.Contains(
-            "a172b8834f025c50a414dd7748b48cafcdae5e1b32e304d557780eb2cbc3d767",
+            "005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a",
             builderScript);
         Assert.Contains(
             "Admission-performance pilot package path requires one of the reviewed A0, A3, A4, or A7 tuples.",

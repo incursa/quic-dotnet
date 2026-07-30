@@ -849,22 +849,22 @@ measure the oversized seam and the combined batch-plus-buffer effect; it
 cannot attribute batch and buffer independently.
 
 The bounded rack execution completed from clean source
-`fc82651ce20ec2cdd55a5ea6c902e9ff285bd13d` on
+`c9ff68a9811a01902cdc09549f843239f5dd4016` on
 `plab-worker-x64-02` (system under test) and `plab-worker-x64-03` (load).
 All four cells and eight repetitions completed with exact transferred bytes,
 zero failures, zero timeouts, and no detected load-generator saturation.
-The compact server evidence remained between 41,827 and 43,740 bytes per cell.
+The compact server evidence remained between 46,806 and 48,313 bytes per cell.
 The canonical
 [pilot result](../../eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-result-v1.json)
 has content SHA-256
-`2887fed8f5769acbd90bafaf18418f0de81ed8f969ad2c23705e422f292ff610`.
+`2bdad29055956afea81f468700dd78602cf8381c35564ce7f5f61ccab5ee4412`.
 
 | Cell | R1 requests/s | R2 requests/s | Midpoint requests/s | Midpoint p95 | Requests/s versus A0 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| A0 | 112.18 | 118.89 | 115.53 | 909.04 ms | baseline |
-| A4 | 118.89 | 118.13 | 118.51 | 902.80 ms | +2.57% |
-| A3 | 117.81 | 114.94 | 116.37 | 894.49 ms | +0.73% |
-| A7 | 114.62 | 120.55 | 117.58 | 882.57 ms | +1.77% |
+| A0 | 112.26 | 113.06 | 112.66 | 930.14 ms | baseline |
+| A4 | 115.53 | 118.78 | 117.16 | 898.88 ms | +3.99% |
+| A3 | 115.42 | 117.73 | 116.58 | 896.05 ms | +3.48% |
+| A7 | 110.56 | 111.81 | 111.18 | 923.28 ms | -1.31% |
 
 These are directional pilot values, not acceptance statistics. Two repetitions,
 serial nonrandomized order, worker CPU asymmetry, incomplete resource metrics,
@@ -891,6 +891,14 @@ even-order Williams balanced Latin square. It expands to 64 one-repetition
 jobs: every cell occupies every execution position once, and every ordered
 first-order predecessor/successor pair occurs once. One exact package is built
 per cell and reused across all eight blocks.
+
+The current regenerated control has content SHA-256
+`b7b115e649b46b44f99c33deb4f6e3f7106c4421e7994bdefa5e4d44d02cfdad`;
+its compiled 64-run manifest has content SHA-256
+`005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a`.
+The earlier `e92d00e8` / `a172b883` campaign accepted 23 of 64 rows before
+the runtime fix changed the source identity. Its retained execution root is
+historical evidence only and must not be resumed or mixed with a new campaign.
 
 Regenerate, validate, and inspect the plan-only path with:
 

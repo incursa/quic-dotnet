@@ -165,7 +165,7 @@ function Get-AdmissionPerformancePackagePathCell {
     $pilotManifestContentSha256 =
         "257b31f3f93c6a34e14066b2c5d77bfc15ab5f2cfe54603b8d9244eb93fb7fd9"
     $balancedManifestContentSha256 =
-        "a172b8834f025c50a414dd7748b48cafcdae5e1b32e304d557780eb2cbc3d767"
+        "005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a"
     $selectedManifestContentSha256 = if (
         [string]::IsNullOrWhiteSpace($ManifestContentSha256)
     ) {
