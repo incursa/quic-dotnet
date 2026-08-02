@@ -227,7 +227,7 @@ function Save-CampaignControllerEvidence {
     [void](New-Item -ItemType Directory -Force -Path $DownloadRoot)
     $index = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs/$JobId/artifacts" -Method 'GET'
     Write-JsonFile $ArtifactIndexPath $index
-    $resultArtifact = Get-RequiredArtifact $index '(^|/)c1-s100-r1/result\.json$' `
+    $resultArtifact = Get-RequiredArtifact $index '(^|/)c1-s1-r1/result\.json$' `
         "result_artifact_count_invalid:$CellId"
     $resultText = Get-ArtifactText $ControllerUri $JobId $resultArtifact `
         "result_artifact_empty:$CellId"
@@ -239,7 +239,8 @@ function Save-CampaignControllerEvidence {
         [long]$metrics.totalRequests -gt 0 -and
         [long]$metrics.successfulRequests -eq [long]$metrics.totalRequests -and
         [long]$metrics.failedRequests -eq 0 -and [long]$metrics.timeoutRequests -eq 0 -and
-        [long]$metrics.bytesSent -gt 0 -and [long]$metrics.bytesSent -eq [long]$metrics.bytesReceived -and
+        [long]$metrics.bytesSent -eq 0 -and
+        [long]$metrics.bytesReceived -eq ([long]$metrics.totalRequests * 1MB) -and
         [string]$benchmark.loadToolSaturationStatus -ceq
             'load-generator-saturation-not-detected') `
         "result_invariant_failed:${CellId}:$ExecutionIndex"
@@ -253,23 +254,49 @@ function Save-CampaignControllerEvidence {
         "bounded_stdout_artifact_empty:$CellId"
     $stdoutBytes = [Text.UTF8Encoding]::new($false).GetByteCount($stdoutText)
     Assert-Campaign ($stdoutBytes -gt 0 -and $stdoutBytes -le $StdoutMaxBytes -and
-        $stdoutText -match '(?m)^QUIC_ADAPTIVE_RUNTIME_EVIDENCE_MODE=bounded_aggregate$') `
+        $stdoutText -match '(?m)^QUIC_ADAPTIVE_RUNTIME_EVIDENCE_MODE=bounded_aggregate$' -and
+        $stdoutText -match '(?m)^QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS=5$') `
         "bounded_stdout_invalid:${CellId}:$stdoutBytes"
     $boundedLines = @($stdoutText -split '\r?\n' | Where-Object {
         $_ -like 'QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=*' })
     Assert-Campaign ($boundedLines.Count -gt 0) "bounded_epoch_missing:$CellId"
-    $bounded = ([string]$boundedLines[-1] -replace
-        '^QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=', '') | ConvertFrom-Json
-    Assert-Campaign ([string]$bounded.SchemaVersion -ceq
-        'adaptive-runtime-bounded-aggregate-epoch-v1' -and
-        $bounded.ArithmeticSaturated -eq $false -and
-        [long]$bounded.QueuedSendBurstEvidenceCount -gt 0) `
+    $boundedEpochs = @($boundedLines | ForEach-Object {
+        ([string]$_ -replace
+            '^QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=', '') |
+            ConvertFrom-Json
+    })
+    $invalidBoundedEpochs = @($boundedEpochs | Where-Object {
+        [string]$_.SchemaVersion -cne
+            'adaptive-runtime-bounded-aggregate-epoch-v1' -or
+        $_.ArithmeticSaturated -ne $false
+    })
+    $nonMonotonicEpochs = [Collections.Generic.List[string]]::new()
+    for ($index = 1; $index -lt $boundedEpochs.Count; $index++) {
+        $prior = $boundedEpochs[$index - 1]
+        $current = $boundedEpochs[$index]
+        if ([long]$current.Sequence -le [long]$prior.Sequence -or
+            [long]$current.QueuedSendBurstEvidenceCount -lt
+                [long]$prior.QueuedSendBurstEvidenceCount -or
+            [long]$current.QueuedSendBurstLegalBudgetGreaterThanOneCount -lt
+                [long]$prior.QueuedSendBurstLegalBudgetGreaterThanOneCount) {
+            [void]$nonMonotonicEpochs.Add([string]$current.Sequence)
+        }
+    }
+    $benchmarkCompletedAt = [DateTimeOffset]::Parse([string]$benchmark.timestamp)
+    $boundedEpochsThroughBenchmark = @($boundedEpochs | Where-Object {
+        [DateTimeOffset]::Parse([string]$_.ObservedAtUtc) -le
+            $benchmarkCompletedAt
+    })
+    Assert-Campaign ($boundedEpochsThroughBenchmark.Count -gt 0) `
+        "bounded_epoch_before_benchmark_missing:$CellId"
+    $bounded = $boundedEpochsThroughBenchmark[-1]
+    $queuedEvidenceCount = [long]$bounded.QueuedSendBurstEvidenceCount
+    $activationCount =
+        [long]$bounded.QueuedSendBurstLegalBudgetGreaterThanOneCount
+    Assert-Campaign ($boundedEpochs.Count -eq $boundedLines.Count -and
+        $invalidBoundedEpochs.Count -eq 0 -and
+        $nonMonotonicEpochs.Count -eq 0 -and $queuedEvidenceCount -gt 0) `
         "queued_bounded_epoch_invalid:$CellId"
-    $activationCountProperty = $bounded.PSObject.Properties[
-        'QueuedSendBurstLegalBudgetGreaterThanOneCount']
-    Assert-Campaign ($null -ne $activationCountProperty) `
-        'queued_activation_counter_missing'
-    $activationCount = [long]$activationCountProperty.Value
     if ($RequireActivation) {
         Assert-Campaign ($CellId -ceq
             'cell.queued_send_burst_budget.performance.q1' -and
@@ -280,7 +307,7 @@ function Save-CampaignControllerEvidence {
     $stdoutText | Set-Content -LiteralPath $stdoutPath -Encoding utf8
 
     $loadArtifact = Get-RequiredArtifact $index `
-        '^implementations/.+/c1-s100-r1/load-tool-process-metrics-summary\.json$' `
+        '^implementations/.+/c1-s1-r1/load-tool-process-metrics-summary\.json$' `
         "load_metrics_artifact_count_invalid:$CellId"
     $loadText = Get-ArtifactText $ControllerUri $JobId $loadArtifact `
         "load_metrics_artifact_empty:$CellId"
@@ -290,7 +317,7 @@ function Save-CampaignControllerEvidence {
     $loadText | Set-Content -LiteralPath $loadPath -Encoding utf8
 
     $adapterArtifact = Get-RequiredArtifact $index `
-        '^sut/implementations/.+/c1-s100-r1/adapter-metrics\.json$' `
+        '^sut/implementations/.+/c1-s1-r1/adapter-metrics\.json$' `
         "target_adapter_metrics_artifact_count_invalid:$CellId"
     $adapterText = Get-ArtifactText $ControllerUri $JobId $adapterArtifact `
         "target_adapter_metrics_artifact_empty:$CellId"
@@ -305,7 +332,7 @@ function Save-CampaignControllerEvidence {
     $adapterText | Set-Content -LiteralPath $adapterPath -Encoding utf8
 
     $counterArtifacts = @(Get-OptionalArtifact $index `
-        '^sut/implementations/.+/c1-s100-r1/counters-summary\.json$')
+        '^sut/implementations/.+/c1-s1-r1/counters-summary\.json$')
     $counterStatus = 'unavailable'; $counterSamples = 0; $counterPath = $null
     if ($counterArtifacts.Count -eq 1) {
         $counterText = Get-ArtifactText $ControllerUri $JobId $counterArtifacts[0] `
@@ -339,8 +366,15 @@ function Save-CampaignControllerEvidence {
             load_generator_saturation_status = [string]$benchmark.loadToolSaturationStatus
         }
         bounded_aggregate = [pscustomobject][ordered]@{
-            epoch_count = $boundedLines.Count; stdout_bytes = $stdoutBytes
-            final_epoch = $bounded
+            epoch_count = $boundedEpochsThroughBenchmark.Count
+            emitted_epoch_count = $boundedLines.Count
+            stdout_bytes = $stdoutBytes
+            queued_send_burst_evidence_count = $queuedEvidenceCount
+            legal_budget_gt_one_count = $activationCount
+            arithmetic_saturated = $false
+            last_epoch_sequence = [long]$bounded.Sequence
+            last_epoch_observed_at_utc = [string]$bounded.ObservedAtUtc
+            benchmark_completed_at_utc = [string]$benchmark.timestamp
         }
         load_process_metrics = $loadSummary
         target_process_metrics = [pscustomobject][ordered]@{
@@ -447,7 +481,7 @@ Assert-Campaign (Test-AdaptiveRuntimeJsonSchema $control $controlSchemaPath) `
     'queued_campaign_schema_invalid'
 Assert-Campaign ([string]$control.controller_uri -ceq 'http://10.10.99.176:5088' -and
     [string]$control.package_selection.scenario_id -ceq
-        'quic.transport.stream-throughput.1mb' -and
+        'quic.transport.stream-download.1mb' -and
     [string]$control.host_selection.placement_policy -ceq 'isolated-pair' -and
     [string]$control.host_selection.sut_node_id -ceq 'plab-worker-x64-02' -and
     [string]$control.host_selection.load_node_id -ceq 'plab-worker-x64-03' -and
@@ -456,6 +490,7 @@ Assert-Campaign ([string]$control.controller_uri -ceq 'http://10.10.99.176:5088'
     [int]$control.design.block_count -eq 8 -and
     [int]$control.design.repetitions_per_cell -eq 8 -and
     [int]$control.design.total_job_count -eq 16 -and
+    [int]$control.resource_metrics.bounded_aggregate_interval_seconds -eq 5 -and
     $control.measurement_capability_authorized -eq $true -and
     $control.timing_execution_authorized -eq $true -and
     $control.performance_acceptance_authorization -eq $false -and
@@ -622,7 +657,7 @@ else {
         'activation-preflight\attempt-{0:D2}' -f $preflightAttemptIndex)
     $preflightArgs = @{
         ControllerUri=$controllerUri; PackageTarget='RawQuic'
-        ProtocolLabRoot=$protocolLabRootFull; ScenarioId='quic.transport.stream-throughput.1mb'
+        ProtocolLabRoot=$protocolLabRootFull; ScenarioId='quic.transport.stream-download.1mb'
         Protocol='quic'; TestExecutorId='quic-go-raw-load'
         LoadProfileId=[string]$control.package_selection.load_profile_id
         Repetitions=1; PlacementPolicy='isolated-pair'
@@ -760,7 +795,7 @@ foreach ($plannedRun in @($manifest.planned_runs | Sort-Object execution_index))
     [void](New-Item -ItemType Directory -Force -Path $runRoot)
     $runArgs = @{
         ControllerUri=$controllerUri; PackageTarget='RawQuic'; ProtocolLabRoot=$protocolLabRootFull
-        ScenarioId='quic.transport.stream-throughput.1mb'; Protocol='quic'
+        ScenarioId='quic.transport.stream-download.1mb'; Protocol='quic'
         TestExecutorId='quic-go-raw-load'; LoadProfileId=[string]$control.package_selection.load_profile_id
         Repetitions=1; PlacementPolicy='isolated-pair'
         PackageVersion=[string]$package[0].package_ref.packageVersion

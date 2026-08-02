@@ -74,7 +74,8 @@ Assert-Result ([string]$result.activation_preflight.predicate_id -ceq
 Assert-Result (@($result.runs | Where-Object {
     [long]$_.total_requests -eq [long]$_.successful_requests -and
     [long]$_.failed_requests -eq 0 -and [long]$_.timeout_requests -eq 0 -and
-    [long]$_.bytes_sent -eq [long]$_.bytes_received -and
+    [long]$_.bytes_sent -eq 0 -and
+    [long]$_.bytes_received -eq ([long]$_.total_requests * 1MB) -and
     [string]$_.load_generator_saturation_status -ceq
         'load-generator-saturation-not-detected' -and
     [long]$_.bounded_aggregate.stdout_bytes -le 65536 -and

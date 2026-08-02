@@ -40,7 +40,7 @@
       "required": ["suite_id", "scenario_id", "protocol", "test_executor_id", "load_profile_id", "repetitions_per_cell", "block_count"],
       "properties": {
         "suite_id": { "type": "string", "minLength": 1 },
-        "scenario_id": { "const": "quic.transport.stream-throughput.1mb" },
+        "scenario_id": { "const": "quic.transport.stream-download.1mb" },
         "protocol": { "const": "quic" },
         "test_executor_id": { "const": "quic-go-raw-load" },
         "load_profile_id": { "type": "string", "minLength": 1 },
@@ -267,7 +267,7 @@
         "metrics": { "$ref": "#/$defs/metricValues" },
         "total_requests": { "type": "integer", "minimum": 1 }, "successful_requests": { "type": "integer", "minimum": 1 },
         "failed_requests": { "const": 0 }, "timeout_requests": { "const": 0 },
-        "bytes_sent": { "type": "integer", "minimum": 1 }, "bytes_received": { "type": "integer", "minimum": 1 },
+        "bytes_sent": { "const": 0 }, "bytes_received": { "type": "integer", "minimum": 1 },
         "load_generator_saturation_status": { "const": "load-generator-saturation-not-detected" },
         "bounded_aggregate": { "$ref": "#/$defs/boundedAggregate" },
         "load_process": { "$ref": "#/$defs/loadProcess" },

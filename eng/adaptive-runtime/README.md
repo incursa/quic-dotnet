@@ -454,7 +454,7 @@ record streams. Convert a retained stream independently with:
   -RuntimeSha256 <64-hex-digest> `
   -HostFingerprint <pseudonymous-host-fingerprint> `
   -CorrectnessFlagsJson '{"payloadValid":true,"protocolValid":true,"timedOut":false,"ownershipValid":true,"terminalValid":true,"violationCodes":[]}' `
-  -ScenarioId quic.transport.stream-throughput.1mb `
+  -ScenarioId quic.transport.stream-download.1mb `
   -TrafficShape upload `
   -AccountingMode fixed_per_stream `
   -ArrivalPattern sustained `

@@ -114,7 +114,7 @@
         "package_target": { "const": "RawQuic" },
         "implementation_id": { "const": "quic-dotnet-raw-dev" },
         "suite_id": { "const": "quic-transport-v1-comparison" },
-        "scenario_id": { "const": "quic.transport.stream-throughput.1mb" },
+        "scenario_id": { "const": "quic.transport.stream-download.1mb" },
         "protocol": { "const": "quic" },
         "test_executor_id": { "const": "quic-go-raw-load" },
         "load_profile_id": { "const": "raw-quic-peer-confidence" },
@@ -170,7 +170,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["scenario_id", "predicate_id", "required_cell_id", "required_before_timing_rows"],
       "properties": {
-        "scenario_id": { "const": "quic.transport.stream-throughput.1mb" },
+        "scenario_id": { "const": "quic.transport.stream-download.1mb" },
         "predicate_id": { "const": "predicate.queued_send.legal_budget_gt_one" },
         "required_cell_id": { "const": "cell.queued_send_burst_budget.performance.q1" },
         "required_before_timing_rows": { "const": true }
@@ -180,12 +180,13 @@
       "type": "object", "additionalProperties": false,
       "required": [
         "queued_send_activation_counter_required", "load_process_metrics_required",
-        "bounded_server_stdout_max_bytes"
+        "bounded_server_stdout_max_bytes", "bounded_aggregate_interval_seconds"
       ],
       "properties": {
         "queued_send_activation_counter_required": { "const": true },
         "load_process_metrics_required": { "const": true },
-        "bounded_server_stdout_max_bytes": { "const": 65536 }
+        "bounded_server_stdout_max_bytes": { "const": 65536 },
+        "bounded_aggregate_interval_seconds": { "const": 5 }
       }
     },
     "trace": {

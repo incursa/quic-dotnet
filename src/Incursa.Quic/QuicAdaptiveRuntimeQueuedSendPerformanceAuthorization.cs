@@ -22,7 +22,7 @@ internal readonly record struct
     private const string CampaignIdValue =
         "campaign.queued_send_burst_budget.performance.v1";
     private const string PackagePathManifestContentSha256 =
-        "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d";
+        "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab";
     private const string PackagePathQueuedSendQ0CellContentSha256 =
         "b2911df4e1782b6f1636d37bf50f0dd5e59dbbb9164ec3154b667034c43fb3e9";
     private const string PackagePathQueuedSendQ1CellContentSha256 =

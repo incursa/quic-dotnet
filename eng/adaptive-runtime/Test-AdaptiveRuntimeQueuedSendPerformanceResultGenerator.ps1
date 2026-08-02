@@ -42,7 +42,7 @@ $control = [pscustomobject][ordered]@{
     controller_uri = 'http://10.10.99.176:5088'
     package_selection = [pscustomobject][ordered]@{
         suite_id = 'raw-quic-local-v1'
-        scenario_id = 'quic.transport.stream-throughput.1mb'
+        scenario_id = 'quic.transport.stream-download.1mb'
         protocol = 'quic'; test_executor_id = 'quic-go-raw-load'
         load_profile_id = 'raw-quic-peer-confidence'
     }
@@ -92,17 +92,18 @@ for ($block = 1; $block -le 8; $block++) {
                 requests_per_second=$value; throughput_bytes_per_second=$value*1048576
                 latency_p50_ms=2.0; latency_p95_ms=4.0
                 total_requests=100; successful_requests=100; failed_requests=0
-                timeout_requests=0; bytes_sent=104857600; bytes_received=104857600
+                timeout_requests=0; bytes_sent=0; bytes_received=104857600
                 load_generator_saturation_status='load-generator-saturation-not-detected'
             }
             bounded_aggregate=[pscustomobject][ordered]@{
                 epoch_count=2; stdout_bytes=2048
-                final_epoch=[pscustomobject][ordered]@{
-                    SchemaVersion='adaptive-runtime-bounded-aggregate-epoch-v1'
-                    QueuedSendBurstEvidenceCount=20
-                    QueuedSendBurstLegalBudgetGreaterThanOneCount=10
-                    ArithmeticSaturated=$false
-                }
+                queued_send_burst_evidence_count=20
+                legal_budget_gt_one_count=10
+                arithmetic_saturated=$false
+                last_epoch_sequence=2
+                last_epoch_observed_at_utc='2026-08-02T00:00:02Z'
+                benchmark_completed_at_utc='2026-08-02T00:00:03Z'
+                emitted_epoch_count=2
             }
             load_process_metrics=[pscustomobject][ordered]@{
                 sample_count=3; normalized_cpu_percent_mean=20.0

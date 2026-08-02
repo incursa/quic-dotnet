@@ -277,7 +277,7 @@ function Get-QueuedSendPerformancePackagePathCell {
     # The exact reviewed manifest and cell hashes are intentionally centralized here.
     # Package construction cannot authorize an arbitrary caller-supplied identity.
     $reviewedManifestContentSha256 =
-        "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d"
+        "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab"
     if ($ManifestContentSha256 -ne $reviewedManifestContentSha256) {
         throw "Queued-send performance package path requires the exact reviewed manifest hash."
     }

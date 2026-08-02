@@ -305,7 +305,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("cell.queued_send_burst_budget.performance.q0", builderScript);
         Assert.Contains("cell.queued_send_burst_budget.performance.q1", builderScript);
         Assert.Contains(
-            "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d",
+            "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab",
             builderScript);
         Assert.Contains(
             "b2911df4e1782b6f1636d37bf50f0dd5e59dbbb9164ec3154b667034c43fb3e9",
@@ -371,6 +371,13 @@ public sealed class ProtocolLabPackageTemplateTests
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=",
             rawQuicServer);
         Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS=",
+            rawQuicServer);
+        Assert.Contains(
+            "queuedSendPerformanceAuthorization is not null",
+            rawQuicServer);
+        Assert.Contains("TimeSpan.FromSeconds(5)", rawQuicServer);
+        Assert.Contains(
             "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_CONTRACT=raw-quic-bounded-stream-aggregate-v1",
             rawQuicServer);
         Assert.Contains(
@@ -404,7 +411,10 @@ public sealed class ProtocolLabPackageTemplateTests
             "new(SnapshotInterval)",
             rawQuicServer);
         Assert.Contains(
-            "new(TimeSpan.FromSeconds(1))",
+            "new(boundedAggregateInterval)",
+            rawQuicServer);
+        Assert.Contains(
+            "TimeSpan.FromSeconds(1)",
             rawQuicServer);
         Assert.Contains(
             "RecordBoundedOversizedWrite(in evidence)",

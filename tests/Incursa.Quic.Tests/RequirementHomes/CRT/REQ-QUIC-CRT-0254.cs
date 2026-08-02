@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_CRT_0254
     private const string CampaignId =
         "campaign.queued_send_burst_budget.performance.v1";
     private const string ManifestHash =
-        "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d";
+        "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab";
     private const string Q0CellId =
         "cell.queued_send_burst_budget.performance.q0";
     private const string Q0CellHash =

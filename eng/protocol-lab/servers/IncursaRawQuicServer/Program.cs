@@ -314,6 +314,9 @@ QuicReceiveDeliveryQuantumConfiguredPolicySnapshot?
                 receiveDeliveryQuantumObservationMode,
                 receiveDeliveryQuantumPolicy.ForcedValue)
             : null;
+var boundedAggregateInterval = queuedSendPerformanceAuthorization is not null
+    ? TimeSpan.FromSeconds(5)
+    : TimeSpan.FromSeconds(1);
 var epochPublisher = adaptiveInstrumentationEnabled
     ? new AdaptiveRuntimeEpochPublisher(
         configuredStage1Policy,
@@ -321,7 +324,8 @@ var epochPublisher = adaptiveInstrumentationEnabled
         configuredAdaptiveBackpressurePolicy,
         configuredPacketFlushCadencePolicy,
         configuredReceiveDeliveryQuantumPolicy,
-        evidenceMode)
+        evidenceMode,
+        boundedAggregateInterval)
     : null;
 var streamOutcomePublisher =
     evidenceMode == AdaptiveRuntimeEvidenceMode.BoundedAggregate
@@ -528,6 +532,8 @@ if (adaptiveInstrumentationEnabled)
     {
         Console.WriteLine(
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_CONTRACT=adaptive-runtime-bounded-aggregate-epoch-v1");
+        Console.WriteLine(
+            $"QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS={boundedAggregateInterval.TotalSeconds:R}");
         Console.WriteLine(
             "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_CONTRACT=raw-quic-bounded-stream-aggregate-v1");
     }
@@ -1776,6 +1782,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     private readonly QuicReceiveDeliveryQuantumConfiguredPolicySnapshot?
         configuredReceiveDeliveryQuantumPolicy;
     private readonly AdaptiveRuntimeEvidenceMode evidenceMode;
+    private readonly TimeSpan boundedAggregateInterval;
     private readonly Channel<AdaptiveRuntimeEpochRecord> epochs = Channel.CreateBounded<AdaptiveRuntimeEpochRecord>(
         new BoundedChannelOptions(4096)
         {
@@ -1863,7 +1870,8 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             configuredPacketFlushCadencePolicy,
         QuicReceiveDeliveryQuantumConfiguredPolicySnapshot?
             configuredReceiveDeliveryQuantumPolicy,
-        AdaptiveRuntimeEvidenceMode evidenceMode)
+        AdaptiveRuntimeEvidenceMode evidenceMode,
+        TimeSpan boundedAggregateInterval)
     {
         this.configuredStage1Policy = configuredStage1Policy;
         this.configuredBufferCopyPolicy =
@@ -1875,6 +1883,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         this.configuredReceiveDeliveryQuantumPolicy =
             configuredReceiveDeliveryQuantumPolicy;
         this.evidenceMode = evidenceMode;
+        this.boundedAggregateInterval = boundedAggregateInterval;
         _ = WriteEpochsAsync();
         _ = WriteApplicationSendTurnProvenanceAsync();
         _ = WriteApplicationSendTurnEvidenceAsync();
@@ -2072,8 +2081,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     {
         try
         {
-            using PeriodicTimer timer =
-                new(TimeSpan.FromSeconds(1));
+            using PeriodicTimer timer = new(boundedAggregateInterval);
             long lastPublishedActivityCount = 0;
             while (await timer.WaitForNextTickAsync())
             {

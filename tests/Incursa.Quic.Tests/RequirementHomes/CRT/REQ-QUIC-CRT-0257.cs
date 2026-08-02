@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_CRT_0257
             QuicAdaptiveRuntimeQueuedSendPerformanceAuthorization
                 .CreateForReviewedPackagePath(
                     "campaign.queued_send_burst_budget.performance.v1",
-                    "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d",
+                    "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab",
                     "cell.queued_send_burst_budget.performance.q1",
                     "2f4a7a36c0d52aeae801a979e91335347693db5ec8665715497d068fb02cdc2a",
                     QuicQueuedSendBurstPolicyMode.SingleDatagram);

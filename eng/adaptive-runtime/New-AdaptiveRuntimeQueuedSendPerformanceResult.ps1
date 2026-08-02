@@ -258,7 +258,6 @@ foreach ($attempt in $completedAttempts) {
         ConvertFrom-Json -Depth 100
     $benchmark = $summary.benchmark
     $bounded = $summary.bounded_aggregate
-    $epoch = $bounded.final_epoch
     $load = $summary.load_process_metrics
     Assert-Result ([string]$summary.schema_version -ceq
         'adaptive-runtime-queued-send-performance-measurement-summary-v1' -and
@@ -270,20 +269,19 @@ foreach ($attempt in $completedAttempts) {
     Assert-Result ([long]$benchmark.total_requests -gt 0 -and
         [long]$benchmark.total_requests -eq [long]$benchmark.successful_requests -and
         [long]$benchmark.failed_requests -eq 0 -and [long]$benchmark.timeout_requests -eq 0 -and
-        [long]$benchmark.bytes_sent -gt 0 -and
-        [long]$benchmark.bytes_sent -eq [long]$benchmark.bytes_received -and
+        [long]$benchmark.bytes_sent -eq 0 -and
+        [long]$benchmark.bytes_received -eq
+            ([long]$benchmark.total_requests * 1MB) -and
         [string]$benchmark.load_generator_saturation_status -ceq
             'load-generator-saturation-not-detected') `
         "queued_benchmark_invariant_failed:$executionIndex"
-    $activationProperty = $epoch.PSObject.Properties[
-        'QueuedSendBurstLegalBudgetGreaterThanOneCount']
     Assert-Result ([long]$bounded.stdout_bytes -gt 0 -and
         [long]$bounded.stdout_bytes -le
             [long]$control.resource_metrics.bounded_server_stdout_max_bytes -and
-        [string]$epoch.SchemaVersion -ceq 'adaptive-runtime-bounded-aggregate-epoch-v1' -and
-        [long]$epoch.QueuedSendBurstEvidenceCount -gt 0 -and
-        $null -ne $activationProperty -and [long]$activationProperty.Value -ge 0 -and
-        $epoch.ArithmeticSaturated -eq $false) `
+        [long]$bounded.epoch_count -gt 0 -and
+        [long]$bounded.queued_send_burst_evidence_count -gt 0 -and
+        [long]$bounded.legal_budget_gt_one_count -ge 0 -and
+        $bounded.arithmetic_saturated -eq $false) `
         "queued_bounded_aggregate_invalid:$executionIndex"
     Assert-Result ([int]$load.sample_count -gt 0 -and
         [double]$load.normalized_cpu_percent_mean -ge 0 -and
@@ -314,9 +312,10 @@ foreach ($attempt in $completedAttempts) {
         load_generator_saturation_status = [string]$benchmark.load_generator_saturation_status
         bounded_aggregate = [pscustomobject][ordered]@{
             epoch_count = [long]$bounded.epoch_count; stdout_bytes = [long]$bounded.stdout_bytes
-            queued_send_burst_evidence_count = [long]$epoch.QueuedSendBurstEvidenceCount
-            legal_budget_gt_one_count = [long]$activationProperty.Value
-            arithmetic_saturated = [bool]$epoch.ArithmeticSaturated
+            queued_send_burst_evidence_count =
+                [long]$bounded.queued_send_burst_evidence_count
+            legal_budget_gt_one_count = [long]$bounded.legal_budget_gt_one_count
+            arithmetic_saturated = [bool]$bounded.arithmetic_saturated
         }
         load_process = [pscustomobject][ordered]@{
             sample_count = [int]$load.sample_count

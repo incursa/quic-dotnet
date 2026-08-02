@@ -33,6 +33,8 @@ Assert-Test ($runnerText.Contains('[switch] $Resume') -and
     $runnerText.Contains('package_resume_hash_mismatch') -and
     $runnerText.Contains('package_resume_attestation_mismatch') -and
     $runnerText.Contains('$priorPreflightAttempts = @()') -and
+    $runnerText.Contains('c1-s1-r1/result\.json$') -and
+    -not $runnerText.Contains('c1-s100-r1') -and
     $runnerText.Contains('plab-worker-x64-02') -and
     $runnerText.Contains('plab-worker-x64-03') -and
     $runnerText.Contains('AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256') -and
@@ -43,7 +45,11 @@ Assert-Test ($runnerText.Contains(
     "'cell.queued_send_burst_budget.performance.q0'") -and
     $runnerText.Contains(
         "'cell.queued_send_burst_budget.performance.q1'") -and
-    $runnerText.Contains("'quic.transport.stream-throughput.1mb'")) `
+    $runnerText.Contains("'quic.transport.stream-download.1mb'") -and
+    -not $runnerText.Contains("ScenarioId='quic.transport.stream-throughput.1mb'") -and
+    $runnerText.Contains('$boundedEpochsThroughBenchmark') -and
+    $runnerText.Contains('$nonMonotonicEpochs') -and
+    $runnerText.Contains('QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS=5')) `
     'queued_runner_exact_scope_missing'
 
 $planRoot = Join-Path $TemporaryRoot 'plan-only'
@@ -51,7 +57,7 @@ $plan = & $runnerPath -RepositoryRoot $RepositoryRoot `
     -OutputRoot $planRoot | ConvertFrom-Json
 Assert-Test ([string]$plan.mode -ceq 'plan_only' -and
     [string]$plan.compiled_manifest_sha256 -ceq
-        '9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d' -and
+        '2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab' -and
     [int]$plan.planned_run_count -eq 16 -and
     [int]$plan.activation_preflight_run_count -eq 0 -and
     [int]$plan.actual_measurements_run -eq 0) `
@@ -95,7 +101,7 @@ foreach ($binding in @($control.cell_bindings)) {
             queuedSendPerformanceCampaignId =
                 'campaign.queued_send_burst_budget.performance.v1'
             queuedSendPerformanceManifestContentSha256 =
-                '9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d'
+                '2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab'
             queuedSendPerformanceCellId = $cellId
             queuedSendPerformanceCellContentSha256 =
                 [string]$binding.content_sha256

@@ -29,7 +29,7 @@
     }
   ],
   "artifact_type": "work_item",
-  "planned_changes": "- Add a queued-send performance campaign manifest and descriptive result control set.\n- Add deterministic compiler, runner, preflight gate, and result-materialization scripts for the two-cell queued-send family.\n- Bind the single_datagram timing acceptance to the quic.transport.stream-throughput.1mb gate proving predicate.queued_send.legal_budget_gt_one.\n- Preserve resumability, bounded aggregate evidence, and exact job identity across retries.\n- Keep adjacent axes fixed at legacy_current and keep all acceptance and activation booleans false.",
+  "planned_changes": "- Add a queued-send performance campaign manifest and descriptive result control set.\n- Add deterministic compiler, runner, preflight gate, and result-materialization scripts for the two-cell queued-send family.\n- Bind the single_datagram timing acceptance to the quic.transport.stream-download.1mb gate proving predicate.queued_send.legal_budget_gt_one.\n- Preserve resumability, bounded aggregate evidence, and exact job identity across retries.\n- Keep adjacent axes fixed at legacy_current and keep all acceptance and activation booleans false.",
   "design_links": [
     "ARC-QUIC-CRT-0122"
   ],

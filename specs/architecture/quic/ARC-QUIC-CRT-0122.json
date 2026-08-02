@@ -50,7 +50,7 @@
   "data_and_state_considerations": "Control documents remain immutable and versioned. The timing campaign and manifest should be content-hashed, replayable, and additive. Job-level evidence must preserve source, binary, host, workload, package, controller, run, block, position, and cell identity. Failed or retried attempts remain retained evidence, not deleted artifacts. The gate workload and its predicate proof are preconditions for accepting timing rows and must stay separate from the timing result itself.",
   "edge_cases_and_constraints": [
     "All adjacent queued-send axes remain legacy_current and must not vary during this slice.",
-    "A failed gate proof for quic.transport.stream-throughput.1mb must leave single_datagram rows unaccepted.",
+    "A failed gate proof for quic.transport.stream-download.1mb must leave single_datagram rows unaccepted.",
     "Resumed jobs must preserve the original exact identity, not mint a fresh logical cell.",
     "Bounded aggregate evidence must not delete failed or retried attempts.",
     "A two-cell family does not justify covering-array generation."

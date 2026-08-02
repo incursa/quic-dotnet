@@ -109,7 +109,7 @@
     {
       "id": "REQ-QUIC-CRT-0257",
       "title": "Require the stream-throughput gate before accepting timing rows",
-      "statement": "The repository MUST use quic.transport.stream-throughput.1mb as the activation gate workload for the single_datagram treatment and prove predicate.queued_send.legal_budget_gt_one before accepting any timing row for that treatment; if the predicate is not proven, the row remains evidence but not accepted.",
+      "statement": "The repository MUST use quic.transport.stream-download.1mb as the activation gate workload for the single_datagram treatment and prove predicate.queued_send.legal_budget_gt_one before accepting any timing row for that treatment; if the predicate is not proven, the row remains evidence but not accepted.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-CRT-0122"
