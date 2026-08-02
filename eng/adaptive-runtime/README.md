@@ -924,6 +924,37 @@ A completed job whose local extraction was interrupted can be revalidated
 without submitting new work by passing `-ReplayEvidenceJobId`, the exact
 `-ReplayEvidenceCellId`, and its `-ReplayEvidenceExecutionIndex`.
 
+The replacement balanced campaign completed all 64 planned measurements from
+clean source `f78f9d769e98dbbae4565151315265cc6b128944` on
+`plab-worker-x64-02` and `plab-worker-x64-03`. It retained two pre-measurement
+orchestration failures before successful retry, but the accepted measurements
+had exact bytes, zero failed requests, zero timeouts, no detected saturation,
+and server output no larger than 27,768 bytes. The canonical
+[balanced result](../../eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-result-v1.json)
+has content SHA-256
+`add8ee5162576630792d1281d34bfc70a1e416bb7cf461353a2a90b761417549`.
+
+Across the 64 measurements, requests per second averaged 107.996 with a 3.91%
+coefficient of variation, and p95 latency averaged 976.817 ms with a 4.15%
+coefficient of variation. The seven requests-per-second effects, expressed as
+a percentage of the grand mean, were oversized +0.617%, batch -0.374%, buffer
++1.184%, oversized-by-batch -0.562%, oversized-by-buffer +1.409%,
+batch-by-buffer -1.246%, and the three-factor interaction -1.639%. These are
+descriptive contrasts; block-level effects frequently changed sign, and A5 was
+unusually variable.
+
+Generate and verify the canonical result from the retained execution root with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/New-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1 `
+  -ExecutionRoot <execution-root>
+
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1 `
+  -ExecutionRoot <execution-root>
+```
+
 The balanced campaign remains characterization on one worker pair and one
-workload. Covering-array generation, performance acceptance, adaptive-rule
-derivation, active behavior, and production activation remain false.
+workload. No practical effect threshold was predeclared before the run, and no
+held-out worker pair or workload has validated the effects. Covering-array
+generation, performance acceptance, adaptive-rule derivation, active behavior,
+and production activation remain false.

@@ -6,7 +6,7 @@
   "title": "Exact admission-family offline performance readiness",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, the completed package-backed A0/A3/A4/A7 ProtocolLab rack pilot, and a separately authorized counterbalanced A0-A7 follow-on.",
+  "purpose": "Satisfy REQ-QUIC-CRT-0247 through REQ-QUIC-CRT-0252 with additive factor-space reconciliation, one exact performance-only A0-A7 authorization, deterministic campaign compilation, the completed package-backed A0/A3/A4/A7 ProtocolLab rack pilot, and the completed counterbalanced A0-A7 follow-on with canonical non-accepting analysis.",
   "related_artifacts": [
     "SPEC-QUIC-CRT-ADMISSION-PERFORMANCE",
     "SPEC-QUIC-CRT-ADMISSION-CORRECTNESS",
@@ -35,6 +35,10 @@
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "schemas/adaptive-runtime-send-admission-performance-balanced-result-v1.schema.json",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-result-v1.json",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceReadiness.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePilot.ps1",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-pilot-v1.json",
@@ -46,8 +50,8 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs"
   ],
-  "design_summary": "The retained v2 cell space and timing-disabled campaign v1 remain immutable. Factor-space v3 identifies A0 through A7 as the reviewed exact exhaustive subset and keeps the four bounded cells blocked. An internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. The dry-run compiler continues to expand all eight cells without running a clock. The completed additive pilot selected A0, A3, A4, and A7. The additive follow-on selects all eight reviewed cells and expands an eight-block even-order Williams balanced Latin square into 64 one-repetition jobs. Every cell occupies every execution position once and every ordered first-order predecessor/successor pair occurs once. Eight implementation packages are built once from clean source and reused by exact cell identity. The controller retains isolated-pair worker selection, while the runner checkpoints every attempt for safe resume, leaves intrusive target counter capture disabled for the external prestarted target, requires sampled load-process telemetry, downloads only bounded summaries, and rejects topology, payload, failure, timeout, saturation, or runtime-evidence mismatches.",
-  "data_and_state_considerations": "Canonical control documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. All compilers emit deterministic manifests without collecting timing data. Pilot and balanced-campaign runs are append-only external evidence under temporary evidence roots and bind source, package binary, controller, topology, manifest, block, position, cell, workload, repetition, job, run, runtime evidence, resource telemetry, outcome, and checksums. The balanced campaign state is rewritten after every attempt and resume requires the exact source, control, manifest, and package identities.",
+  "design_summary": "The retained v2 cell space and timing-disabled campaign v1 remain immutable. Factor-space v3 identifies A0 through A7 as the reviewed exact exhaustive subset and keeps the four bounded cells blocked. An internal fixed-field performance token is parallel to, but mutually exclusive with, correctness authorization; it binds one exact campaign manifest and one A0-A7 tuple and carries no performance-acceptance or active authority. The dry-run compiler continues to expand all eight cells without running a clock. The completed additive pilot selected A0, A3, A4, and A7. The completed additive follow-on selected all eight reviewed cells and expanded an eight-block even-order Williams balanced Latin square into 64 one-repetition jobs. Every cell occupied every execution position once and every ordered first-order predecessor/successor pair occurred once. Eight implementation packages were built once from clean source and reused by exact cell identity. The controller retained isolated-pair worker selection, while the runner checkpointed every attempt for safe resume, left intrusive target counter capture disabled for the external prestarted target, required sampled load-process telemetry, downloaded only bounded summaries, and rejected topology, payload, failure, timeout, saturation, or runtime-evidence mismatches. The post-run generator reconciles retained controller evidence into a content-hashed result with per-run, cell, block, position, resource, and full-factorial summaries; its verifier deterministically replays the result without submitting measurements.",
+  "data_and_state_considerations": "Canonical control and result documents are additive, versioned, and content-hashed. Runtime authorization is immutable, internal-only, and connection-local. All compilers emit deterministic manifests without collecting timing data. Pilot and balanced-campaign runs are append-only external evidence under temporary evidence roots and bind source, package binary, controller, topology, manifest, block, position, cell, workload, repetition, job, run, runtime evidence, resource telemetry, outcome, and checksums. The balanced campaign state is rewritten after every attempt and resume requires the exact source, control, manifest, and package identities. The committed balanced result preserves the reconciled aggregates and retained failure metadata while keeping the bulk rack evidence outside the repository.",
   "edge_cases_and_constraints": [
     "The eight reviewed cells are exhaustive, so covering arrays would reduce evidence without reducing a large search space.",
     "The four bounded_multi_fragment cells remain present but blocked on shadow_recommendation_value_mismatch.",
@@ -56,6 +60,7 @@
     "A clean local dry run does not establish a stable performance result.",
     "The four-cell pilot estimates oversized and combined batch-plus-buffer effects; it cannot isolate batch from buffer without additional cells.",
     "The balanced follow-on includes all eight cells and can estimate the three main effects and their interactions, but eight blocks on one worker pair remain characterization rather than held-out acceptance evidence.",
+    "No practical effect threshold was predeclared before this campaign, so the completed result can report descriptive contrasts but cannot select a winner, accept performance, or derive a rule.",
     "Target runtime counters remain unavailable for the external prestarted target, and enabling the existing intrusive counter-capture extension caused a zero-response benchmark failure; the balanced campaign therefore requires sampled load-process telemetry without claiming target-process resource data."
   ],
   "alternatives_considered": [

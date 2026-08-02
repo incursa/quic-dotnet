@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-CRT-0121",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "Exact admission-family performance readiness verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -60,10 +60,14 @@
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeAdmissionPerformanceBalancedCampaign.ps1",
+    "schemas/adaptive-runtime-send-admission-performance-balanced-result-v1.schema.json",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformanceBalancedResult.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-send-admission-performance-balanced-result-v1.json",
     "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
     "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0248.cs",
     "scripts/Validate-SpecTraceJson.ps1"
   ],
-  "status_summary": "The bounded four-cell pilot was rerun on 2026-07-30 from clean source c9ff68a9811a01902cdc09549f843239f5dd4016 using plab-worker-x64-02 as SUT and plab-worker-x64-03 as load on independent physical hosts. All A0, A3, A4, and A7 jobs and eight repetitions completed with exact bytes, zero request failures, zero timeouts, no detected load saturation, and compact server evidence between 46,806 and 48,313 bytes. Canonical result 2bdad29055956afea81f468700dd78602cf8381c35564ce7f5f61ccab5ee4412 records directional midpoint rates of 112.66, 116.58, 117.16, and 111.18 requests per second for A0, A3, A4, and A7 respectively. Two serial repetitions and incomplete resource metrics prevent acceptance or independent batch and buffer attribution. The earlier e92d00e8 / a172b883 balanced attempt accepted 23 of 64 rows before the source identity changed and is retained as historical, non-resumable evidence. The regenerated balanced control hash is b7b115e649b46b44f99c33deb4f6e3f7106c4421e7994bdefa5e4d44d02cfdad and its 64-run manifest hash is 005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a; a replacement 64-run execution has not started. Performance acceptance, rule derivation, and activation remain false."
+  "status_summary": "The bounded four-cell pilot was rerun on 2026-07-30 from clean source c9ff68a9811a01902cdc09549f843239f5dd4016 using plab-worker-x64-02 as SUT and plab-worker-x64-03 as load on independent physical hosts. Canonical pilot result 2bdad29055956afea81f468700dd78602cf8381c35564ce7f5f61ccab5ee4412 remains directional. The regenerated balanced control b7b115e649b46b44f99c33deb4f6e3f7106c4421e7994bdefa5e4d44d02cfdad and manifest 005f39814881cbfff70b8d283b1ee5a8e0c430496db5b30141d2208e4aed024a completed from clean source f78f9d769e98dbbae4565151315265cc6b128944 on the same independent x64-02/x64-03 pair. All 64 planned measurements completed with exact bytes, zero request failures, zero timeouts, no detected saturation, bounded aggregate output, and two retained pre-measurement failures before successful retry. Canonical balanced result add8ee5162576630792d1281d34bfc70a1e416bb7cf461353a2a90b761417549 reports a grand mean of 107.996 requests per second, eight cell summaries, and all seven declared full-factorial contrasts. The largest absolute requests-per-second contrast is the three-factor interaction at -1.639 percent of the grand mean; block-level contrast signs are not stable enough to select a rule. One worker pair, one workload, unavailable target counters, A5 variability, absence of held-out validation, and absence of predeclared practical thresholds keep performance acceptance, rule derivation, covering-array generation, active behavior, and production activation false."
 }
