@@ -192,6 +192,34 @@ public sealed class QuicAckGenerationStateTests
         Assert.False(state.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
     }
 
+    [Fact]
+    public void TryBuildAckFrame_KeepsTheNewestThirtyTwoRangesWhenSparseHistoryExceedsStackCapacity()
+    {
+        QuicAckGenerationState state = new();
+        ulong receivedAtMicros = 1_000;
+        for (ulong packetNumber = 1; packetNumber < 80; packetNumber += 2)
+        {
+            state.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                ackEliciting: true,
+                receivedAtMicros: receivedAtMicros);
+            receivedAtMicros += 10;
+        }
+
+        Assert.True(state.TryBuildAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 2_000,
+            out QuicAckFrame frame));
+
+        Assert.Equal((byte)0x02, frame.FrameType);
+        Assert.Equal(79UL, frame.LargestAcknowledged);
+        Assert.Equal(0UL, frame.FirstAckRange);
+        Assert.Equal(31, frame.AdditionalRanges.Length);
+        Assert.Equal(77UL, frame.AdditionalRanges[0].SmallestAcknowledged);
+        Assert.Equal(17UL, frame.AdditionalRanges[^1].SmallestAcknowledged);
+    }
+
     private static void AssertEcnCounts(QuicAckFrame frame, ulong ect0, ulong ect1, ulong ecnCe)
     {
         Assert.True(frame.EcnCounts.HasValue);

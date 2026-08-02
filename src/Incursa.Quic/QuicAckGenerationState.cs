@@ -559,7 +559,12 @@ internal sealed class QuicAckGenerationState
     {
         if ((uint)rangeCount >= (uint)ranges.Length)
         {
-            throw new InvalidOperationException("The ACK range buffer is too small.");
+            // ACK generation only needs the newest retained ranges. When sparse
+            // history exceeds the configured capacity, discard the oldest range
+            // and keep tracking the newest ranges that will actually be encoded.
+            ranges[1..].CopyTo(ranges);
+            ranges[^1] = range;
+            return;
         }
 
         ranges[rangeCount++] = range;
