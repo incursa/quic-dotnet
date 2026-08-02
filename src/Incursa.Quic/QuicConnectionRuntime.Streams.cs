@@ -3048,7 +3048,10 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private int GetMaximumQueuedApplicationPayloadBytes()
-        => GetMaximumApplicationPayloadBytes(GetPendingApplicationAckHeadroomBytes());
+        // Application threads capture this admission value outside the connection actor.
+        // Keep that publication path independent of mutable ACK-generation state.
+        => GetMaximumApplicationPayloadBytes(
+            QueuedApplicationSendAdmissionAckHeadroomBytes);
 
     private int GetMaximumFlowControlCreditPayloadBytes()
         => GetMaximumApplicationPayloadBytes(GetPendingApplicationAckHeadroomBytes());

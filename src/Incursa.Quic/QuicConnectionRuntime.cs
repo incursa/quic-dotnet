@@ -59,6 +59,7 @@ internal sealed partial class QuicConnectionRuntime :
     private const int PathMtuProbeDelayMilliseconds = 1;
     private const ulong CommonEthernetIpv4QuicDatagramSizeBytes = 1_472;
     private const ulong CommonEthernetIpv6QuicDatagramSizeBytes = 1_452;
+    private const int QueuedApplicationSendAdmissionAckHeadroomBytes = 64;
     internal const int HostedApplicationDatagramBatchSegmentSize = 1_472;
     internal const int HostedApplicationDatagramBatchCapacity = QuicSendPolicy.EstablishedQueuedApplicationSendBurstDatagrams;
     private const int HandshakeEgressChunkBytes = QuicVersionNegotiation.Version1MinimumDatagramPayloadSize;
