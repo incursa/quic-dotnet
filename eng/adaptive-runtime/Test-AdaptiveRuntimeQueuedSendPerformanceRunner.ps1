@@ -33,7 +33,7 @@ Assert-Test ($runnerText.Contains('[switch] $Resume') -and
     $runnerText.Contains('package_resume_hash_mismatch') -and
     $runnerText.Contains('package_resume_attestation_mismatch') -and
     $runnerText.Contains('$priorPreflightAttempts = @()') -and
-    $runnerText.Contains('c1-s1-r1/result\.json$') -and
+    $runnerText.Contains('quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/result\.json$') -and
     -not $runnerText.Contains('c1-s100-r1') -and
     $runnerText.Contains('plab-worker-x64-02') -and
     $runnerText.Contains('plab-worker-x64-03') -and
@@ -49,6 +49,11 @@ Assert-Test ($runnerText.Contains(
     -not $runnerText.Contains("ScenarioId='quic.transport.stream-throughput.1mb'") -and
     $runnerText.Contains('$boundedEpochsThroughBenchmark') -and
     $runnerText.Contains('$nonMonotonicEpochs') -and
+    $runnerText.Contains('$epochIndex') -and
+    -not $runnerText.Contains('for ($index = 1; $index -lt $boundedEpochs.Count') -and
+    $runnerText.Contains('$preflightAttemptIndex') -and
+    $runnerText.Contains('$runAttemptIndex') -and
+    $runnerText.Contains('$manifest.content_sha256.Substring(0,8)') -and
     $runnerText.Contains('QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS=5')) `
     'queued_runner_exact_scope_missing'
 

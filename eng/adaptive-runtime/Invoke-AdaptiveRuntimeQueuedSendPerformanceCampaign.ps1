@@ -227,7 +227,8 @@ function Save-CampaignControllerEvidence {
     [void](New-Item -ItemType Directory -Force -Path $DownloadRoot)
     $index = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs/$JobId/artifacts" -Method 'GET'
     Write-JsonFile $ArtifactIndexPath $index
-    $resultArtifact = Get-RequiredArtifact $index '(^|/)c1-s1-r1/result\.json$' `
+    $resultArtifact = Get-RequiredArtifact $index `
+        '^implementations/quic-dotnet-raw-dev/quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/result\.json$' `
         "result_artifact_count_invalid:$CellId"
     $resultText = Get-ArtifactText $ControllerUri $JobId $resultArtifact `
         "result_artifact_empty:$CellId"
@@ -248,7 +249,7 @@ function Save-CampaignControllerEvidence {
     $resultText | Set-Content -LiteralPath $resultPath -Encoding utf8
 
     $stdoutArtifact = Get-RequiredArtifact $index `
-        '^sut/.+/adapter-child-artifacts/server\.stdout/server\.stdout\.txt$' `
+        '^sut/implementations/quic-dotnet-raw-dev/quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/adapter-child-artifacts/server\.stdout/server\.stdout\.txt$' `
         "bounded_stdout_artifact_count_invalid:$CellId"
     $stdoutText = Get-ArtifactText $ControllerUri $JobId $stdoutArtifact `
         "bounded_stdout_artifact_empty:$CellId"
@@ -271,9 +272,9 @@ function Save-CampaignControllerEvidence {
         $_.ArithmeticSaturated -ne $false
     })
     $nonMonotonicEpochs = [Collections.Generic.List[string]]::new()
-    for ($index = 1; $index -lt $boundedEpochs.Count; $index++) {
-        $prior = $boundedEpochs[$index - 1]
-        $current = $boundedEpochs[$index]
+    for ($epochIndex = 1; $epochIndex -lt $boundedEpochs.Count; $epochIndex++) {
+        $prior = $boundedEpochs[$epochIndex - 1]
+        $current = $boundedEpochs[$epochIndex]
         if ([long]$current.Sequence -le [long]$prior.Sequence -or
             [long]$current.QueuedSendBurstEvidenceCount -lt
                 [long]$prior.QueuedSendBurstEvidenceCount -or
@@ -307,7 +308,7 @@ function Save-CampaignControllerEvidence {
     $stdoutText | Set-Content -LiteralPath $stdoutPath -Encoding utf8
 
     $loadArtifact = Get-RequiredArtifact $index `
-        '^implementations/.+/c1-s1-r1/load-tool-process-metrics-summary\.json$' `
+        '^implementations/quic-dotnet-raw-dev/quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/load-tool-process-metrics-summary\.json$' `
         "load_metrics_artifact_count_invalid:$CellId"
     $loadText = Get-ArtifactText $ControllerUri $JobId $loadArtifact `
         "load_metrics_artifact_empty:$CellId"
@@ -317,7 +318,7 @@ function Save-CampaignControllerEvidence {
     $loadText | Set-Content -LiteralPath $loadPath -Encoding utf8
 
     $adapterArtifact = Get-RequiredArtifact $index `
-        '^sut/implementations/.+/c1-s1-r1/adapter-metrics\.json$' `
+        '^sut/implementations/quic-dotnet-raw-dev/quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/adapter-metrics\.json$' `
         "target_adapter_metrics_artifact_count_invalid:$CellId"
     $adapterText = Get-ArtifactText $ControllerUri $JobId $adapterArtifact `
         "target_adapter_metrics_artifact_empty:$CellId"
@@ -332,7 +333,7 @@ function Save-CampaignControllerEvidence {
     $adapterText | Set-Content -LiteralPath $adapterPath -Encoding utf8
 
     $counterArtifacts = @(Get-OptionalArtifact $index `
-        '^sut/implementations/.+/c1-s1-r1/counters-summary\.json$')
+        '^sut/implementations/quic-dotnet-raw-dev/quic\.transport\.stream-download\.1mb/quic/.+/c1-s1-r1/counters-summary\.json$')
     $counterStatus = 'unavailable'; $counterSamples = 0; $counterPath = $null
     if ($counterArtifacts.Count -eq 1) {
         $counterText = Get-ArtifactText $ControllerUri $JobId $counterArtifacts[0] `
@@ -373,8 +374,9 @@ function Save-CampaignControllerEvidence {
             legal_budget_gt_one_count = $activationCount
             arithmetic_saturated = $false
             last_epoch_sequence = [long]$bounded.Sequence
-            last_epoch_observed_at_utc = [string]$bounded.ObservedAtUtc
-            benchmark_completed_at_utc = [string]$benchmark.timestamp
+            last_epoch_observed_at_utc =
+                ([DateTimeOffset]::Parse([string]$bounded.ObservedAtUtc)).ToString('O')
+            benchmark_completed_at_utc = $benchmarkCompletedAt.ToString('O')
         }
         load_process_metrics = $loadSummary
         target_process_metrics = [pscustomobject][ordered]@{
@@ -662,7 +664,10 @@ else {
         LoadProfileId=[string]$control.package_selection.load_profile_id
         Repetitions=1; PlacementPolicy='isolated-pair'
         PackageVersion=[string]$q1Package[0].package_ref.packageVersion
-        RunIdPrefix="queued-activation-$($manifest.document_id)"; ResultRoot=$preflightRoot
+        RunIdPrefix=('queued-activation-{0}-{1}-a{2:D2}' -f
+            $manifest.document_id,$manifest.content_sha256.Substring(0,8),
+            $preflightAttemptIndex)
+        ResultRoot=$preflightRoot
         TimeoutSeconds=3600; UsePackageReferenceOnly=$true
         RequiredCapability=@('evidenceTier=offline-ml-two-host-vm')
         PackageReference=@(('{0}|{1}|{2}' -f
@@ -793,14 +798,18 @@ foreach ($plannedRun in @($manifest.planned_runs | Sort-Object execution_index))
         [int]$plannedRun.block_index,[int]$plannedRun.position_index,$cellLabel
     $runRoot = Join-Path $outputRootFull "runs\$runName"
     [void](New-Item -ItemType Directory -Force -Path $runRoot)
+    $runAttemptIndex = @($attempts | Where-Object {
+        [int]$_.execution_index -eq $executionIndex }).Count + 1
     $runArgs = @{
         ControllerUri=$controllerUri; PackageTarget='RawQuic'; ProtocolLabRoot=$protocolLabRootFull
         ScenarioId='quic.transport.stream-download.1mb'; Protocol='quic'
         TestExecutorId='quic-go-raw-load'; LoadProfileId=[string]$control.package_selection.load_profile_id
         Repetitions=1; PlacementPolicy='isolated-pair'
         PackageVersion=[string]$package[0].package_ref.packageVersion
-        RunIdPrefix=('queued-b{0:D2}-p{1:D2}-{2}-{3}' -f
-            [int]$plannedRun.block_index,[int]$plannedRun.position_index,$cellLabel,$manifest.document_id)
+        RunIdPrefix=('queued-b{0:D2}-p{1:D2}-{2}-{3}-{4}-a{5:D2}' -f
+            [int]$plannedRun.block_index,[int]$plannedRun.position_index,$cellLabel,
+            $manifest.document_id,$manifest.content_sha256.Substring(0,8),
+            $runAttemptIndex)
         ResultRoot=$runRoot; TimeoutSeconds=3600; UsePackageReferenceOnly=$true
         RequiredCapability=@('evidenceTier=offline-ml-two-host-vm')
         PackageReference=@(('{0}|{1}|{2}' -f $package[0].package_ref.packageId,
@@ -815,7 +824,7 @@ foreach ($plannedRun in @($manifest.planned_runs | Sort-Object execution_index))
     $attempt = [ordered]@{
         execution_index=$executionIndex; block_index=[int]$plannedRun.block_index
         position_index=[int]$plannedRun.position_index; cell_id=$cellId
-        attempt_index=@($attempts | Where-Object { [int]$_.execution_index -eq $executionIndex }).Count + 1
+        attempt_index=$runAttemptIndex
         package_ref=$package[0].package_ref; job_id=$null; run_id=$null; topology=$null
         outcome='submitted'; failure_reason_code=$null
         controller_artifact_index_path=$null; controller_artifact_downloads=@()
