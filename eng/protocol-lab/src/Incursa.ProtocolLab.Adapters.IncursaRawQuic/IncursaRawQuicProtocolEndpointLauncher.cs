@@ -137,6 +137,12 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_CAPACITY_SUMMARY"] = capacitySummaryLogging;
         }
 
+        var evidenceMode = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE");
+        if (!string.IsNullOrWhiteSpace(evidenceMode))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE"] = evidenceMode;
+        }
+
         var receiveCreditPolicy = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_RECEIVE_CREDIT_POLICY");
         if (!string.IsNullOrWhiteSpace(receiveCreditPolicy))
         {
@@ -147,6 +153,12 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         if (!string.IsNullOrWhiteSpace(applicationSendTurnPolicy))
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY"] = applicationSendTurnPolicy;
+        }
+
+        var queuedSendBurstPolicy = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY");
+        if (!string.IsNullOrWhiteSpace(queuedSendBurstPolicy))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY"] = queuedSendBurstPolicy;
         }
 
         var oversizedWriteAdmissionPolicy = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY");
@@ -207,6 +219,36 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         if (!string.IsNullOrWhiteSpace(admissionPerformanceBufferCopyPolicy))
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY"] = admissionPerformanceBufferCopyPolicy;
+        }
+
+        var queuedSendPerformanceCampaignId = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID");
+        if (!string.IsNullOrWhiteSpace(queuedSendPerformanceCampaignId))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID"] = queuedSendPerformanceCampaignId;
+        }
+
+        var queuedSendPerformanceManifestContentSha256 = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256");
+        if (!string.IsNullOrWhiteSpace(queuedSendPerformanceManifestContentSha256))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256"] = queuedSendPerformanceManifestContentSha256;
+        }
+
+        var queuedSendPerformanceCellId = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID");
+        if (!string.IsNullOrWhiteSpace(queuedSendPerformanceCellId))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID"] = queuedSendPerformanceCellId;
+        }
+
+        var queuedSendPerformanceCellContentSha256 = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256");
+        if (!string.IsNullOrWhiteSpace(queuedSendPerformanceCellContentSha256))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256"] = queuedSendPerformanceCellContentSha256;
+        }
+
+        var queuedSendPerformancePolicy = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY");
+        if (!string.IsNullOrWhiteSpace(queuedSendPerformancePolicy))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY"] = queuedSendPerformancePolicy;
         }
 
         var qlogPath = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH");

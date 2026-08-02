@@ -2010,6 +2010,16 @@ internal sealed partial class QuicConnectionRuntime :
                 forcedMode,
                 forcedApplicationSendTurnMode,
                 forcedQueuedSendBurstMode);
+        bool queuedSendPerformanceAuthorized =
+            options.QueuedSendPerformanceAuthorization
+                is { } queuedSendPerformanceAuthorization
+            && queuedSendPerformanceAuthorization.Authorizes(
+                forcedOversizedWriteAdmissionMode,
+                forcedApplicationSendBatchMode,
+                forcedBufferCopyPolicyValue,
+                forcedMode,
+                forcedApplicationSendTurnMode,
+                forcedQueuedSendBurstMode);
         if (options.SendCompositionCorrectnessAuthorization is not null
             && !sendCompositionCorrectnessAuthorized)
         {
@@ -2034,6 +2044,12 @@ internal sealed partial class QuicConnectionRuntime :
             throw new InvalidOperationException(
                 "The send-admission performance authorization does not match the exact reviewed A0-A7 offline-measurement cell.");
         }
+        if (options.QueuedSendPerformanceAuthorization is not null
+            && !queuedSendPerformanceAuthorized)
+        {
+            throw new InvalidOperationException(
+                "The queued-send performance authorization does not match the exact reviewed queued-send burst cell.");
+        }
         if (options.SendCompositionCorrectnessAuthorization is not null
             && options.SendCompositionPerformanceAuthorization is not null)
         {
@@ -2054,6 +2070,15 @@ internal sealed partial class QuicConnectionRuntime :
         {
             throw new InvalidOperationException(
                 "Send-admission performance authorization is mutually exclusive with correctness and send-composition authorizations.");
+        }
+        if (options.QueuedSendPerformanceAuthorization is not null
+            && (options.SendAdmissionCorrectnessAuthorization is not null
+                || options.SendAdmissionPerformanceAuthorization is not null
+                || options.SendCompositionCorrectnessAuthorization is not null
+                || options.SendCompositionPerformanceAuthorization is not null))
+        {
+            throw new InvalidOperationException(
+                "Queued-send performance authorization is mutually exclusive with correctness and send-composition authorizations.");
         }
         if (applicationSendBatchTreatmentSelected)
         {

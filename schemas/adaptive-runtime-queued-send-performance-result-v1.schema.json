@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.incursa.example/adaptive-runtime-queued-send-performance-result-v1.schema.json",
+  "title": "Adaptive runtime queued-send performance result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "document_id", "document_version", "content_sha256",
+    "control_ref", "compiled_manifest_ref", "source_commit", "source_dirty_state",
+    "controller_uri", "worker_pair", "workload", "activation_preflight", "run_counts",
+    "packages", "failed_attempts", "runs", "cells", "block_summaries", "order_summaries",
+    "overall_directional_differences_q1_minus_q0", "resource_telemetry",
+    "analysis_boundary", "covering_array", "limitations", "conclusion",
+    "performance_acceptance_authorization", "adaptive_rule_derivation_authorization",
+    "active_behavior_authorization", "production_activation_authorization", "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-queued-send-performance-result-v1" },
+    "document_id": { "const": "adaptive_runtime_queued_send_performance_result_v1" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/sha256" },
+    "control_ref": { "$ref": "#/$defs/documentReference" },
+    "compiled_manifest_ref": { "$ref": "#/$defs/documentReference" },
+    "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "source_dirty_state": { "const": "clean" },
+    "controller_uri": { "const": "http://10.10.99.176:5088" },
+    "worker_pair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["topology_classification", "sut_node_id", "sut_physical_host_id", "load_node_id", "load_physical_host_id"],
+      "properties": {
+        "topology_classification": { "const": "independent_physical_hosts" },
+        "sut_node_id": { "const": "plab-worker-x64-02" },
+        "sut_physical_host_id": { "type": "string", "minLength": 1 },
+        "load_node_id": { "const": "plab-worker-x64-03" },
+        "load_physical_host_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "workload": {
+      "type": "object", "additionalProperties": false,
+      "required": ["suite_id", "scenario_id", "protocol", "test_executor_id", "load_profile_id", "repetitions_per_cell", "block_count"],
+      "properties": {
+        "suite_id": { "type": "string", "minLength": 1 },
+        "scenario_id": { "const": "quic.transport.stream-throughput.1mb" },
+        "protocol": { "const": "quic" },
+        "test_executor_id": { "const": "quic-go-raw-load" },
+        "load_profile_id": { "type": "string", "minLength": 1 },
+        "repetitions_per_cell": { "const": 8 },
+        "block_count": { "const": 8 }
+      }
+    },
+    "activation_preflight": {
+      "type": "object", "additionalProperties": false,
+      "required": ["predicate_id", "cell_id", "job_id", "run_id", "activation_observed", "accepted_timed_row", "attempt_count", "failed_attempt_count"],
+      "properties": {
+        "predicate_id": { "const": "predicate.queued_send.legal_budget_gt_one" },
+        "cell_id": { "const": "cell.queued_send_burst_budget.performance.q1" },
+        "job_id": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "activation_observed": { "const": true },
+        "accepted_timed_row": { "const": false },
+        "attempt_count": { "type": "integer", "minimum": 1 },
+        "failed_attempt_count": { "$ref": "#/$defs/nonNegativeInteger" }
+      }
+    },
+    "run_counts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["planned_runs", "completed_runs", "actual_measurements_run", "activation_preflight_runs", "failed_attempts", "failed_requests", "timeout_requests", "saturated_runs"],
+      "properties": {
+        "planned_runs": { "const": 16 }, "completed_runs": { "const": 16 },
+        "actual_measurements_run": { "const": 16 }, "activation_preflight_runs": { "const": 1 },
+        "failed_attempts": { "$ref": "#/$defs/nonNegativeInteger" },
+        "failed_requests": { "const": 0 }, "timeout_requests": { "const": 0 },
+        "saturated_runs": { "const": 0 }
+      }
+    },
+    "packages": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "$ref": "#/$defs/cellPackage" }
+    },
+    "failed_attempts": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["phase", "execution_index", "attempt_index", "cell_id", "job_id", "run_id", "outcome", "package_ref", "failure_reason_code", "measurement_recorded"],
+        "properties": {
+          "phase": { "enum": ["activation_preflight", "timed_campaign"] },
+          "execution_index": { "type": "integer", "minimum": 0, "maximum": 16 },
+          "attempt_index": { "type": "integer", "minimum": 1 },
+          "cell_id": { "$ref": "#/$defs/cellId" },
+          "job_id": { "type": "string" },
+          "run_id": { "type": "string" },
+          "outcome": { "type": "string", "minLength": 1 },
+          "package_ref": { "$ref": "#/$defs/packageReference" },
+          "failure_reason_code": { "type": "string", "minLength": 1 },
+          "measurement_recorded": { "const": false }
+        }
+      }
+    },
+    "runs": {
+      "type": "array", "minItems": 16, "maxItems": 16,
+      "items": { "$ref": "#/$defs/run" }
+    },
+    "cells": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "$ref": "#/$defs/cellSummary" }
+    },
+    "block_summaries": {
+      "type": "array", "minItems": 8, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["block_index", "order", "directional_differences_q1_minus_q0"],
+        "properties": {
+          "block_index": { "type": "integer", "minimum": 1, "maximum": 8 },
+          "order": { "enum": ["q0_then_q1", "q1_then_q0"] },
+          "directional_differences_q1_minus_q0": { "$ref": "#/$defs/metricValues" }
+        }
+      }
+    },
+    "order_summaries": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["order", "block_count", "directional_differences_q1_minus_q0"],
+        "properties": {
+          "order": { "enum": ["q0_then_q1", "q1_then_q0"] },
+          "block_count": { "const": 4 },
+          "directional_differences_q1_minus_q0": { "$ref": "#/$defs/metricStatistics" }
+        }
+      }
+    },
+    "overall_directional_differences_q1_minus_q0": { "$ref": "#/$defs/metricStatistics" },
+    "resource_telemetry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["load_process_samples_present", "load_process_warnings_retained", "target_runtime_counter_status", "load_cpu_percent", "load_cpu_peak_interval_max", "load_memory_max_bytes", "server_stdout_bytes", "bounded_server_stdout_max_bytes"],
+      "properties": {
+        "load_process_samples_present": { "const": true },
+        "load_process_warnings_retained": { "type": "array", "items": { "type": "string" } },
+        "target_runtime_counter_status": { "enum": ["unavailable", "partially_or_fully_captured"] },
+        "load_cpu_percent": { "$ref": "#/$defs/statistics" },
+        "load_cpu_peak_interval_max": { "type": "number", "minimum": 0 },
+        "load_memory_max_bytes": { "type": "integer", "minimum": 1 },
+        "server_stdout_bytes": { "$ref": "#/$defs/statistics" },
+        "bounded_server_stdout_max_bytes": { "const": 65536 }
+      }
+    },
+    "analysis_boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["classification", "directional_difference_definition", "threshold_available", "winner_selection_authorized", "performance_acceptance_authorized", "adaptive_rule_derivation_authorized", "active_behavior_authorized", "production_activation_authorized"],
+      "properties": {
+        "classification": { "const": "descriptive_characterization_only" },
+        "directional_difference_definition": { "const": "single_datagram_minus_legacy_current_within_each_counterbalanced_block" },
+        "threshold_available": { "const": false }, "winner_selection_authorized": { "const": false },
+        "performance_acceptance_authorized": { "const": false },
+        "adaptive_rule_derivation_authorized": { "const": false },
+        "active_behavior_authorized": { "const": false },
+        "production_activation_authorized": { "const": false }
+      }
+    },
+    "covering_array": {
+      "type": "object", "additionalProperties": false,
+      "required": ["generator_implemented", "required_for_current_two_cell_family"],
+      "properties": {
+        "generator_implemented": { "const": false },
+        "required_for_current_two_cell_family": { "const": false }
+      }
+    },
+    "limitations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "conclusion": { "const": "queued_send_campaign_completed_characterization_only_no_rule" },
+    "performance_acceptance_authorization": { "const": false },
+    "adaptive_rule_derivation_authorization": { "const": false },
+    "active_behavior_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "type": "object" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "nonNegativeInteger": { "type": "integer", "minimum": 0 },
+    "cellId": {
+      "enum": [
+        "cell.queued_send_burst_budget.performance.q0",
+        "cell.queued_send_burst_budget.performance.q1"
+      ]
+    },
+    "documentReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["document_id", "schema_version", "document_version", "content_sha256"],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "packageReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["package_id", "package_version", "sha256"],
+      "properties": {
+        "package_id": { "type": "string", "minLength": 1 },
+        "package_version": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "cellPackage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cell_id", "package_ref"],
+      "properties": { "cell_id": { "$ref": "#/$defs/cellId" }, "package_ref": { "$ref": "#/$defs/packageReference" } }
+    },
+    "statistics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["n", "mean", "median", "sample_standard_deviation", "coefficient_of_variation_percent", "minimum", "maximum"],
+      "properties": {
+        "n": { "type": "integer", "minimum": 1 }, "mean": { "type": "number" },
+        "median": { "type": "number" }, "sample_standard_deviation": { "type": "number", "minimum": 0 },
+        "coefficient_of_variation_percent": { "type": "number", "minimum": 0 },
+        "minimum": { "type": "number" }, "maximum": { "type": "number" }
+      }
+    },
+    "metricValues": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requests_per_second", "useful_bytes_per_second", "latency_p50_ms", "latency_p95_ms"],
+      "properties": {
+        "requests_per_second": { "type": "number" }, "useful_bytes_per_second": { "type": "number" },
+        "latency_p50_ms": { "type": "number" }, "latency_p95_ms": { "type": "number" }
+      }
+    },
+    "metricStatistics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requests_per_second", "useful_bytes_per_second", "latency_p50_ms", "latency_p95_ms"],
+      "properties": {
+        "requests_per_second": { "$ref": "#/$defs/statistics" },
+        "useful_bytes_per_second": { "$ref": "#/$defs/statistics" },
+        "latency_p50_ms": { "$ref": "#/$defs/statistics" },
+        "latency_p95_ms": { "$ref": "#/$defs/statistics" }
+      }
+    },
+    "boundedAggregate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["epoch_count", "stdout_bytes", "queued_send_burst_evidence_count", "legal_budget_gt_one_count", "arithmetic_saturated"],
+      "properties": {
+        "epoch_count": { "type": "integer", "minimum": 1 },
+        "stdout_bytes": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "queued_send_burst_evidence_count": { "type": "integer", "minimum": 1 },
+        "legal_budget_gt_one_count": { "$ref": "#/$defs/nonNegativeInteger" },
+        "arithmetic_saturated": { "const": false }
+      }
+    },
+    "loadProcess": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sample_count", "normalized_cpu_percent_mean", "normalized_cpu_percent_peak_interval", "memory_max_bytes", "warnings"],
+      "properties": {
+        "sample_count": { "type": "integer", "minimum": 1 },
+        "normalized_cpu_percent_mean": { "type": "number", "minimum": 0 },
+        "normalized_cpu_percent_peak_interval": { "type": "number", "minimum": 0 },
+        "memory_max_bytes": { "type": "integer", "minimum": 1 },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "run": {
+      "type": "object", "additionalProperties": false,
+      "required": ["execution_index", "block_index", "position_index", "cell_id", "job_id", "run_id", "package_ref", "metrics", "total_requests", "successful_requests", "failed_requests", "timeout_requests", "bytes_sent", "bytes_received", "load_generator_saturation_status", "bounded_aggregate", "load_process", "target_runtime_counter_status"],
+      "properties": {
+        "execution_index": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "block_index": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "position_index": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "cell_id": { "$ref": "#/$defs/cellId" }, "job_id": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 }, "package_ref": { "$ref": "#/$defs/packageReference" },
+        "metrics": { "$ref": "#/$defs/metricValues" },
+        "total_requests": { "type": "integer", "minimum": 1 }, "successful_requests": { "type": "integer", "minimum": 1 },
+        "failed_requests": { "const": 0 }, "timeout_requests": { "const": 0 },
+        "bytes_sent": { "type": "integer", "minimum": 1 }, "bytes_received": { "type": "integer", "minimum": 1 },
+        "load_generator_saturation_status": { "const": "load-generator-saturation-not-detected" },
+        "bounded_aggregate": { "$ref": "#/$defs/boundedAggregate" },
+        "load_process": { "$ref": "#/$defs/loadProcess" },
+        "target_runtime_counter_status": { "enum": ["unavailable", "captured"] }
+      }
+    },
+    "cellSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cell_id", "queued_send_burst_budget", "package_ref", "requests_per_second", "useful_bytes_per_second", "latency_p50_ms", "latency_p95_ms", "bounded_evidence_totals"],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/cellId" },
+        "queued_send_burst_budget": { "enum": ["legacy_current", "single_datagram"] },
+        "package_ref": { "$ref": "#/$defs/packageReference" },
+        "requests_per_second": { "$ref": "#/$defs/statistics" },
+        "useful_bytes_per_second": { "$ref": "#/$defs/statistics" },
+        "latency_p50_ms": { "$ref": "#/$defs/statistics" },
+        "latency_p95_ms": { "$ref": "#/$defs/statistics" },
+        "bounded_evidence_totals": {
+          "type": "object", "additionalProperties": false,
+          "required": ["epoch_count", "stdout_bytes", "queued_send_burst_evidence_count", "legal_budget_gt_one_count", "arithmetic_saturated"],
+          "properties": {
+            "epoch_count": { "type": "integer", "minimum": 8 }, "stdout_bytes": { "type": "integer", "minimum": 8 },
+            "queued_send_burst_evidence_count": { "type": "integer", "minimum": 8 },
+            "legal_budget_gt_one_count": { "$ref": "#/$defs/nonNegativeInteger" },
+            "arithmetic_saturated": { "const": false }
+          }
+        }
+      }
+    }
+  }
+}

@@ -19,6 +19,12 @@ param(
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [ValidateSet("", "legacy_current", "single_datagram")]
+    [string] $AdaptiveRuntimeQueuedSendBurstPolicy = "",
+
+    [ValidatePattern("^$|^[0-9a-f]{64}$")]
+    [string] $AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 = "",
+
     [ValidateSet("", "legacy_current", "single_fragment")]
     [string] $AdaptiveRuntimeOversizedWriteAdmissionPolicy = "",
 
@@ -256,6 +262,47 @@ function Get-AdmissionPerformancePackagePathCell {
         throw "Admission-performance pilot package path requires one of the reviewed A0, A3, A4, or A7 tuples."
     }
     $cell.manifestContentSha256 = $selectedManifestContentSha256
+    return $cell
+}
+
+function Get-QueuedSendPerformancePackagePathCell {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $QueuedSendBurstPolicy,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ManifestContentSha256
+    )
+
+    # The exact reviewed manifest and cell hashes are intentionally centralized here.
+    # Package construction cannot authorize an arbitrary caller-supplied identity.
+    $reviewedManifestContentSha256 =
+        "9233dfdf43d14236a15a55907832582b1d82a692da3b9f400fdebd76f23abd5d"
+    if ($ManifestContentSha256 -ne $reviewedManifestContentSha256) {
+        throw "Queued-send performance package path requires the exact reviewed manifest hash."
+    }
+
+    $cell = switch ($QueuedSendBurstPolicy) {
+        "legacy_current" {
+            [ordered]@{
+                campaignId = "campaign.queued_send_burst_budget.performance.v1"
+                cellId = "cell.queued_send_burst_budget.performance.q0"
+                cellContentSha256 = "b2911df4e1782b6f1636d37bf50f0dd5e59dbbb9164ec3154b667034c43fb3e9"
+            }
+        }
+        "single_datagram" {
+            [ordered]@{
+                campaignId = "campaign.queued_send_burst_budget.performance.v1"
+                cellId = "cell.queued_send_burst_budget.performance.q1"
+                cellContentSha256 = "2f4a7a36c0d52aeae801a979e91335347693db5ec8665715497d068fb02cdc2a"
+            }
+        }
+        default {
+            throw "Queued-send performance package path requires the reviewed q0 or q1 policy value."
+        }
+    }
+
+    $cell.manifestContentSha256 = $ManifestContentSha256
     return $cell
 }
 
@@ -539,6 +586,9 @@ if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -and 
 if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
 }
+if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy) -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeQueuedSendBurstPolicy is supported only for the RawQuic package target."
+}
 if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy) -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeOversizedWriteAdmissionPolicy is supported only for the RawQuic package target."
 }
@@ -583,10 +633,39 @@ if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
     $PackageVersion = Get-DefaultPackageVersion -RepositoryRoot $repoRoot -SourceClean $sourceClean
 }
 
-$admissionPerformancePathRequested =
+$queuedSendPerformancePathRequested =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256)
+$admissionPerformancePathRequested = -not $queuedSendPerformancePathRequested -and (
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendBatchPolicy) -or
-    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeBufferCopyPolicy)
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeBufferCopyPolicy))
+if ($queuedSendPerformancePathRequested) {
+    if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy) -or
+        [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256)) {
+        throw "Queued-send performance package path requires the queued-send policy and exact manifest hash together."
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeAdmissionPerformanceManifestContentSha256)) {
+        throw "Admission-performance and queued-send performance package-path authorizations are mutually exclusive."
+    }
+
+    $adjacentPolicyValues = @(
+        $AdaptiveRuntimeReceiveCreditPolicy,
+        $AdaptiveRuntimeApplicationSendTurnPolicy,
+        $AdaptiveRuntimeOversizedWriteAdmissionPolicy,
+        $AdaptiveRuntimeApplicationSendBatchPolicy,
+        $AdaptiveRuntimeBufferCopyPolicy,
+        $AdaptiveRuntimePacketFlushCadencePolicy,
+        $AdaptiveRuntimeReceiveDeliveryQuantumPolicy,
+        $AdaptiveRuntimeConnectionShardPlacementPolicy,
+        $AdaptiveRuntimeApplicationDatagramBatchTransportPolicy,
+        $AdaptiveRuntimeCongestionPacingProfilePolicy)
+    if (@($adjacentPolicyValues | Where-Object {
+                -not [string]::IsNullOrWhiteSpace($_) -and $_ -ne "legacy_current"
+            }).Count -ne 0) {
+        throw "Queued-send performance package path requires every adjacent adaptive-runtime policy to be legacy_current or unset."
+    }
+}
 if ($admissionPerformancePathRequested) {
     if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy) -or
         [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendBatchPolicy) -or
@@ -630,6 +709,7 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
 $adaptiveRuntimeEnvironmentRequested =
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy) -or
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendBatchPolicy) -or
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeBufferCopyPolicy) -or
@@ -647,6 +727,12 @@ if ($admissionPerformancePathRequested) {
         -BufferCopyPolicy $AdaptiveRuntimeBufferCopyPolicy `
         -ManifestContentSha256 $AdaptiveRuntimeAdmissionPerformanceManifestContentSha256
 }
+$queuedSendPerformanceCell = $null
+if ($queuedSendPerformancePathRequested) {
+    $queuedSendPerformanceCell = Get-QueuedSendPerformancePackagePathCell `
+        -QueuedSendBurstPolicy $AdaptiveRuntimeQueuedSendBurstPolicy `
+        -ManifestContentSha256 $AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256
+}
 if ($adaptiveRuntimeEnvironmentRequested) {
     $implementationManifestPath = Join-Path $stageRoot "implementations/quic-dotnet-raw-dev.yaml"
     $implementationText = Get-Content -LiteralPath $implementationManifestPath -Raw
@@ -662,6 +748,9 @@ if ($adaptiveRuntimeEnvironmentRequested) {
     }
     if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_TURN_POLICY: $AdaptiveRuntimeApplicationSendTurnPolicy"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy)) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY: $AdaptiveRuntimeQueuedSendBurstPolicy"
     }
     if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy)) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY: $AdaptiveRuntimeOversizedWriteAdmissionPolicy"
@@ -699,6 +788,14 @@ if ($adaptiveRuntimeEnvironmentRequested) {
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY: $AdaptiveRuntimeOversizedWriteAdmissionPolicy"
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY: $AdaptiveRuntimeApplicationSendBatchPolicy"
         $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY: $AdaptiveRuntimeBufferCopyPolicy"
+    }
+    if ($queuedSendPerformanceCell -ne $null) {
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE: bounded_aggregate"
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID: $($queuedSendPerformanceCell.campaignId)"
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256: $($queuedSendPerformanceCell.manifestContentSha256)"
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID: $($queuedSendPerformanceCell.cellId)"
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256: $($queuedSendPerformanceCell.cellContentSha256)"
+        $environmentReplacement += "`n  PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY: $AdaptiveRuntimeQueuedSendBurstPolicy"
     }
     $implementationText = [regex]::Replace(
         $implementationText,
@@ -810,6 +907,12 @@ $embeddedProvenance = [ordered]@{
         packageTarget = $PackageTarget
         adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
         adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+        adaptiveRuntimeQueuedSendBurstPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy)) { $null } else { $AdaptiveRuntimeQueuedSendBurstPolicy }
+        queuedSendPerformancePackagePathSelected = [bool]$queuedSendPerformancePathRequested
+        queuedSendPerformanceCampaignId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.campaignId }
+        queuedSendPerformanceManifestContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.manifestContentSha256 }
+        queuedSendPerformanceCellId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellId }
+        queuedSendPerformanceCellContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellContentSha256 }
         admissionPerformancePackagePathSelected = [bool]$admissionPerformancePathRequested
         admissionPerformanceCampaignId = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.campaignId }
         admissionPerformanceManifestContentSha256 = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.manifestContentSha256 }
@@ -840,6 +943,12 @@ $attestation = [ordered]@{
         packageTarget = $PackageTarget
         adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
         adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+        adaptiveRuntimeQueuedSendBurstPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy)) { $null } else { $AdaptiveRuntimeQueuedSendBurstPolicy }
+        queuedSendPerformancePackagePathSelected = [bool]$queuedSendPerformancePathRequested
+        queuedSendPerformanceCampaignId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.campaignId }
+        queuedSendPerformanceManifestContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.manifestContentSha256 }
+        queuedSendPerformanceCellId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellId }
+        queuedSendPerformanceCellContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellContentSha256 }
         admissionPerformancePackagePathSelected = [bool]$admissionPerformancePathRequested
         admissionPerformanceCampaignId = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.campaignId }
         admissionPerformanceManifestContentSha256 = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.manifestContentSha256 }
@@ -870,6 +979,12 @@ Write-JsonFile -Value $attestation -Path $attestationPath
     packageVersion = $PackageVersion
     adaptiveRuntimeReceiveCreditPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeReceiveCreditPolicy)) { $null } else { $AdaptiveRuntimeReceiveCreditPolicy }
     adaptiveRuntimeApplicationSendTurnPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeApplicationSendTurnPolicy)) { $null } else { $AdaptiveRuntimeApplicationSendTurnPolicy }
+    adaptiveRuntimeQueuedSendBurstPolicy = if ([string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy)) { $null } else { $AdaptiveRuntimeQueuedSendBurstPolicy }
+    queuedSendPerformancePackagePathSelected = [bool]$queuedSendPerformancePathRequested
+    queuedSendPerformanceCampaignId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.campaignId }
+    queuedSendPerformanceManifestContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.manifestContentSha256 }
+    queuedSendPerformanceCellId = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellId }
+    queuedSendPerformanceCellContentSha256 = if ($queuedSendPerformanceCell -eq $null) { $null } else { $queuedSendPerformanceCell.cellContentSha256 }
     admissionPerformancePackagePathSelected = [bool]$admissionPerformancePathRequested
     admissionPerformanceCampaignId = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.campaignId }
     admissionPerformanceManifestContentSha256 = if ($admissionPerformanceCell -eq $null) { $null } else { $admissionPerformanceCell.manifestContentSha256 }

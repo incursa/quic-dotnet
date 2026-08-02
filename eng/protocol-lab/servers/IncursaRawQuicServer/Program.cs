@@ -52,14 +52,27 @@ var admissionPerformanceAuthorization = ResolveAdmissionPerformanceAuthorization
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY"),
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY"),
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY"));
+var queuedSendPerformanceAuthorization = ResolveQueuedSendPerformanceAuthorization(
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256"),
+    Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY"));
 var evidenceMode = ResolveAdaptiveRuntimeEvidenceMode(
     Environment.GetEnvironmentVariable(
         "PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE"));
 if (evidenceMode == AdaptiveRuntimeEvidenceMode.BoundedAggregate
-    && admissionPerformanceAuthorization is null)
+    && admissionPerformanceAuthorization is null
+    && queuedSendPerformanceAuthorization is null)
 {
     throw new InvalidOperationException(
-        "Bounded aggregate adaptive-runtime evidence requires an exact admission-performance package-path authorization.");
+        "Bounded aggregate adaptive-runtime evidence requires an exact admission-performance or queued-send package-path authorization.");
+}
+if (admissionPerformanceAuthorization is not null
+    && queuedSendPerformanceAuthorization is not null)
+{
+    throw new InvalidOperationException(
+        "Admission-performance and queued-send performance package-path authorizations are mutually exclusive.");
 }
 var adaptiveBackpressurePolicy = ResolveAdaptiveBackpressurePolicy(
     Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADAPTIVE_BACKPRESSURE_POLICY"));
@@ -251,6 +264,19 @@ QuicAdaptiveRuntimeStage1PolicySnapshot? configuredStage1Policy =
                     oversizedWriteAdmissionPolicy.ForcedMode,
                     oversizedObservationMode,
                     bufferCopyPolicy.ForcedValue)
+            : queuedSendPerformanceAuthorization is { } queuedSendAuthorization
+                ? QuicAdaptiveRuntimeStage1ConfiguredPolicy
+                    .CreateForQueuedSendPerformance(
+                        queuedSendAuthorization,
+                        applicationSendTurnPolicy.ForcedMode,
+                        sendTurnObservationMode,
+                        applicationSendBatchPolicy.ForcedMode,
+                        sendBatchObservationMode,
+                        queuedSendBurstPolicy.ForcedMode,
+                        burstObservationMode,
+                        oversizedWriteAdmissionPolicy.ForcedMode,
+                        oversizedObservationMode,
+                        bufferCopyPolicy.ForcedValue)
             : QuicAdaptiveRuntimeStage1ConfiguredPolicy.Create(
                 applicationSendTurnPolicy.ForcedMode,
                 sendTurnObservationMode,
@@ -386,6 +412,8 @@ var listenerOptions = new QuicListenerOptions
                 bufferCopyPolicy.ForcedValue,
             SendAdmissionPerformanceAuthorization =
                 admissionPerformanceAuthorization,
+            QueuedSendPerformanceAuthorization =
+                queuedSendPerformanceAuthorization,
             AdaptiveRuntimeShadowEnabled = adaptiveInstrumentationEnabled,
             AdaptiveRuntimeShadowEpochInterval = !adaptiveInstrumentationEnabled
                 ? TimeSpan.Zero
@@ -588,6 +616,50 @@ catch (QuicException ex)
 finally
 {
     await listener.DisposeAsync();
+}
+
+static QuicAdaptiveRuntimeQueuedSendPerformanceAuthorization? ResolveQueuedSendPerformanceAuthorization(
+    string? campaignId,
+    string? manifestContentSha256,
+    string? cellId,
+    string? cellContentSha256,
+    string? queuedSendBurstPolicyValue)
+{
+    bool anyValueSpecified =
+        !string.IsNullOrWhiteSpace(campaignId)
+        || !string.IsNullOrWhiteSpace(manifestContentSha256)
+        || !string.IsNullOrWhiteSpace(cellId)
+        || !string.IsNullOrWhiteSpace(cellContentSha256)
+        || !string.IsNullOrWhiteSpace(queuedSendBurstPolicyValue);
+    if (!anyValueSpecified)
+    {
+        return null;
+    }
+
+    if (string.IsNullOrWhiteSpace(campaignId)
+        || string.IsNullOrWhiteSpace(manifestContentSha256)
+        || string.IsNullOrWhiteSpace(cellId)
+        || string.IsNullOrWhiteSpace(cellContentSha256)
+        || string.IsNullOrWhiteSpace(queuedSendBurstPolicyValue))
+    {
+        throw new InvalidOperationException(
+            "Queued-send performance package-path environment variables must be supplied together.");
+    }
+
+    var queuedSendBurstPolicy =
+        ResolveQueuedSendBurstPolicy(queuedSendBurstPolicyValue);
+    if (queuedSendBurstPolicy.ForcedMode is not { } queuedBurstMode)
+    {
+        throw new InvalidOperationException(
+            "Queued-send performance package-path authorization requires a forced legacy_current or single_datagram queued-send burst policy.");
+    }
+
+    return QuicAdaptiveRuntimeQueuedSendPerformanceAuthorization.CreateForReviewedPackagePath(
+        campaignId,
+        manifestContentSha256,
+        cellId,
+        cellContentSha256,
+        queuedBurstMode);
 }
 
 static QuicAdaptiveRuntimeAdmissionPerformanceAuthorization? ResolveAdmissionPerformanceAuthorization(
@@ -1763,6 +1835,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
     private long boundedApplicationSendBatchEvidenceCount;
     private long boundedApplicationSendBatchAppliedWriteCount;
     private long boundedQueuedSendBurstEvidenceCount;
+    private long boundedQueuedSendBurstLegalBudgetGreaterThanOneCount;
     private long boundedOversizedWriteEvidenceCount;
     private long boundedOversizedCommittedFragments;
     private long boundedOversizedCommittedBytes;
@@ -2027,6 +2100,8 @@ internal sealed class AdaptiveRuntimeEpochPublisher
                     Volatile.Read(
                         ref boundedQueuedSendBurstEvidenceCount),
                     Volatile.Read(
+                        ref boundedQueuedSendBurstLegalBudgetGreaterThanOneCount),
+                    Volatile.Read(
                         ref boundedOversizedWriteEvidenceCount),
                     Volatile.Read(
                         ref boundedOversizedCommittedFragments),
@@ -2158,9 +2233,22 @@ internal sealed class AdaptiveRuntimeEpochPublisher
         CompleteBoundedEvidenceEvent();
     }
 
-    private void RecordBoundedQueuedSendBurst()
-        => RecordBoundedCount(
-            ref boundedQueuedSendBurstEvidenceCount);
+    private void RecordBoundedQueuedSendBurst(
+        in QuicQueuedSendBurstEvidence evidence)
+    {
+        RecordBoundedValue(
+            ref boundedQueuedSendBurstEvidenceCount,
+            1);
+        if (QuicQueuedSendBurstEvidenceGate.HasLegalBudgetGreaterThanOne(
+                in evidence))
+        {
+            RecordBoundedValue(
+                ref boundedQueuedSendBurstLegalBudgetGreaterThanOneCount,
+                1);
+        }
+
+        CompleteBoundedEvidenceEvent();
+    }
 
     private void RecordBoundedOversizedWrite(
         in QuicOversizedWriteAdmissionEvidence evidence)
@@ -2527,7 +2615,7 @@ internal sealed class AdaptiveRuntimeEpochPublisher
             if (owner.evidenceMode
                 == AdaptiveRuntimeEvidenceMode.BoundedAggregate)
             {
-                owner.RecordBoundedQueuedSendBurst();
+                owner.RecordBoundedQueuedSendBurst(in evidence);
                 return accumulated;
             }
 
@@ -2867,6 +2955,7 @@ internal readonly record struct BoundedAdaptiveRuntimeEpochRecord(
     long ApplicationSendBatchEvidenceCount,
     long ApplicationSendBatchAppliedWriteCount,
     long QueuedSendBurstEvidenceCount,
+    long QueuedSendBurstLegalBudgetGreaterThanOneCount,
     long OversizedWriteEvidenceCount,
     long OversizedCommittedFragments,
     long OversizedCommittedBytes,

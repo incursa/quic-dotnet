@@ -42,6 +42,12 @@ param(
     [ValidateSet("", "legacy_current", "conservative", "observe_only", "shadow")]
     [string] $AdaptiveRuntimeApplicationSendTurnPolicy = "",
 
+    [ValidateSet("", "legacy_current", "single_datagram")]
+    [string] $AdaptiveRuntimeQueuedSendBurstPolicy = "",
+
+    [ValidatePattern("^$|^[0-9a-f]{64}$")]
+    [string] $AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 = "",
+
     [ValidateSet("", "legacy_current", "single_fragment")]
     [string] $AdaptiveRuntimeOversizedWriteAdmissionPolicy = "",
 
@@ -272,6 +278,14 @@ $applicationSendTurnPolicySelected =
 if ($applicationSendTurnPolicySelected -and $PackageTarget -ne "RawQuic") {
     throw "AdaptiveRuntimeApplicationSendTurnPolicy is supported only for the RawQuic package target."
 }
+$queuedSendBurstPolicySelected =
+    -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendBurstPolicy)
+if ($queuedSendBurstPolicySelected -and $PackageTarget -ne "RawQuic") {
+    throw "AdaptiveRuntimeQueuedSendBurstPolicy is supported only for the RawQuic package target."
+}
+if (-not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256) -and -not $queuedSendBurstPolicySelected) {
+    throw "AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 requires AdaptiveRuntimeQueuedSendBurstPolicy."
+}
 $oversizedWriteAdmissionPolicySelected =
     -not [string]::IsNullOrWhiteSpace($AdaptiveRuntimeOversizedWriteAdmissionPolicy)
 if ($oversizedWriteAdmissionPolicySelected -and $PackageTarget -ne "RawQuic") {
@@ -474,6 +488,8 @@ if (-not $UsePackageReferenceOnly) {
         Configuration = $Configuration
         RuntimeIdentifier = $RuntimeIdentifier
         AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy
+        AdaptiveRuntimeQueuedSendBurstPolicy = $AdaptiveRuntimeQueuedSendBurstPolicy
+        AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 = $AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256
         AdaptiveRuntimeOversizedWriteAdmissionPolicy = $AdaptiveRuntimeOversizedWriteAdmissionPolicy
         AdaptiveRuntimeApplicationSendBatchPolicy = $AdaptiveRuntimeApplicationSendBatchPolicy
         AdaptiveRuntimeBufferCopyPolicy = $AdaptiveRuntimeBufferCopyPolicy

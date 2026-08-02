@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0122",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "Queued-send burst offline performance readiness",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Satisfy REQ-QUIC-CRT-0253 through REQ-QUIC-CRT-0258 with an exact two-cell queued-send authority, deterministic eight-block timing campaign, package-backed ProtocolLab execution, a preflight stream-throughput gate, resumable bounded evidence, and a non-accepting descriptive result.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-QUEUED-SEND-PERFORMANCE",
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "WI-QUIC-CRT-0123",
+    "VER-QUIC-CRT-0124"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0253",
+    "REQ-QUIC-CRT-0254",
+    "REQ-QUIC-CRT-0255",
+    "REQ-QUIC-CRT-0256",
+    "REQ-QUIC-CRT-0257",
+    "REQ-QUIC-CRT-0258"
+  ],
+  "key_components": [
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-actuation-plan-v1.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-manifest-v1.json",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceRunner.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResultGenerator.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1RawEvidence.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1UnifiedEvidence.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/protocol-lab/templates/raw-quic/protocol-lab-package.json",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0254.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0257.cs",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+    "schemas/adaptive-runtime-queued-send-performance-campaign-v1.schema.json",
+    "schemas/adaptive-runtime-queued-send-performance-manifest-v1.schema.json",
+    "schemas/adaptive-runtime-queued-send-performance-result-v1.schema.json"
+  ],
+  "design_summary": "The design reuses the existing queued-send correctness and actuation boundary, but narrows performance authority to exactly two cells and one exact manifest-bound measurement bundle. The compiler emits an eight-block, two-position order so each queued-send treatment appears once per position and the resulting 16 jobs remain reproducible. The ProtocolLab runner owns the package-backed execution and resumability layer, while the queued-send gate remains a separate preflight that must prove the legal-budget predicate before the single_datagram timing rows can be accepted. The analysis result is intentionally descriptive: it can preserve block and position effects, report bounded aggregate observations, and keep failed or resumed attempts, but it does not promote a policy winner or derive a new adaptive rule.",
+  "data_and_state_considerations": "Control documents remain immutable and versioned. The timing campaign and manifest should be content-hashed, replayable, and additive. Job-level evidence must preserve source, binary, host, workload, package, controller, run, block, position, and cell identity. Failed or retried attempts remain retained evidence, not deleted artifacts. The gate workload and its predicate proof are preconditions for accepting timing rows and must stay separate from the timing result itself.",
+  "edge_cases_and_constraints": [
+    "All adjacent queued-send axes remain legacy_current and must not vary during this slice.",
+    "A failed gate proof for quic.transport.stream-throughput.1mb must leave single_datagram rows unaccepted.",
+    "Resumed jobs must preserve the original exact identity, not mint a fresh logical cell.",
+    "Bounded aggregate evidence must not delete failed or retried attempts.",
+    "A two-cell family does not justify covering-array generation."
+  ],
+  "alternatives_considered": [
+    "Fold the queued-send timing work into the admission-performance slice; rejected because the queued-send gate and exact treatment pair are behaviorally distinct and already have their own correctness lineage.",
+    "Use a covering-array campaign; rejected because the family has only two cells.",
+    "Authorize timing rows without the stream-throughput gate; rejected because the single_datagram cell must prove predicate.queued_send.legal_budget_gt_one before the row is accepted."
+  ],
+  "risks": [
+    "A stale manifest hash could misbind the exact measurement authority.",
+    "A package/runtime mismatch could make resumable timing evidence look credible when it is not.",
+    "The gate workload could be overread as acceptance evidence if the timing result is not kept descriptively bounded.",
+    "A non-deterministic block order would defeat the intended two-position characterization."
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "title": "Queued-send burst performance characterization verification",
+  "preconditions": [
+    "The exact queued-send actuation lineage and queued-send performance specification remain present.",
+    "Performance acceptance authorization, active behavior authorization, and production activation remain false.",
+    "The ProtocolLab raw QUIC package path is available for package-backed execution.",
+    "The queued-send gate workload quic.transport.stream-throughput.1mb remains supported."
+  ],
+  "verification_method": "Validate the canonical JSON, compile the queued-send campaign deterministically, inspect the fixed two-cell schedule, execute the package-backed ProtocolLab path, review bounded aggregate evidence, and check that the result remains descriptive rather than promotional.",
+  "owner": "quic-maintainers",
+  "artifact_type": "verification",
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "status": "planned",
+  "domain": "quic",
+  "verifies": [
+    "REQ-QUIC-CRT-0253",
+    "REQ-QUIC-CRT-0254",
+    "REQ-QUIC-CRT-0255",
+    "REQ-QUIC-CRT-0256",
+    "REQ-QUIC-CRT-0257",
+    "REQ-QUIC-CRT-0258"
+  ],
+  "evidence": [
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-actuation-plan-v1.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-manifest-v1.json",
+    "eng/adaptive-runtime/Compile-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/New-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceRunner.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResultGenerator.ps1",
+    "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1",
+    "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1RawEvidence.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/protocol-lab/templates/raw-quic/protocol-lab-package.json",
+    "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0254.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0257.cs",
+    "scripts/Validate-SpecTraceJson.ps1"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Scope",
+      "content": "Verify the exact two-cell queued-send performance authority, the eight-block / 16-job deterministic campaign, the package-backed ProtocolLab execution path, the stream-throughput gate proof, resumability, bounded aggregate evidence, and the non-accepting descriptive result."
+    }
+  ],
+  "status_summary": "Planned. This artifact will be complete when the queued-send performance control, campaign, manifest, runner, and result artifacts all validate, the gate workload proves predicate.queued_send.legal_budget_gt_one before accepted single_datagram timing rows, and the final result remains descriptive rather than promotional.",
+  "scope": "Verify the exact two-cell queued-send performance slice, the deterministic two-position campaign shape, the ProtocolLab package-backed execution path, the gate precondition for accepted single_datagram timing rows, the resumable bounded evidence model, and the non-accepting analysis boundary.",
+  "procedure": [
+    "Validate the queued-send performance SpecTrace JSON against the published schema.",
+    "Compile the queued-send performance campaign twice and confirm the eight-block, two-position schedule is byte-identical.",
+    "Confirm the campaign contains exactly 16 jobs and 8 repetitions per cell.",
+    "Prove the quic.transport.stream-throughput.1mb gate establishes predicate.queued_send.legal_budget_gt_one before accepting single_datagram timing rows.",
+    "Execute the package-backed ProtocolLab path and confirm resumable attempt accounting and bounded aggregate evidence.",
+    "Review the result and confirm that no adaptive rule, winner, active behavior, or production activation is produced."
+  ],
+  "expected_result": "The queued-send performance slice remains exactly two cells wide, deterministic, package-backed, resumable, and descriptively bounded; gate failure keeps single_datagram timing rows unaccepted; and the result stays non-promoting.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-QUEUED-SEND-PERFORMANCE",
+    "ARC-QUIC-CRT-0122",
+    "WI-QUIC-CRT-0123"
+  ],
+  "artifact_id": "VER-QUIC-CRT-0124"
+}
