@@ -10,7 +10,7 @@
     "VER-QUIC-CRT-0124"
   ],
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "completion_notes": "Add the queued-send performance control, campaign, manifest, and descriptive result artifacts as an additive slice. Keep the existing correctness/onboarding boundary intact, reuse the package-backed ProtocolLab raw QUIC path, and preserve the non-accepting performance boundary.",
+  "completion_notes": "Implemented the additive queued-send performance control, campaign, manifest, package authorization, runner, bounded evidence, result generator, deterministic replay, requirement-home tests, and SpecTrace records. The exact eight-block / 16-job campaign completed on independent hosts plab-worker-x64-02 and plab-worker-x64-03 from clean source 5bd4b4d2ddbb027bee534392dca2a2518f8fa935 with zero failed attempts, zero request failures, zero timeouts, and no detected saturation. A separate activation preflight produced 19,455 legal-budget activations before timing. Canonical result 1c02b545e1714079fc12f6f46bba502c5f5c661dbf5883a2591774cbfe9979 records eight rows per cell and 779,800 total bytes of bounded server output. legacy_current averaged 26.9473 requests per second and 46.7691 ms p95; single_datagram averaged 1.7960 requests per second and 596.1500 ms p95. The observed single_datagram treatment was worse in every block, but the result remains characterization-only: no winner, performance acceptance, adaptive rule, active behavior, production activation, or covering-array generation was authorized.",
   "out_of_scope": [
     "Performance acceptance or adaptive-rule derivation",
     "active behavior or production activation",
@@ -18,7 +18,7 @@
     "Changing the queued-send correctness lineage",
     "Deleting retained failed or retried evidence"
   ],
-  "status": "planned",
+  "status": "complete",
   "domain": "quic",
   "summary": "Author an exact two-cell queued-send performance slice with deterministic eight-block timing, package-backed ProtocolLab execution, a preflight stream-throughput gate, resumable bounded evidence, and a descriptive non-promoting result.",
   "verification_plan": "Validate the new SpecTrace JSON, prove the campaign compiles to exactly eight two-position blocks and 16 jobs, prove the gate workload must establish predicate.queued_send.legal_budget_gt_one before accepted single_datagram timing rows, run focused Release builds and targeted tests, verify package-backed ProtocolLab execution preserves resumability and bounded aggregate evidence, and confirm that performance acceptance, rule derivation, active behavior, and production activation remain false.",

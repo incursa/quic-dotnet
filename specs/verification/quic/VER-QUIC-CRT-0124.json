@@ -10,7 +10,7 @@
   "owner": "quic-maintainers",
   "artifact_type": "verification",
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
-  "status": "planned",
+  "status": "passed",
   "domain": "quic",
   "verifies": [
     "REQ-QUIC-CRT-0253",
@@ -27,6 +27,7 @@
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
     "eng/adaptive-runtime/Invoke-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
     "eng/adaptive-runtime/New-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+    "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-result-v1.json",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceRunner.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
@@ -47,7 +48,7 @@
       "content": "Verify the exact two-cell queued-send performance authority, the eight-block / 16-job deterministic campaign, the package-backed ProtocolLab execution path, the stream-throughput gate proof, resumability, bounded aggregate evidence, and the non-accepting descriptive result."
     }
   ],
-  "status_summary": "Planned. This artifact will be complete when the queued-send performance control, campaign, manifest, runner, and result artifacts all validate, the gate workload proves predicate.queued_send.legal_budget_gt_one before accepted single_datagram timing rows, and the final result remains descriptive rather than promotional.",
+  "status_summary": "Passed. The exact control hash cb80a3309d792443e903657746c2be0a7931a838f1bf37eba4b84ff727bcc382 and manifest hash 2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab compiled deterministically to eight alternating two-position blocks and 16 jobs. A separate preflight on plab-worker-x64-02 and plab-worker-x64-03 proved predicate.queued_send.legal_budget_gt_one with 19,455 activations. All 16 timed rows completed from clean source 5bd4b4d2ddbb027bee534392dca2a2518f8fa935 with exact transferred bytes, zero failed attempts, zero request failures, zero timeouts, no detected saturation, and per-row output below the 65,536-byte cap. Canonical result 1c02b545e1714079fc12f6f46bba502c5f5c661dbf5883a2591774cbfe9979 replayed byte-for-byte and reports legacy_current at 26.9473 mean requests per second / 46.7691 ms mean p95 and single_datagram at 1.7960 / 596.1500. The single_datagram result was worse in every block, but the campaign remains characterization-only with performance acceptance, rule derivation, winner selection, covering-array generation, active behavior, and production activation false.",
   "scope": "Verify the exact two-cell queued-send performance slice, the deterministic two-position campaign shape, the ProtocolLab package-backed execution path, the gate precondition for accepted single_datagram timing rows, the resumable bounded evidence model, and the non-accepting analysis boundary.",
   "procedure": [
     "Validate the queued-send performance SpecTrace JSON against the published schema.",

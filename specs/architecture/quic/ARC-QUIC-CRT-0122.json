@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "ARC-QUIC-CRT-0122",
   "artifact_type": "architecture",
-  "status": "draft",
+  "status": "implemented",
   "title": "Queued-send burst offline performance readiness",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -46,8 +46,8 @@
     "schemas/adaptive-runtime-queued-send-performance-manifest-v1.schema.json",
     "schemas/adaptive-runtime-queued-send-performance-result-v1.schema.json"
   ],
-  "design_summary": "The design reuses the existing queued-send correctness and actuation boundary, but narrows performance authority to exactly two cells and one exact manifest-bound measurement bundle. The compiler emits an eight-block, two-position order so each queued-send treatment appears once per position and the resulting 16 jobs remain reproducible. The ProtocolLab runner owns the package-backed execution and resumability layer, while the queued-send gate remains a separate preflight that must prove the legal-budget predicate before the single_datagram timing rows can be accepted. The analysis result is intentionally descriptive: it can preserve block and position effects, report bounded aggregate observations, and keep failed or resumed attempts, but it does not promote a policy winner or derive a new adaptive rule.",
-  "data_and_state_considerations": "Control documents remain immutable and versioned. The timing campaign and manifest should be content-hashed, replayable, and additive. Job-level evidence must preserve source, binary, host, workload, package, controller, run, block, position, and cell identity. Failed or retried attempts remain retained evidence, not deleted artifacts. The gate workload and its predicate proof are preconditions for accepting timing rows and must stay separate from the timing result itself.",
+  "design_summary": "The implemented design reuses the existing queued-send correctness and actuation boundary, but narrows performance authority to exactly two cells and one exact manifest-bound measurement bundle. The compiler emits an eight-block, two-position alternating order so each queued-send treatment appears four times in each position and the resulting 16 jobs remain reproducible. The ProtocolLab runner owns package-backed execution, exact artifact selection, bounded cumulative-epoch reconciliation, and resumability. A separate preflight proved predicate.queued_send.legal_budget_gt_one before any timed row was accepted. The canonical analysis preserves block and position effects and bounded aggregate observations, but does not promote a policy winner or derive a new adaptive rule.",
+  "data_and_state_considerations": "Control documents are immutable, versioned, content-hashed, replayable, and additive. The completed campaign binds source commit 5bd4b4d2ddbb027bee534392dca2a2518f8fa935, control hash cb80a3309d792443e903657746c2be0a7931a838f1bf37eba4b84ff727bcc382, manifest hash 2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab, exact package binaries, the independent plab-worker-x64-02 and plab-worker-x64-03 pair, workload quic.transport.stream-download.1mb, block, position, cell, job, run, runtime evidence, and checksums. Failed or retried attempts remain retained evidence. The separate activation preflight proved the legal-budget predicate, while the canonical result hash 1c02b545e1714079fc12f6f46bba502c5f5c661dbf5883a2591774cbfe9979 preserves only bounded reconciled aggregates in the repository.",
   "edge_cases_and_constraints": [
     "All adjacent queued-send axes remain legacy_current and must not vary during this slice.",
     "A failed gate proof for quic.transport.stream-download.1mb must leave single_datagram rows unaccepted.",
