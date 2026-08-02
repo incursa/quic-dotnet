@@ -32,6 +32,7 @@ Assert-Test ($runnerText.Contains('[switch] $Resume') -and
     $runnerText.Contains('Assert-CampaignPackageIdentities') -and
     $runnerText.Contains('package_resume_hash_mismatch') -and
     $runnerText.Contains('package_resume_attestation_mismatch') -and
+    $runnerText.Contains('$priorPreflightAttempts = @()') -and
     $runnerText.Contains('plab-worker-x64-02') -and
     $runnerText.Contains('plab-worker-x64-03') -and
     $runnerText.Contains('AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256') -and

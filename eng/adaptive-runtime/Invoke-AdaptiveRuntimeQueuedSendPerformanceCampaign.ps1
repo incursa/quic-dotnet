@@ -612,10 +612,11 @@ else {
         [string]$_.cell_id -ceq
             'cell.queued_send_burst_budget.performance.q1' })
     Assert-Campaign ($q1Package.Count -eq 1) 'q1_preflight_package_missing'
-    $priorPreflightAttempts = if (Test-Path -LiteralPath $preflightPath -PathType Leaf) {
-        @((Get-Content -LiteralPath $preflightPath -Raw |
+    $priorPreflightAttempts = @()
+    if (Test-Path -LiteralPath $preflightPath -PathType Leaf) {
+        $priorPreflightAttempts = @((Get-Content -LiteralPath $preflightPath -Raw |
             ConvertFrom-Json -Depth 100).attempts)
-    } else { @() }
+    }
     $preflightAttemptIndex = $priorPreflightAttempts.Count + 1
     $preflightRoot = Join-Path $outputRootFull (
         'activation-preflight\attempt-{0:D2}' -f $preflightAttemptIndex)
