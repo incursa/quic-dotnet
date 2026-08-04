@@ -1,0 +1,189 @@
+# Copyright (c) 2026 Incursa LLC.
+# Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+[CmdletBinding()]
+param(
+    [string] $RepositoryRoot =
+        (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
+    [string] $TemporaryRoot =
+        'C:\shared\temp\quic-dotnet\admission-performance-pairwise-request-tests'
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+Import-Module (Join-Path $PSScriptRoot `
+    'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
+
+$assertionCount = 0
+function Assert-Test([bool] $Condition, [string] $Code) {
+    if (-not $Condition) {
+        throw $Code
+    }
+    $script:assertionCount++
+}
+
+function Read-Repo([string] $RelativePath) {
+    Read-AdaptiveRuntimeJsonDocument (Join-Path $RepositoryRoot $RelativePath)
+}
+
+function Join-Values([object[]] $Values) {
+    [string]::Join('|', @($Values | ForEach-Object { [string]$_ }))
+}
+
+function New-HashLiteral([int] $Nibble) {
+    return ([string]('{0:x1}' -f $Nibble)) * 64
+}
+
+function Write-JsonFile([string] $Path, [object] $Value) {
+    $parent = Split-Path -Parent $Path
+    if (-not [string]::IsNullOrWhiteSpace($parent)) {
+        New-Item -ItemType Directory -Force -Path $parent | Out-Null
+    }
+
+    [System.IO.File]::WriteAllText(
+        $Path,
+        ($Value | ConvertTo-Json -Depth 100),
+        [System.Text.UTF8Encoding]::new($false))
+}
+
+[void](New-Item -ItemType Directory -Force -Path $TemporaryRoot)
+
+$pilotPath = 'eng\adaptive-runtime\experiment-control\adaptive-runtime-send-admission-performance-pilot-v1.json'
+$pilot = Read-Repo $pilotPath
+Assert-Test (Test-AdaptiveRuntimeDocumentHash $pilot) 'pairwise_request_test_pilot_hash_invalid'
+
+$packageManifestPath = Join-Path $TemporaryRoot 'existing-packages.json'
+$packageManifest = [pscustomobject][ordered]@{
+    schemaVersion = 'adaptive-runtime-admission-performance-pairwise-package-manifest-v1'
+    controllerUri = [string]$pilot.controller_uri
+    experimentId = 'adaptive-runtime-send-admission-performance-pairwise'
+    experimentVersion = '2026.08.03-test'
+    sourceCommit = ('a' * 40)
+    packageVersionPrefix = 'adaptive-runtime-admission-stage-e1-test'
+    implementation_packages = @(
+        foreach ($cellId in @('a0','a1','a2','a3','a4','a5','a6','a7')) {
+            $ordinal = [int]$cellId.Substring(1)
+            [pscustomobject][ordered]@{
+                cell_id = $cellId
+                package_ref = [pscustomobject][ordered]@{
+                    packageId = 'quic-dotnet-raw-dev'
+                    packageVersion = "adaptive-runtime-admission-stage-e1-test-$cellId"
+                    sha256 = New-HashLiteral ($ordinal + 1)
+                }
+            }
+        }
+    )
+}
+Write-JsonFile -Path $packageManifestPath -Value $packageManifest
+
+$outputRoot = Join-Path $TemporaryRoot 'output'
+$driverPath = Join-Path $PSScriptRoot 'New-AdaptiveRuntimeAdmissionPerformancePairwiseRequest.ps1'
+$result = & $driverPath `
+    -RepositoryRoot $RepositoryRoot `
+    -PilotPath (Join-Path $RepositoryRoot $pilotPath) `
+    -ControllerUri 'http://127.0.0.1:5088/' `
+    -ExistingPackageManifestPath $packageManifestPath `
+    -OutputRoot $outputRoot `
+    -PassThru
+
+Assert-Test (
+    [string]$result.controller_uri -ceq 'http://127.0.0.1:5088' -and
+    [string]$result.experiment_id -ceq 'adaptive-runtime-send-admission-performance-pairwise' -and
+    [int]$result.candidate_arm_count -eq 4
+) 'pairwise_request_driver_summary_invalid'
+Assert-Test (
+    (Join-Values @($result.pinned_arm_ids)) -ceq
+        (Join-Values @('a0','a4','a3','a7'))
+) 'pairwise_request_driver_pinned_ids_invalid'
+
+$request = Get-Content -LiteralPath $result.request_path -Raw |
+    ConvertFrom-Json -Depth 100 -DateKind String
+Assert-Test (
+    [string]$request.schemaVersion -ceq
+        'protocol-lab-internal-experiment-pairwise-generation-request-v1' -and
+    [string]$request.strategyId -ceq 'pairwise-greedy-v1' -and
+    [string]$request.displayName -ceq
+        'Adaptive runtime send admission performance pilot'
+) 'pairwise_request_header_invalid'
+Assert-Test (
+    @($request.candidateArms).Count -eq 4 -and
+    (Join-Values @($request.pinnedArmIds)) -ceq
+        (Join-Values @('a0','a4','a3','a7')) -and
+    @($request.coverage.excludedPairs).Count -eq 0
+) 'pairwise_request_candidate_pool_invalid'
+Assert-Test (
+    (Join-Values @($request.coverage.factors.factorId)) -ceq
+        (Join-Values @(
+            'oversized_write_admission_quantum',
+            'send_composition_profile'
+        ))
+) 'pairwise_request_coverage_factors_invalid'
+
+$candidateById = @{}
+foreach ($candidate in @($request.candidateArms)) {
+    $candidateById[[string]$candidate.armId] = $candidate
+}
+
+Assert-Test (
+    [string]$candidateById['a0'].role -ceq 'baseline' -and
+    [string]$candidateById['a3'].role -ceq 'candidate' -and
+    [string]$candidateById['a7'].factorValues.send_composition_profile -ceq
+        'single_eligible_memory_conservative' -and
+    [string]$candidateById['a4'].factorValues.oversized_write_admission_quantum -ceq
+        'single_fragment'
+) 'pairwise_request_candidate_controls_invalid'
+Assert-Test (
+    @($candidateById['a0'].machineRoles).Count -eq 2 -and
+    [string]$candidateById['a0'].placementPolicy -ceq 'isolated-pair' -and
+    (Join-Values @($candidateById['a0'].machineRoles.roleId)) -ceq
+        (Join-Values @('sut','load')) -and
+    [string]$candidateById['a0'].machineRoles[0].resourceRequirements.capabilities[0].name -ceq 'role' -and
+    [string]$candidateById['a0'].machineRoles[1].resourceRequirements.capabilities[1].value -ceq
+        'offline-ml-two-host-vm'
+) 'pairwise_request_machine_roles_invalid'
+
+$runPlan = $candidateById['a7'].runPlan
+Assert-Test (
+    [string]$runPlan.schemaVersion -ceq 'protocol-lab-run-plan-v1' -and
+    [string]$runPlan.targetMode -ceq 'implementation-resolved' -and
+    [string]$runPlan.targetNetworkMode -ceq 'published-endpoint' -and
+    [string]$runPlan.publicationIntent -ceq 'local-only' -and
+    [int]$runPlan.repetitions -eq 2 -and
+    [string]$runPlan.requiredCapabilities[0].name -ceq 'evidenceTier' -and
+    [string]$runPlan.requiredCapabilities[0].value -ceq 'offline-ml-two-host-vm'
+) 'pairwise_request_run_plan_controls_invalid'
+Assert-Test (
+    @($runPlan.packages).Count -eq 3 -and
+    [string]$runPlan.packages[0].packageId -ceq 'quic-dotnet-raw-dev' -and
+    [string]$runPlan.packages[0].packageVersion -ceq
+        'adaptive-runtime-admission-stage-e1-test-a7'
+) 'pairwise_request_run_plan_packages_invalid'
+Assert-Test (
+    @($runPlan.traceReferences).Count -eq 9 -and
+    [string]$runPlan.traceReferences[0] -like 'architecture:*' -and
+    [string]$runPlan.traceReferences[-1] -like 'work-item:*'
+) 'pairwise_request_trace_references_invalid'
+
+$packageManifestOutput = Get-Content -LiteralPath $result.package_manifest_path -Raw |
+    ConvertFrom-Json -Depth 100 -DateKind String
+Assert-Test (
+    @($packageManifestOutput.implementation_packages).Count -eq 4 -and
+    [string]$packageManifestOutput.implementation_packages[3].cell_id -ceq 'a7'
+) 'pairwise_request_package_manifest_invalid'
+
+$driverText = Get-Content -LiteralPath $driverPath -Raw
+Assert-Test (
+    $driverText.Contains('/api/lab/experiments/pairwise-generation/preview') -and
+    $driverText.Contains('/api/lab/experiments/pairwise-generation/import') -and
+    $driverText.Contains('pairwise_request_preview_not_importable')
+) 'pairwise_request_live_preview_import_path_missing'
+
+[pscustomobject][ordered]@{
+    assertion_count = $assertionCount
+    candidate_arm_count = @($request.candidateArms).Count
+    pinned_arm_count = @($request.pinnedArmIds).Count
+    package_count = @($packageManifestOutput.implementation_packages).Count
+    experiment_id = [string]$request.experimentId
+    output_root = [string]$result.output_root
+} | ConvertTo-Json -Depth 8

@@ -848,6 +848,27 @@ behavior, and production activation remain false. The four-cell pilot can
 measure the oversized seam and the combined batch-plus-buffer effect; it
 cannot attribute batch and buffer independently.
 
+The Stage E1 experiment-workspace export for this pilot preserves that same
+truth boundary. It exports only A0, A3, A4, and A7 as exact embedded run
+plans, keeps the rack execution order pinned to A0, A4, A3, A7, and models the
+second pilot factor as coupled `send_composition_profile` rather than pretending
+the four-cell design independently covers `application_send_batch_formation`
+and `buffer_copy_coalescing`. Build the request offline, or preview/import it
+into the internal experiment workspace, with:
+
+```powershell
+pwsh -NoProfile -File eng/adaptive-runtime/Test-AdaptiveRuntimeAdmissionPerformancePairwiseRequest.ps1
+
+pwsh -NoProfile -File eng/adaptive-runtime/New-AdaptiveRuntimeAdmissionPerformancePairwiseRequest.ps1 `
+  -OutputRoot C:\shared\temp\quic-dotnet\admission-performance-pairwise
+```
+
+The producer does not upload packages, contact a controller, or import by
+default. A local isolated controller can be used for reviewed preview/import by
+supplying `-ControllerUri`, `-ExistingPackageManifestPath`, `-Preview`, and
+`-Import`. Package upload and any campaign execution remain separate,
+explicitly authorized operations.
+
 The bounded rack execution completed from clean source
 `c9ff68a9811a01902cdc09549f843239f5dd4016` on
 `plab-worker-x64-02` (system under test) and `plab-worker-x64-03` (load).
