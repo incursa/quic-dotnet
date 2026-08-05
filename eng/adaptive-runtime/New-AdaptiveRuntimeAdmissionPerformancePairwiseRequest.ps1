@@ -15,6 +15,7 @@ param(
     [switch] $PublishPackages,
     [switch] $Preview,
     [switch] $Import,
+    [switch] $Start,
     [switch] $PassThru
 )
 
@@ -102,6 +103,9 @@ function Publish-PairwisePackage {
     }
     Invoke-RestMethod -Uri $uploadUri -Method Post -Form $form -TimeoutSec 120 -ErrorAction Stop
 }
+
+Assert-Request (-not $Start -or $Import) 'pairwise_request_start_requires_import'
+Assert-Request (-not ($Start -and $PublishPackages)) 'pairwise_request_start_conflicts_publish_packages'
 
 function Join-Values([object[]] $Values) {
     [string]::Join('|', @($Values | ForEach-Object { [string]$_ }))
@@ -313,6 +317,8 @@ $requestPath = Join-Path $outputRootFull 'pairwise-generation-request.json'
 $previewPath = Join-Path $outputRootFull 'pairwise-generation-preview.json'
 $importRequestPath = Join-Path $outputRootFull 'pairwise-generation-import-request.json'
 $importResponsePath = Join-Path $outputRootFull 'pairwise-generation-import-response.json'
+$startRequestPath = Join-Path $outputRootFull 'pairwise-generation-start-request.json'
+$startResponsePath = Join-Path $outputRootFull 'pairwise-generation-start-response.json'
 
 $cellsById = @{}
 
@@ -433,6 +439,7 @@ $request = [pscustomobject][ordered]@{
     coverage = $coverage
     candidateArms = @($candidateArms)
     pinnedArmIds = @($pilot.execution_sequence)
+    executionSequenceArmIds = @($pilot.execution_sequence)
     labels = @(
         'adaptive-runtime',
         'send-admission',
@@ -481,6 +488,8 @@ Write-JsonFile -Path $requestPath -Value $request
 $previewResponse = $null
 $importRequest = $null
 $importResponse = $null
+$startRequest = $null
+$startResponse = $null
 if ($Preview -or $Import) {
     $previewResponse = Invoke-ControllerJson `
         -Uri ($ControllerUri + '/api/lab/experiments/pairwise-generation/preview') `
@@ -507,6 +516,39 @@ if ($Import) {
     Write-JsonFile -Path $importResponsePath -Value $importResponse
 }
 
+$startExecutionId = $null
+if ($Start) {
+    Assert-Request ($null -ne $previewResponse) 'pairwise_request_start_preview_missing'
+    Assert-Request ($null -ne $importResponse) 'pairwise_request_start_import_missing'
+    $selectedArmSet = Join-Values @($previewResponse.selectedArmIds | ForEach-Object { [string]$_ } | Sort-Object)
+    $executionSequenceSet = Join-Values @($request.executionSequenceArmIds | ForEach-Object { [string]$_ } | Sort-Object)
+    Assert-Request ($selectedArmSet -ceq $executionSequenceSet) 'pairwise_request_start_sequence_mismatch'
+    $startRequest = [pscustomobject][ordered]@{
+        schemaVersion = 'admission-performance-pairwise-start-request-v1'
+        executionId = $null
+        expectedManifestContentHash = [string]$previewResponse.generatedManifestContentHash
+        expectedCompilationContentHash = [string]$previewResponse.preview.compilationContentHash
+    }
+    Write-JsonFile -Path $startRequestPath -Value $startRequest
+    $startResponse = Invoke-ControllerJson `
+        -Uri ($ControllerUri + '/api/lab/experiments/' + $request.experimentId + '/versions/' + $request.experimentVersion + '/executions') `
+        -Method Post `
+        -Body $startRequest
+    $startExecutionId = [string]$startResponse.executionId
+    $startResponseCompact = [pscustomobject][ordered]@{
+        schemaVersion = 'admission-performance-pairwise-start-response-v1'
+        experiment_id = [string]$startResponse.experimentId
+        experiment_version = [string]$startResponse.experimentVersion
+        execution_id = [string]$startResponse.executionId
+        status = [string]$startResponse.status
+        created_at = [string]$startResponse.createdAt
+        updated_at = [string]$startResponse.updatedAt
+        manifest_content_hash = [string]$startResponse.manifestContentHash
+        compilation_content_hash = [string]$startResponse.compilationContentHash
+    }
+    Write-JsonFile -Path $startResponsePath -Value $startResponseCompact
+}
+
 $result = [pscustomobject][ordered]@{
     output_root = $outputRootFull
     package_manifest_path = $packagesPath
@@ -514,16 +556,22 @@ $result = [pscustomobject][ordered]@{
     preview_path = if ($null -ne $previewResponse) { $previewPath } else { $null }
     import_request_path = if ($null -ne $importRequest) { $importRequestPath } else { $null }
     import_response_path = if ($null -ne $importResponse) { $importResponsePath } else { $null }
+    start_request_path = if ($null -ne $startRequest) { $startRequestPath } else { $null }
+    start_response_path = if ($null -ne $startResponse) { $startResponsePath } else { $null }
     controller_uri = $ControllerUri
     experiment_id = [string]$request.experimentId
     experiment_version = [string]$request.experimentVersion
     candidate_arm_count = @($request.candidateArms).Count
     pinned_arm_ids = @($request.pinnedArmIds)
+    execution_sequence_arm_ids = @($request.executionSequenceArmIds)
     package_version_prefix = $packageVersionPrefix
     preview_status = if ($null -ne $previewResponse) { [string]$previewResponse.status } else { $null }
     preview_can_import = if ($null -ne $previewResponse) { [bool]$previewResponse.canImport } else { $null }
     selected_arm_ids = if ($null -ne $previewResponse) { @($previewResponse.selectedArmIds) } else { @() }
     import_completed = ($null -ne $importResponse)
+    start_completed = ($null -ne $startResponse)
+    start_execution_id = if ($null -ne $startResponse) { $startExecutionId } else { $null }
+    start_status = if ($null -ne $startResponse) { [string]$startResponse.status } else { $null }
 }
 
 if ($PassThru) {

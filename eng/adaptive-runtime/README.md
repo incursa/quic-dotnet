@@ -863,11 +863,13 @@ pwsh -NoProfile -File eng/adaptive-runtime/New-AdaptiveRuntimeAdmissionPerforman
   -OutputRoot C:\shared\temp\quic-dotnet\admission-performance-pairwise
 ```
 
-The producer does not upload packages, contact a controller, or import by
-default. A local isolated controller can be used for reviewed preview/import by
-supplying `-ControllerUri`, `-ExistingPackageManifestPath`, `-Preview`, and
-`-Import`. Package upload and any campaign execution remain separate,
-explicitly authorized operations.
+The producer does not upload packages, contact a controller, or start a
+campaign by default. A local isolated controller can be used for reviewed
+preview/import by supplying `-ControllerUri`, `-ExistingPackageManifestPath`,
+`-Preview`, and `-Import`. `-Start` is an explicit post-import approval step:
+it requires `-Import`, reuses the reviewed preview hashes, calls only the
+experiment execution endpoint, and remains separate from package upload and
+any campaign execution.
 
 The bounded rack execution completed from clean source
 `c9ff68a9811a01902cdc09549f843239f5dd4016` on
