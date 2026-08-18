@@ -678,7 +678,7 @@ foreach ($connectionGroup in @($records | Group-Object -Property connectionKey))
 for ($rowIndex = 0; $rowIndex -lt $rowPaths.Count; $rowIndex++) {
     Move-Item -LiteralPath $pendingRowPaths[$rowIndex] -Destination $rowPaths[$rowIndex] -ErrorAction Stop
 }
-Remove-Item -LiteralPath $pendingDirectory -ErrorAction Stop
+Remove-Item -LiteralPath $pendingDirectory -Force -ErrorAction Stop
 
 $rowChecksums = @(
     $rowPaths | ForEach-Object {
