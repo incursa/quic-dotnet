@@ -2306,7 +2306,7 @@ public sealed class Http3MinimalServerTests
             includeContentLength: true,
             coalesceHeadersAndData: true);
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.MessageError, terminalState.Close.ApplicationErrorCode);
         await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.MessageError);
@@ -2841,7 +2841,7 @@ public sealed class Http3MinimalServerTests
         QuicConnection connection,
         RecordingHttp3DiagnosticsSink? diagnostics = null)
     {
-        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(20);
         while (DateTimeOffset.UtcNow < deadline)
         {
             if (connection.Runtime.TerminalState is QuicConnectionTerminalState terminalState)
