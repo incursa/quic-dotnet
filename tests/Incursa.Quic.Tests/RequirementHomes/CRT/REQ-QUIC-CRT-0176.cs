@@ -431,7 +431,7 @@ public sealed class REQ_QUIC_CRT_0176
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
                 RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
 
-            Assert.Equal(0, result.ExitCode);
+            Assert.True(result.ExitCode == 0, result.Output);
             string[] rowPaths = Directory.GetFiles(outputDirectory, "send-turn-row-*.json")
                 .OrderBy(static path => path, StringComparer.Ordinal)
                 .ToArray();
@@ -527,7 +527,7 @@ public sealed class REQ_QUIC_CRT_0176
             AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
                 RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
 
-            Assert.Equal(0, result.ExitCode);
+            Assert.True(result.ExitCode == 0, result.Output);
             string rowPath = Assert.Single(Directory.GetFiles(outputDirectory, "send-turn-row-*.json"));
             using JsonDocument row = JsonDocument.Parse(File.ReadAllText(rowPath));
             JsonElement root = row.RootElement;
@@ -581,7 +581,9 @@ public sealed class REQ_QUIC_CRT_0176
                 RunSendTurnEvidenceExporter(rawEvidencePath, outputDirectory);
 
             Assert.NotEqual(0, result.ExitCode);
-            Assert.Contains("duplicate or out of order", result.Output, StringComparison.Ordinal);
+            Assert.True(
+                result.Output.Contains("duplicate or out of order", StringComparison.Ordinal),
+                result.Output);
             Assert.Empty(Directory.GetFiles(outputDirectory, "send-turn-row-*.json"));
         }
         finally
@@ -702,7 +704,7 @@ public sealed class REQ_QUIC_CRT_0176
                     localResult["runId"]!.GetValue<string>(),
                     localResult["cellId"]!.GetValue<string>(),
                     sample["sampleId"]!.GetValue<string>());
-            Assert.Equal(0, export.ExitCode);
+            Assert.True(export.ExitCode == 0, export.Output);
 
             string[] rowPaths = Directory.GetFiles(outputDirectory, "send-turn-row-*.json");
             Assert.Equal(2, rowPaths.Length);
