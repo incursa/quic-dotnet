@@ -91,6 +91,9 @@ jobs:
           sudo mkdir -p /certs /www /downloads /logs/qlog
           sudo chmod -R a+rwx /certs /www /downloads /logs
 
+      - name: Test cross-platform adaptive evidence tools
+        run: dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --configuration Release --filter "FullyQualifiedName~REQ_QUIC_CRT_0176"
+
       - name: Test correctness suite
         run: dotnet test Incursa.Quic.slnx --no-build --configuration Release --filter "Category!=Performance"
 
