@@ -325,10 +325,20 @@ $conditionMap = @{
     ResourceConstrained = 16
 }
 $sourceHash = (Get-FileHash -LiteralPath $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()
-$repositoryBranch = [string] (git -C $RepositoryRoot branch --show-current 2>$null)
-$repositoryBranch = $repositoryBranch.Trim()
-$repositoryRemoteUrl = [string] (git -C $RepositoryRoot remote get-url origin 2>$null)
-$repositoryRemoteUrl = $repositoryRemoteUrl.Trim()
+$repositoryBranchOutput = git -C $RepositoryRoot branch --show-current 2>$null
+$repositoryBranch = if ($null -eq $repositoryBranchOutput) {
+    [string]::Empty
+}
+else {
+    ([string] $repositoryBranchOutput).Trim()
+}
+$repositoryRemoteUrlOutput = git -C $RepositoryRoot remote get-url origin 2>$null
+$repositoryRemoteUrl = if ($null -eq $repositoryRemoteUrlOutput) {
+    [string]::Empty
+}
+else {
+    ([string] $repositoryRemoteUrlOutput).Trim()
+}
 $rowPaths = [System.Collections.Generic.List[string]]::new()
 $pendingRowPaths = [System.Collections.Generic.List[string]]::new()
 $seenIdentity = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
