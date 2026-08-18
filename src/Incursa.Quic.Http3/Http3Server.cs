@@ -336,6 +336,12 @@ public sealed class Http3Server : IAsyncDisposable
             QuicStream? stream = await connection.TryAcceptInboundStreamAsync(cancellationToken).ConfigureAwait(false);
             if (stream is null)
             {
+                if (connection.Runtime.TerminalState is
+                    { Origin: QuicConnectionCloseOrigin.Local })
+                {
+                    await connection.Runtime.WaitForDiscardedAsync(cancellationToken).ConfigureAwait(false);
+                }
+
                 return;
             }
 

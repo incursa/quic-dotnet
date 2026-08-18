@@ -1877,6 +1877,7 @@ internal sealed partial class QuicConnectionRuntime
     {
         System.Diagnostics.Debug.WriteLine($"[QUIC] {nameof(DiscardConnection)} phase={phase}->Discarded origin={origin} reason='{closeMetadata.ReasonPhrase}'");
         phase = QuicConnectionPhase.Discarded;
+        discardedCompletion.TrySetResult();
         idleTimeoutState = null;
         lifecycleTimerState.ClearTerminalEndTicks();
         terminalState = new QuicConnectionTerminalState(

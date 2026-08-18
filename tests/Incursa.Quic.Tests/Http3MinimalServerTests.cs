@@ -511,14 +511,20 @@ public sealed class Http3MinimalServerTests
             return;
         }
 
-        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
         QuicStream decoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await WriteStreamTypeAsync(decoderStream, Http3StreamType.QPackDecoder);
+        await WaitForDiagnosticAsync(
+            diagnostics,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.StreamOpened
+                && diagnostic.StreamId == decoderStream.Id
+                && diagnostic.StreamKind == Http3StreamKind.QPackDecoder);
         await decoderStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.ClosedCriticalStream, terminalState.Close.ApplicationErrorCode);
     }

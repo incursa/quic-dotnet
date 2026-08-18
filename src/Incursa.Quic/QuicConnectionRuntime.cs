@@ -244,6 +244,8 @@ internal sealed partial class QuicConnectionRuntime :
     private bool zeroRttPacketSent;
     private bool handshakeDonePacketSent;
     private bool localCloseEffectsPending;
+    private readonly TaskCompletionSource discardedCompletion =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
     private bool hasSuccessfullyProcessedAnotherPacket;
 
     private int consumerStarted;
@@ -3621,6 +3623,19 @@ internal sealed partial class QuicConnectionRuntime :
 
     public QuicConnectionTerminalState? TerminalState => terminalState;
 
+    internal ValueTask WaitForDiscardedAsync(CancellationToken cancellationToken)
+    {
+        if (Phase == QuicConnectionPhase.Discarded)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        Task completionTask = discardedCompletion.Task;
+        return cancellationToken.CanBeCanceled
+            ? new ValueTask(completionTask.WaitAsync(cancellationToken))
+            : new ValueTask(completionTask);
+    }
+
     public QuicIdleTimeoutState? IdleTimeoutState => idleTimeoutState;
 
     public ulong? LocalMaxIdleTimeoutMicros => localMaxIdleTimeoutMicros;
@@ -6784,6 +6799,7 @@ internal sealed partial class QuicConnectionRuntime :
 
         try
         {
+            discardedCompletion.TrySetResult();
             Exception completionException = terminalState is QuicConnectionTerminalState terminalStateValue
                 ? CreateTerminalException(terminalStateValue)
                 : new ObjectDisposedException(nameof(QuicConnectionRuntime));
@@ -6851,6 +6867,7 @@ internal sealed partial class QuicConnectionRuntime :
                                 effectObserver(result.GetEffect(index));
                             }
                         }
+
                     }
                     catch
                     {
