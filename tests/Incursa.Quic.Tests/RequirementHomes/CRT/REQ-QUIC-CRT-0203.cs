@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_CRT_0203
     public void SendTurnLabelsCollapseToOneVerificationOnlyExpectedBehavior()
     {
         string planPath = AdaptiveRuntimePolicyScriptTestSupport.FindRepositoryFile(
-            "tests/fixtures/adaptive-runtime-experiment-plan-compiler/warning/send-verification.plan.json");
+            "tests/fixtures/adaptive-exp-plan/warning/send-verification.plan.json");
         string repoRoot = AdaptiveRuntimePolicyScriptTestSupport.FindRepoRoot();
         AdaptiveRuntimePolicyScriptTestSupport.ProcessResult result =
             AdaptiveRuntimePolicyScriptTestSupport.RunPowerShellFile(

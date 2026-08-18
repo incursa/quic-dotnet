@@ -14,9 +14,9 @@ $root = Join-Path $RepositoryRoot 'tests\fixtures\adaptive-runtime-experiment-ha
 $catalog = Read-AdaptiveRuntimeJsonDocument (
     Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control\adaptive-runtime-effective-behavior-catalog-v2.json')
 $interactionPlanPath = Join-Path $RepositoryRoot (
-    'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\interaction.plan.json')
+    'tests\fixtures\adaptive-exp-plan\valid\interaction.plan.json')
 $verificationSourcePlanPath = Join-Path $RepositoryRoot (
-    'tests\fixtures\adaptive-runtime-experiment-plan-compiler\warning\send-verification.plan.json')
+    'tests\fixtures\adaptive-exp-plan\warning\send-verification.plan.json')
 New-Item -ItemType Directory -Path (Join-Path $root 'linked') -Force | Out-Null
 $verificationPlan = Read-AdaptiveRuntimeJsonDocument $verificationSourcePlanPath
 $verificationPlan.family_id = 'send_planning_verification'
@@ -448,7 +448,7 @@ $outcomeMaterialization = New-AdaptiveRuntimeOutcomeMaterializationV1 `
     -Evidence $projectionEvidence -Catalog $catalog
 $manifest = Read-AdaptiveRuntimeJsonDocument (
     Join-Path $RepositoryRoot (
-        'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\compiled-manifest.fixture.json'))
+        'tests\fixtures\adaptive-exp-plan\valid\compiled-manifest.fixture.json'))
 $manifest.document_id = 'manifest.fixture.hardening_projection'
 $manifest.compiled_execution_manifest_id =
     'manifest.fixture.hardening_projection.v1'

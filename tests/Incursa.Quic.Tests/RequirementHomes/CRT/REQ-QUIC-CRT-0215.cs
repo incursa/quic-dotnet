@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_CRT_0215
     {
         using JsonDocument evidence =
             AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
-                "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout/valid/inputs/operation_evidence.json");
+                "tests/fixtures/adaptive-exp-evidence-closeout/valid/inputs/operation_evidence.json");
         JsonElement[] operations =
             evidence.RootElement.GetProperty("operations").EnumerateArray().ToArray();
 
@@ -26,7 +26,7 @@ public sealed class REQ_QUIC_CRT_0215
 
         using JsonDocument behavior =
             AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
-                "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout/valid/inputs/behavior_materialization.json");
+                "tests/fixtures/adaptive-exp-evidence-closeout/valid/inputs/behavior_materialization.json");
         JsonElement[] identities =
             behavior.RootElement.GetProperty("derivations")
                 .EnumerateArray()

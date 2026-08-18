@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_CRT_0217
             root,
             "tests",
             "fixtures",
-            "adaptive-runtime-experiment-evidence-integrity-closeout");
+            "adaptive-exp-evidence-closeout");
 
         Assert.True(Directory.GetFiles(fixtures, "*.json", SearchOption.AllDirectories).Length >= 39);
         using JsonDocument projection =

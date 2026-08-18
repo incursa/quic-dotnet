@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 
-$fixtureRoot = Join-Path $RepoRoot 'tests\fixtures\adaptive-runtime-experiment-runtime-evidence'
+$fixtureRoot = Join-Path $RepoRoot 'tests\fixtures\adaptive-exp-evidence'
 $catalogPath = Join-Path $RepoRoot 'eng\adaptive-runtime\experiment-control\adaptive-runtime-effective-behavior-catalog-v1.json'
 $catalog = Read-AdaptiveRuntimeJsonDocument -Path $catalogPath
 $zeroHash = '0' * 64

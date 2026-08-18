@@ -13,12 +13,12 @@ Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentEvidence.Common.psm1') -Force
 
 $fixtureRoot = Join-Path $RepositoryRoot `
-    'tests\fixtures\adaptive-runtime-experiment-evidence-integrity-closeout'
+    'tests\fixtures\adaptive-exp-evidence-closeout'
 $catalogRoot = Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control'
 $hardeningRoot = Join-Path $RepositoryRoot `
     'tests\fixtures\adaptive-runtime-experiment-hardening'
 $planPath = Join-Path $RepositoryRoot `
-    'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\interaction.plan.json'
+    'tests\fixtures\adaptive-exp-plan\valid\interaction.plan.json'
 $validationPath = Join-Path $hardeningRoot `
     'linked\interaction.validation.v2.json'
 $manifestPath = Join-Path $hardeningRoot `

@@ -26,7 +26,7 @@
     "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeCompiledExecutionManifest.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
-    "tests/fixtures/adaptive-runtime-experiment-plan-compiler"
+    "tests/fixtures/adaptive-exp-plan"
   ],
   "design_summary": "The compiler loads the five canonical authority documents and one immutable source plan, validates hashes and references, applies readiness, experiment-type, family, constraint, capability-expectation, and authorization rules, then expands the plan's ordered configured cells into expected behavior classes and planning-only execution states. Equivalence is derived from effective-behavior identity, never label difference or performance results. A separate post-build step binds a successful validation result to exact committed source, built binary, runner, host, resolved capabilities, and execution order in a dry-run manifest.",
   "data_and_state_considerations": "Canonical JSON and SHA-256 extend ARC-QUIC-CRT-0089. The root content_sha256 is excluded, properties are ordered deterministically, set-like arrays are sorted by canonical element bytes, and treatment, observation, validation finding, and execution order remain significant. Plan, validation, and manifest hashes occupy distinct reference roles and cannot substitute for one another.",

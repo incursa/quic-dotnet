@@ -18,7 +18,7 @@ public sealed class REQ_QUIC_CRT_0209
             root,
             "tests",
             "fixtures",
-            "adaptive-runtime-experiment-runtime-evidence");
+            "adaptive-exp-evidence");
         Assert.Equal(16, Directory.GetFiles(Path.Combine(fixtureRoot, "valid"), "*.json").Length);
         Assert.Equal(5, Directory.GetFiles(Path.Combine(fixtureRoot, "warning"), "*.json").Length);
         Assert.Equal(24, Directory.GetFiles(Path.Combine(fixtureRoot, "invalid"), "*.json").Length);

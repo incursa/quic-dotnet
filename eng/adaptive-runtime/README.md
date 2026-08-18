@@ -220,7 +220,7 @@ plan-validation result:
 
 ```powershell
 ./eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1 `
-  -PlanPath ./tests/fixtures/adaptive-runtime-experiment-plan-compiler/valid/batch-actuation.plan.json `
+  -PlanPath ./tests/fixtures/adaptive-exp-plan/valid/batch-actuation.plan.json `
   -OutputPath ./.artifacts/adaptive-runtime/batch-actuation.validation.json
 ```
 
