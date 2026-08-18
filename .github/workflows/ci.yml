@@ -23,12 +23,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -115,18 +115,18 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout public ProtocolLab contracts
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: incursa/protocol-lab
           path: protocol-lab
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: quic-dotnet/global.json
 
