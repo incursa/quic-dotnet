@@ -768,8 +768,9 @@ internal sealed class QuicConnectionSendRuntime
     {
         packetBytesOwner = null;
         packetBytesLifetimeToken = default;
-        if (!latestTrackedPacketKey.HasValue
-            || !sentPackets.TryGetValue(latestTrackedPacketKey.Value, out QuicConnectionSentPacket packet)
+        QuicConnectionSentPacketKey? trackedPacketKey = latestTrackedPacketKey;
+        if (!trackedPacketKey.HasValue
+            || !sentPackets.TryGetValue(trackedPacketKey.Value, out QuicConnectionSentPacket packet)
             || packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
             || !packet.Retransmittable
             || packet.PlaintextPayload.IsEmpty
@@ -782,7 +783,7 @@ internal sealed class QuicConnectionSendRuntime
 
         packetBytesOwner = packet.PacketBytesOwner;
         packetBytesLifetimeToken = packet.PacketBytesLifetimeToken;
-        sentPackets[latestTrackedPacketKey.Value] = packet with
+        sentPackets[trackedPacketKey.Value] = packet with
         {
             PacketBytes = default,
             PacketBytesOwner = null,
@@ -796,8 +797,9 @@ internal sealed class QuicConnectionSendRuntime
 
     internal bool TryClearLatestRebuildablePacketBytes(ReadOnlyMemory<byte> packetBytes)
     {
-        if (!latestTrackedPacketKey.HasValue
-            || !sentPackets.TryGetValue(latestTrackedPacketKey.Value, out QuicConnectionSentPacket packet)
+        QuicConnectionSentPacketKey? trackedPacketKey = latestTrackedPacketKey;
+        if (!trackedPacketKey.HasValue
+            || !sentPackets.TryGetValue(trackedPacketKey.Value, out QuicConnectionSentPacket packet)
             || packet.PacketNumberSpace != QuicPacketNumberSpace.ApplicationData
             || !packet.Retransmittable
             || packet.PlaintextPayload.IsEmpty
@@ -807,7 +809,7 @@ internal sealed class QuicConnectionSendRuntime
             return false;
         }
 
-        sentPackets[latestTrackedPacketKey.Value] = packet with { PacketBytes = default };
+        sentPackets[trackedPacketKey.Value] = packet with { PacketBytes = default };
         return true;
     }
 
