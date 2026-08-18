@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-queued-send-performance-campaign-v1.schema.json",
+  "title": "Adaptive Runtime Queued Send Performance Campaign v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "document_id", "document_version", "content_sha256",
+    "campaign_id", "family_id", "catalog_bindings", "controller_uri",
+    "host_selection", "package_selection", "design", "selected_cells",
+    "execution_sequence", "cell_bindings", "activation_gate",
+    "resource_metrics", "covering_array_generator_implemented",
+    "covering_array_required", "measurement_capability_authorized",
+    "timing_execution_authorized", "performance_acceptance_authorization",
+    "adaptive_rule_derivation_authorization", "active_behavior_authorization",
+    "production_activation_authorization", "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-queued-send-performance-campaign-v1" },
+    "document_id": { "const": "adaptive_runtime_queued_send_performance_campaign_v1" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "campaign_id": { "const": "campaign.queued_send_burst_budget.performance.v1" },
+    "family_id": { "const": "queued_send_burst_budget" },
+    "catalog_bindings": { "$ref": "#/$defs/catalogBindings" },
+    "controller_uri": { "const": "http://10.10.99.176:5088" },
+    "host_selection": { "$ref": "#/$defs/hostSelection" },
+    "package_selection": { "$ref": "#/$defs/packageSelection" },
+    "design": { "$ref": "#/$defs/design" },
+    "selected_cells": {
+      "const": [
+        "cell.queued_send_burst_budget.performance.q0",
+        "cell.queued_send_burst_budget.performance.q1"
+      ]
+    },
+    "execution_sequence": {
+      "type": "array", "minItems": 16, "maxItems": 16,
+      "items": { "$ref": "#/$defs/cellId" }
+    },
+    "cell_bindings": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "$ref": "#/$defs/cellBinding" }
+    },
+    "activation_gate": { "$ref": "#/$defs/activationGate" },
+    "resource_metrics": { "$ref": "#/$defs/resourceMetrics" },
+    "covering_array_generator_implemented": { "const": false },
+    "covering_array_required": { "const": false },
+    "measurement_capability_authorized": { "const": true },
+    "timing_execution_authorized": { "const": true },
+    "performance_acceptance_authorization": { "const": false },
+    "adaptive_rule_derivation_authorization": { "const": false },
+    "active_behavior_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "cellId": {
+      "type": "string",
+      "enum": [
+        "cell.queued_send_burst_budget.performance.q0",
+        "cell.queued_send_burst_budget.performance.q1"
+      ]
+    },
+    "catalogBindings": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "family_catalog_version", "family_catalog_sha256",
+        "relationship_catalog_version", "relationship_catalog_sha256",
+        "constraint_catalog_version", "constraint_catalog_sha256",
+        "queued_send_proof_review_sha256"
+      ],
+      "properties": {
+        "family_catalog_version": { "const": 5 },
+        "family_catalog_sha256": { "const": "cfee17afcc28da35e657b2d1331bde68c752b5a3487f0af69087c12df6530b93" },
+        "relationship_catalog_version": { "const": 3 },
+        "relationship_catalog_sha256": { "const": "fd6dfa5b02b3423de16ab72c08f99b93c85d186218524c4025b8a47e1fa7b4fc" },
+        "constraint_catalog_version": { "const": 2 },
+        "constraint_catalog_sha256": { "const": "90c85812b46e2aaa639b05bd1d6583d03c9c6b9c0f0730fd67f9567d1210cc49" },
+        "queued_send_proof_review_sha256": { "const": "00c8749a50fec9cc9392c65dcceb0575f303d2c68d771f01f2462f774706ea65" }
+      }
+    },
+    "hostSelection": {
+      "type": "object", "additionalProperties": false,
+      "required": ["placement_policy", "sut_node_id", "load_node_id", "required_capabilities"],
+      "properties": {
+        "placement_policy": { "const": "isolated-pair" },
+        "sut_node_id": { "const": "plab-worker-x64-02" },
+        "load_node_id": { "const": "plab-worker-x64-03" },
+        "required_capabilities": { "const": ["evidenceTier=offline-ml-two-host-vm"] }
+      }
+    },
+    "packageRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["package_id", "package_version", "sha256"],
+      "properties": {
+        "package_id": { "type": "string", "minLength": 1 },
+        "package_version": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "packageSelection": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "component_package_references", "package_target", "implementation_id",
+        "suite_id", "scenario_id", "protocol", "test_executor_id",
+        "load_profile_id", "package_backed_execution"
+      ],
+      "properties": {
+        "component_package_references": {
+          "type": "array", "minItems": 2, "maxItems": 2,
+          "items": { "$ref": "#/$defs/packageRef" }
+        },
+        "package_target": { "const": "RawQuic" },
+        "implementation_id": { "const": "quic-dotnet-raw-dev" },
+        "suite_id": { "const": "quic-transport-v1-comparison" },
+        "scenario_id": { "const": "quic.transport.stream-download.1mb" },
+        "protocol": { "const": "quic" },
+        "test_executor_id": { "const": "quic-go-raw-load" },
+        "load_profile_id": { "const": "raw-quic-peer-confidence" },
+        "package_backed_execution": { "const": true }
+      }
+    },
+    "design": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "kind", "deterministic", "cell_count", "block_count",
+        "positions_per_block", "repetitions_per_cell", "repetitions_per_job",
+        "total_job_count", "position_balanced", "order_balanced"
+      ],
+      "properties": {
+        "kind": { "const": "counterbalanced_two_position_blocks" },
+        "deterministic": { "const": true },
+        "cell_count": { "const": 2 },
+        "block_count": { "const": 8 },
+        "positions_per_block": { "const": 2 },
+        "repetitions_per_cell": { "const": 8 },
+        "repetitions_per_job": { "const": 1 },
+        "total_job_count": { "const": 16 },
+        "position_balanced": { "const": true },
+        "order_balanced": { "const": true }
+      }
+    },
+    "adjacentAxes": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "receive_credit_publication", "application_send_turn_planning",
+        "application_send_batch_formation", "oversized_write_admission_quantum",
+        "buffer_copy_coalescing"
+      ],
+      "properties": {
+        "receive_credit_publication": { "const": "legacy_current" },
+        "application_send_turn_planning": { "const": "legacy_current" },
+        "application_send_batch_formation": { "const": "legacy_current" },
+        "oversized_write_admission_quantum": { "const": "legacy_current" },
+        "buffer_copy_coalescing": { "const": "legacy_current" }
+      }
+    },
+    "cellBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cell_id", "content_sha256", "queued_send_burst_budget", "adjacent_axes"],
+      "properties": {
+        "cell_id": { "$ref": "#/$defs/cellId" },
+        "content_sha256": { "$ref": "#/$defs/hash" },
+        "queued_send_burst_budget": { "enum": ["legacy_current", "single_datagram"] },
+        "adjacent_axes": { "$ref": "#/$defs/adjacentAxes" }
+      }
+    },
+    "activationGate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scenario_id", "predicate_id", "required_cell_id", "required_before_timing_rows"],
+      "properties": {
+        "scenario_id": { "const": "quic.transport.stream-download.1mb" },
+        "predicate_id": { "const": "predicate.queued_send.legal_budget_gt_one" },
+        "required_cell_id": { "const": "cell.queued_send_burst_budget.performance.q1" },
+        "required_before_timing_rows": { "const": true }
+      }
+    },
+    "resourceMetrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "queued_send_activation_counter_required", "load_process_metrics_required",
+        "bounded_server_stdout_max_bytes", "bounded_aggregate_interval_seconds"
+      ],
+      "properties": {
+        "queued_send_activation_counter_required": { "const": true },
+        "load_process_metrics_required": { "const": true },
+        "bounded_server_stdout_max_bytes": { "const": 65536 },
+        "bounded_aggregate_interval_seconds": { "const": 5 }
+      }
+    },
+    "trace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requirement_ids", "architecture_ids", "work_item_ids", "verification_ids"],
+      "properties": {
+        "requirement_ids": { "const": ["REQ-QUIC-CRT-0253", "REQ-QUIC-CRT-0254", "REQ-QUIC-CRT-0255", "REQ-QUIC-CRT-0256", "REQ-QUIC-CRT-0257", "REQ-QUIC-CRT-0258"] },
+        "architecture_ids": { "const": ["ARC-QUIC-CRT-0122"] },
+        "work_item_ids": { "const": ["WI-QUIC-CRT-0123"] },
+        "verification_ids": { "const": ["VER-QUIC-CRT-0124"] }
+      }
+    }
+  }
+}

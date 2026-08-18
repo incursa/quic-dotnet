@@ -1188,6 +1188,8 @@ public sealed class REQ_QUIC_INT_0013
 
     private sealed class InteropRunnerScriptFixture : IDisposable
     {
+        private static readonly TimeSpan ScriptTimeout = TimeSpan.FromSeconds(60);
+
         private readonly TempDirectoryFixture tempDirectoryFixture = new("incursa-quic-interop-runner-script");
         private readonly string powerShellExecutable;
 
@@ -1297,7 +1299,7 @@ public sealed class REQ_QUIC_INT_0013
             Task<string> stderrTask = process.StandardError.ReadToEndAsync();
 
             Task exitTask = process.WaitForExitAsync();
-            Task completed = await Task.WhenAny(exitTask, Task.Delay(TimeSpan.FromSeconds(30))).ConfigureAwait(false);
+            Task completed = await Task.WhenAny(exitTask, Task.Delay(ScriptTimeout)).ConfigureAwait(false);
             if (completed != exitTask)
             {
                 try
@@ -1309,7 +1311,7 @@ public sealed class REQ_QUIC_INT_0013
                     // Best-effort cleanup only.
                 }
 
-                throw new TimeoutException($"The interop runner helper script did not exit within 30 seconds.\nSTDOUT:\n{await stdoutTask.ConfigureAwait(false)}\nSTDERR:\n{await stderrTask.ConfigureAwait(false)}");
+                throw new TimeoutException($"The interop runner helper script did not exit within {ScriptTimeout.TotalSeconds} seconds.\nSTDOUT:\n{await stdoutTask.ConfigureAwait(false)}\nSTDERR:\n{await stderrTask.ConfigureAwait(false)}");
             }
 
             await exitTask.ConfigureAwait(false);

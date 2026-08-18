@@ -440,15 +440,22 @@ public sealed class DoqFatalProtocolErrorTests
         TaskCompletionSource<object?> clientDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
         await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
         {
-            for (int i = 0; i < 3; i++)
+            try
             {
-                await using QuicStream stream = await connection
-                    .AcceptInboundStreamAsync(cancellationToken)
-                    .AsTask()
-                    .WaitAsync(TimeSpan.FromSeconds(10));
+                for (int i = 0; i < 3; i++)
+                {
+                    await using QuicStream stream = await connection
+                        .AcceptInboundStreamAsync(cancellationToken)
+                        .AsTask()
+                        .WaitAsync(TimeSpan.FromSeconds(10));
 
-                stream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.InternalError);
-                Interlocked.Increment(ref resetCount);
+                    stream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.InternalError);
+                    Interlocked.Increment(ref resetCount);
+                }
+            }
+            catch (QuicException) when (Volatile.Read(ref resetCount) >= 2)
+            {
+                // The client is required to terminate after the reset limit is exceeded.
             }
 
             await clientDone.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -467,6 +474,7 @@ public sealed class DoqFatalProtocolErrorTests
             client.QueryAsync(CreateDnsQuery(0x63)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
 
         Assert.Contains("Cannot access", disposed.Message, StringComparison.Ordinal);
+        Assert.Equal(2, Volatile.Read(ref resetCount));
 
         clientDone.TrySetResult(null);
     }

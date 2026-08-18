@@ -13,7 +13,7 @@ Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentEvidence.Common.psm1') -Force
 
 $fixtureRoot = Join-Path $RepositoryRoot `
-    'tests\fixtures\adaptive-runtime-experiment-evidence-integrity-closeout'
+    'tests\fixtures\adaptive-exp-evidence-closeout'
 $schemaRoot = Join-Path $RepositoryRoot 'schemas'
 $catalogRoot = Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control'
 $inputRoot = Join-Path $fixtureRoot 'valid\inputs'

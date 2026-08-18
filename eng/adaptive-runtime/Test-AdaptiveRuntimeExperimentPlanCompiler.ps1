@@ -12,7 +12,7 @@ if ([string]::IsNullOrWhiteSpace($RepositoryRoot)) {
 }
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 
-$fixtureRoot = Join-Path $RepositoryRoot 'tests\fixtures\adaptive-runtime-experiment-plan-compiler'
+$fixtureRoot = Join-Path $RepositoryRoot 'tests\fixtures\adaptive-exp-plan'
 $catalogRoot = Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control'
 $expectations = Read-AdaptiveRuntimeJsonDocument -Path (Join-Path $fixtureRoot 'expectations.json')
 $invalidExpectations = Read-AdaptiveRuntimeJsonDocument -Path (Join-Path $fixtureRoot 'invalid\expectations.json')

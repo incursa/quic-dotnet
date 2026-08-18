@@ -220,7 +220,7 @@ plan-validation result:
 
 ```powershell
 ./eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1 `
-  -PlanPath ./tests/fixtures/adaptive-runtime-experiment-plan-compiler/valid/batch-actuation.plan.json `
+  -PlanPath ./tests/fixtures/adaptive-exp-plan/valid/batch-actuation.plan.json `
   -OutputPath ./.artifacts/adaptive-runtime/batch-actuation.validation.json
 ```
 
@@ -454,7 +454,7 @@ record streams. Convert a retained stream independently with:
   -RuntimeSha256 <64-hex-digest> `
   -HostFingerprint <pseudonymous-host-fingerprint> `
   -CorrectnessFlagsJson '{"payloadValid":true,"protocolValid":true,"timedOut":false,"ownershipValid":true,"terminalValid":true,"violationCodes":[]}' `
-  -ScenarioId quic.transport.stream-throughput.1mb `
+  -ScenarioId quic.transport.stream-download.1mb `
   -TrafficShape upload `
   -AccountingMode fixed_per_stream `
   -ArrivalPattern sustained `

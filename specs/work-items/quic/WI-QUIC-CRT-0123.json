@@ -1,0 +1,45 @@
+{
+  "title": "Prepare queued-send burst performance characterization",
+  "verification_links": [
+    "VER-QUIC-CRT-0124"
+  ],
+  "owner": "quic-maintainers",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-QUEUED-SEND-PERFORMANCE",
+    "ARC-QUIC-CRT-0122",
+    "VER-QUIC-CRT-0124"
+  ],
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "completion_notes": "Implemented the additive queued-send performance control, campaign, manifest, package authorization, runner, bounded evidence, result generator, deterministic replay, requirement-home tests, and SpecTrace records. The exact eight-block / 16-job campaign completed on independent hosts plab-worker-x64-02 and plab-worker-x64-03 from clean source 5bd4b4d2ddbb027bee534392dca2a2518f8fa935 with zero failed attempts, zero request failures, zero timeouts, and no detected saturation. A separate activation preflight produced 19,455 legal-budget activations before timing. Canonical result 1c02b545e1714079fc12f6f46bba502c5f5c661dbf5883a2591774cbfe9979 records eight rows per cell and 779,800 total bytes of bounded server output. legacy_current averaged 26.9473 requests per second and 46.7691 ms p95; single_datagram averaged 1.7960 requests per second and 596.1500 ms p95. The observed single_datagram treatment was worse in every block, but the result remains characterization-only: no winner, performance acceptance, adaptive rule, active behavior, production activation, or covering-array generation was authorized.",
+  "out_of_scope": [
+    "Performance acceptance or adaptive-rule derivation",
+    "active behavior or production activation",
+    "covering-array generation",
+    "Changing the queued-send correctness lineage",
+    "Deleting retained failed or retried evidence"
+  ],
+  "status": "complete",
+  "domain": "quic",
+  "summary": "Author an exact two-cell queued-send performance slice with deterministic eight-block timing, package-backed ProtocolLab execution, a preflight stream-throughput gate, resumable bounded evidence, and a descriptive non-promoting result.",
+  "verification_plan": "Validate the new SpecTrace JSON, prove the campaign compiles to exactly eight two-position blocks and 16 jobs, prove the gate workload must establish predicate.queued_send.legal_budget_gt_one before accepted single_datagram timing rows, run focused Release builds and targeted tests, verify package-backed ProtocolLab execution preserves resumability and bounded aggregate evidence, and confirm that performance acceptance, rule derivation, active behavior, and production activation remain false.",
+  "supplemental_sections": [
+    {
+      "heading": "Related Code And Tests",
+      "content": "- [`eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json`](../../../eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json)\n- [`eng/adaptive-runtime/Invoke-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1`](../../../eng/adaptive-runtime/Invoke-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1)\n- [`eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1`](../../../eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0254.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0254.cs)\n- [`tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0257.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0257.cs)"
+    }
+  ],
+  "artifact_type": "work_item",
+  "planned_changes": "- Add a queued-send performance campaign manifest and descriptive result control set.\n- Add deterministic compiler, runner, preflight gate, and result-materialization scripts for the two-cell queued-send family.\n- Bind the single_datagram timing acceptance to the quic.transport.stream-download.1mb gate proving predicate.queued_send.legal_budget_gt_one.\n- Preserve resumability, bounded aggregate evidence, and exact job identity across retries.\n- Keep adjacent axes fixed at legacy_current and keep all acceptance and activation booleans false.",
+  "design_links": [
+    "ARC-QUIC-CRT-0122"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0253",
+    "REQ-QUIC-CRT-0254",
+    "REQ-QUIC-CRT-0255",
+    "REQ-QUIC-CRT-0256",
+    "REQ-QUIC-CRT-0257",
+    "REQ-QUIC-CRT-0258"
+  ],
+  "artifact_id": "WI-QUIC-CRT-0123"
+}

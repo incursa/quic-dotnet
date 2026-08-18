@@ -43,7 +43,7 @@
     "src/Incursa.Quic/QuicApplicationSendBatchPolicy.cs",
     "src/Incursa.Quic/QuicBufferCopyObservation.cs",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
-    "tests/fixtures/adaptive-runtime-experiment-runtime-evidence",
+    "tests/fixtures/adaptive-exp-evidence",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0206.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0207.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0208.cs",

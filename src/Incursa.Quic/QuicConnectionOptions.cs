@@ -230,6 +230,12 @@ public abstract class QuicConnectionOptions
     internal QuicAdaptiveRuntimeAdmissionPerformanceAuthorization?
         SendAdmissionPerformanceAuthorization { get; set; }
 
+    // CONTEXT: This token authorizes only the exact reviewed queued-send
+    // burst measurement campaign. It remains internal, offline-only, and
+    // cannot authorize active behavior or performance acceptance.
+    internal QuicAdaptiveRuntimeQueuedSendPerformanceAuthorization?
+        QueuedSendPerformanceAuthorization { get; set; }
+
     // CONTEXT: This fixed token is produced only by the reviewed offline
     // send-composition campaign. It is not public configuration, cannot
     // authorize active behavior, and cannot authorize performance acceptance.

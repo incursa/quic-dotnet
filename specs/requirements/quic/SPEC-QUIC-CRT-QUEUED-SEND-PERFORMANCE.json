@@ -1,0 +1,152 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-CRT-QUEUED-SEND-PERFORMANCE",
+  "artifact_type": "specification",
+  "title": "Queued-send burst offline performance characterization",
+  "domain": "quic",
+  "capability": "adaptive-runtime-queued-send-performance",
+  "status": "proposed",
+  "owner": "quic-maintainers",
+  "tags": [
+    "adaptive-runtime",
+    "experiment-control",
+    "offline-measurement",
+    "protocol-lab"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-CRT-FACTOR-ONBOARDING",
+    "SPEC-QUIC-CRT-STAGE1-SEND-PATH",
+    "ARC-QUIC-CRT-0122",
+    "WI-QUIC-CRT-0123",
+    "VER-QUIC-CRT-0124"
+  ],
+  "purpose": "Authorize one exact queued_send_burst_budget performance characterization slice whose only permitted values are legacy_current and single_datagram, while preserving the existing correctness/onboarding trace family, keeping all adjacent axes legacy_current, and leaving performance acceptance, rule derivation, active behavior, and production activation false.",
+  "scope": "This specification applies only to the two configured queued_send_burst_budget cells formed by legacy_current and single_datagram while receive_credit_allocation, application_send_turn_planning, application_send_batch_formation, oversized_write_admission_quantum, and buffer_copy_coalescing remain legacy_current. It governs one manifest-bound offline measurement authority, a deterministic eight-block two-position campaign, package-backed ProtocolLab execution, bounded aggregate evidence, resumability, and a descriptive non-accepting result. It does not authorize covering-array generation, wider Stage 1 execution, active behavior, performance acceptance, adaptive-rule derivation, or production activation.",
+  "context": "queued_send_burst_budget already has a correctness/onboarding contract, a published actuation plan, and an activation predicate that distinguishes the legal single_datagram case from the legacy_current case. This slice adds timing-only characterization for the exact two-cell family after the queued-send gate is proven, using the existing ProtocolLab raw QUIC boundary and keeping the measurement result descriptive rather than promotional.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-CRT-0253",
+      "title": "Authorize the exact queued-send performance family",
+      "statement": "The repository MUST restrict queued_send_burst_budget performance characterization to exactly the legacy_current and single_datagram values while every adjacent adaptive-runtime axis, including receive_credit_allocation, application_send_turn_planning, application_send_batch_formation, oversized_write_admission_quantum, and buffer_copy_coalescing, remains legacy_current; keep performance acceptance authorization false, active behavior authorization false, and production activation false; and reject every outside queued-send configuration.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-actuation-plan-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-policy-axis-contracts-v2.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0254",
+      "title": "Bind one manifest-backed offline measurement authority",
+      "statement": "The repository MUST authorize queued-send performance measurement only through one exact manifest-bound offline authority whose runtime token binds a stable authorization identity, manifest hash, and the two configured queued-send cells, while package and job evidence bind the exact source commit and binary hash; require every adjacent axis to stay legacy_current; reject a stale binding, outside cell, non-manifest execution, or any claim of performance acceptance; and keep the authority additive and reviewable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-manifest-v1.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0255",
+      "title": "Compile the deterministic two-position campaign before timing",
+      "statement": "The repository MUST compile a deterministic eight-block two-position campaign for the exact legacy_current and single_datagram queued-send cells before any timing run; preserve block identity, position identity, treatment order, cell identity, and repetition identity; produce exactly 16 jobs and 8 repetitions per cell; and reject covering-array generation or any extra cell.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Compile-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceCampaign.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-performance-campaign-v1.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0256",
+      "title": "Execute package-backed ProtocolLab jobs with resumable bounded evidence",
+      "statement": "The repository MUST execute the queued-send performance campaign through package-backed ProtocolLab using exact cell identity, job identity, run identity, package identity, controller identity, host identity, workload identity, and bounded aggregate evidence; retain failed, retried, and resumed attempts instead of deleting them; and materialize a canonical descriptive result that remains bounded and replayable.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+          "eng/protocol-lab/templates/raw-quic/protocol-lab-package.json",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/Program.cs"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0257",
+      "title": "Require the stream-throughput gate before accepting timing rows",
+      "statement": "The repository MUST use quic.transport.stream-download.1mb as the activation gate workload for the single_datagram treatment and prove predicate.queued_send.legal_budget_gt_one before accepting any timing row for that treatment; if the predicate is not proven, the row remains evidence but not accepted.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/Invoke-AdaptiveRuntimePolicyLocalSchedule.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeStage1RawEvidence.ps1",
+          "eng/adaptive-runtime/experiment-control/adaptive-runtime-queued-send-actuation-plan-v1.json"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-CRT-0258",
+      "title": "Analyze the result without releasing behavior",
+      "statement": "Offline analysis MUST preserve the two configured queued-send cells and their block and position identities, report a canonical descriptive result from bounded aggregate evidence, and not derive an adaptive rule, select a winner, activate active behavior, or authorize production activation; covering-array generation remains unnecessary.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-CRT-0122"
+        ],
+        "implemented_by": [
+          "WI-QUIC-CRT-0123"
+        ],
+        "verified_by": [
+          "VER-QUIC-CRT-0124"
+        ],
+        "upstream_refs": [
+          "eng/adaptive-runtime/New-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+          "eng/adaptive-runtime/Test-AdaptiveRuntimeQueuedSendPerformanceResult.ps1",
+          "scripts/Validate-SpecTraceJson.ps1"
+        ]
+      }
+    }
+  ]
+}

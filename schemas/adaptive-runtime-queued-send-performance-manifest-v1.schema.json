@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://incursa.dev/schemas/adaptive-runtime-queued-send-performance-manifest-v1.schema.json",
+  "title": "Adaptive Runtime Queued Send Performance Manifest v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "document_id",
+    "document_version",
+    "content_sha256",
+    "control_ref",
+    "planned_runs",
+    "no_measurements",
+    "performance_acceptance_authorization",
+    "adaptive_rule_derivation_authorization",
+    "active_behavior_authorization",
+    "production_activation_authorization",
+    "trace_references"
+  ],
+  "properties": {
+    "schema_version": { "const": "adaptive-runtime-queued-send-performance-manifest-v1" },
+    "document_id": { "const": "manifest.queued_send_burst_budget.performance.v1" },
+    "document_version": { "const": 1 },
+    "content_sha256": { "$ref": "#/$defs/hash" },
+    "control_ref": { "$ref": "#/$defs/documentReference" },
+    "planned_runs": {
+      "type": "array",
+      "minItems": 16,
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/plannedRun" }
+    },
+    "no_measurements": { "const": true },
+    "performance_acceptance_authorization": { "const": false },
+    "adaptive_rule_derivation_authorization": { "const": false },
+    "active_behavior_authorization": { "const": false },
+    "production_activation_authorization": { "const": false },
+    "trace_references": { "$ref": "#/$defs/trace" }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "documentReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "schema_version",
+        "document_version",
+        "content_sha256"
+      ],
+      "properties": {
+        "document_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "document_version": { "type": "integer", "minimum": 1 },
+        "content_sha256": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "plannedRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_index",
+        "block_index",
+        "position_index",
+        "cell_id",
+        "cell_repetition",
+        "repetitions",
+        "state",
+        "job_id",
+        "package_ref",
+        "run_id",
+        "topology",
+        "outcome",
+        "controller_artifact_index_path",
+        "controller_artifact_downloads",
+        "policy_controls"
+      ],
+      "properties": {
+        "execution_index": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "block_index": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "position_index": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "cell_id": {
+          "enum": [
+            "cell.queued_send_burst_budget.performance.q0",
+            "cell.queued_send_burst_budget.performance.q1"
+          ]
+        },
+        "cell_repetition": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "repetitions": { "const": 1 },
+        "state": { "const": "planned" },
+        "job_id": { "type": "null" },
+        "package_ref": { "type": "null" },
+        "run_id": { "type": "null" },
+        "topology": { "type": "null" },
+        "outcome": { "type": "null" },
+        "controller_artifact_index_path": { "type": "null" },
+        "controller_artifact_downloads": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "policy_controls": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["queued_send_burst_budget", "adjacent_axes"],
+          "properties": {
+            "queued_send_burst_budget": {
+              "enum": ["legacy_current", "single_datagram"]
+            },
+            "adjacent_axes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receive_credit_publication",
+                "application_send_turn_planning",
+                "application_send_batch_formation",
+                "oversized_write_admission_quantum",
+                "buffer_copy_coalescing"
+              ],
+              "properties": {
+                "receive_credit_publication": { "const": "legacy_current" },
+                "application_send_turn_planning": { "const": "legacy_current" },
+                "application_send_batch_formation": { "const": "legacy_current" },
+                "oversized_write_admission_quantum": { "const": "legacy_current" },
+                "buffer_copy_coalescing": { "const": "legacy_current" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_ids",
+        "architecture_ids",
+        "work_item_ids",
+        "verification_ids"
+      ],
+      "properties": {
+        "requirement_ids": {
+          "const": [
+            "REQ-QUIC-CRT-0253",
+            "REQ-QUIC-CRT-0254",
+            "REQ-QUIC-CRT-0255",
+            "REQ-QUIC-CRT-0256",
+            "REQ-QUIC-CRT-0257",
+            "REQ-QUIC-CRT-0258"
+          ]
+        },
+        "architecture_ids": { "const": ["ARC-QUIC-CRT-0122"] },
+        "work_item_ids": { "const": ["WI-QUIC-CRT-0123"] },
+        "verification_ids": { "const": ["VER-QUIC-CRT-0124"] }
+      }
+    }
+  }
+}

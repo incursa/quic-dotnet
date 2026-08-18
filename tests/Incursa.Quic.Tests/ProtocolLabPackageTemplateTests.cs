@@ -284,6 +284,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("AdaptiveRuntimeCongestionPacingProfilePolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_CONGESTION_PACING_PROFILE_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", builderScript);
+        Assert.Contains("AdaptiveRuntimeQueuedSendBurstPolicy", builderScript);
+        Assert.Contains("AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeOversizedWriteAdmissionPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY", builderScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendBatchPolicy", builderScript);
@@ -291,6 +294,32 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("AdaptiveRuntimeBufferCopyPolicy", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY", builderScript);
         Assert.Contains("Get-AdmissionPerformancePackagePathCell", builderScript);
+        Assert.Contains("Get-QueuedSendPerformancePackagePathCell", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256", builderScript);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY", builderScript);
+        Assert.Contains("queuedSendPerformancePackagePathSelected", builderScript);
+        Assert.Contains("campaign.queued_send_burst_budget.performance.v1", builderScript);
+        Assert.Contains("cell.queued_send_burst_budget.performance.q0", builderScript);
+        Assert.Contains("cell.queued_send_burst_budget.performance.q1", builderScript);
+        Assert.Contains(
+            "2ad809ecdb882f000c38d00c97f69604cbb3e004186535fd2348800e7c8a27ab",
+            builderScript);
+        Assert.Contains(
+            "b2911df4e1782b6f1636d37bf50f0dd5e59dbbb9164ec3154b667034c43fb3e9",
+            builderScript);
+        Assert.Contains(
+            "2f4a7a36c0d52aeae801a979e91335347693db5ec8665715497d068fb02cdc2a",
+            builderScript);
+        Assert.DoesNotContain("__QUEUED_SEND_PERFORMANCE_", builderScript, StringComparison.Ordinal);
+        Assert.Contains(
+            "Admission-performance and queued-send performance package-path authorizations are mutually exclusive.",
+            builderScript);
+        Assert.Contains(
+            "Queued-send performance package path requires every adjacent adaptive-runtime policy to be legacy_current or unset.",
+            builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", builderScript);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", builderScript);
@@ -325,8 +354,15 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_OVERSIZED_WRITE_ADMISSION_POLICY", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_APPLICATION_SEND_BATCH_POLICY", rawQuicServer);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_BUFFER_COPY_POLICY", rawQuicServer);
+        Assert.Contains("ResolveQueuedSendPerformanceAuthorization", rawQuicServer);
+        Assert.Contains("QueuedSendPerformanceAuthorization =", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256", rawQuicServer);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY", rawQuicServer);
         Assert.Contains(
-            "Bounded aggregate adaptive-runtime evidence requires an exact admission-performance package-path authorization.",
+            "Bounded aggregate adaptive-runtime evidence requires an exact admission-performance or queued-send package-path authorization.",
             rawQuicServer);
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_CONTRACT=adaptive-runtime-bounded-aggregate-epoch-v1",
@@ -334,6 +370,13 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains(
             "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_EPOCH_JSON=",
             rawQuicServer);
+        Assert.Contains(
+            "QUIC_ADAPTIVE_RUNTIME_BOUNDED_AGGREGATE_INTERVAL_SECONDS=",
+            rawQuicServer);
+        Assert.Contains(
+            "queuedSendPerformanceAuthorization is not null",
+            rawQuicServer);
+        Assert.Contains("TimeSpan.FromSeconds(5)", rawQuicServer);
         Assert.Contains(
             "QUIC_RAW_QUIC_BOUNDED_STREAM_AGGREGATE_CONTRACT=raw-quic-bounded-stream-aggregate-v1",
             rawQuicServer);
@@ -368,7 +411,10 @@ public sealed class ProtocolLabPackageTemplateTests
             "new(SnapshotInterval)",
             rawQuicServer);
         Assert.Contains(
-            "new(TimeSpan.FromSeconds(1))",
+            "new(boundedAggregateInterval)",
+            rawQuicServer);
+        Assert.Contains(
+            "TimeSpan.FromSeconds(1)",
             rawQuicServer);
         Assert.Contains(
             "RecordBoundedOversizedWrite(in evidence)",
@@ -478,6 +524,19 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("[switch] $AllowDirtySource", runScript);
         Assert.Contains("AllowDirtySource = [bool]$AllowDirtySource", runScript);
         Assert.Contains("AdaptiveRuntimeApplicationSendTurnPolicy", runScript);
+        Assert.Contains("AdaptiveRuntimeQueuedSendBurstPolicy", runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeQueuedSendBurstPolicy = $AdaptiveRuntimeQueuedSendBurstPolicy",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 = $AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeQueuedSendBurstPolicy is supported only for the RawQuic package target.",
+            runScript);
+        Assert.Contains(
+            "AdaptiveRuntimeQueuedSendPerformanceManifestContentSha256 requires AdaptiveRuntimeQueuedSendBurstPolicy.",
+            runScript);
         Assert.Contains(
             "AdaptiveRuntimeApplicationSendTurnPolicy = $AdaptiveRuntimeApplicationSendTurnPolicy",
             runScript);
@@ -592,6 +651,13 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_OVERSIZED_WRITE_ADMISSION_POLICY", launcher);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_APPLICATION_SEND_BATCH_POLICY", launcher);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_BUFFER_COPY_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_EVIDENCE_MODE", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_BURST_POLICY", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CAMPAIGN_ID", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_MANIFEST_CONTENT_SHA256", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_ID", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_CELL_CONTENT_SHA256", launcher);
+        Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_QUEUED_SEND_PERFORMANCE_QUEUED_SEND_BURST_POLICY", launcher);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CAMPAIGN_ID", launcher);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_MANIFEST_CONTENT_SHA256", launcher);
         Assert.Contains("PROTOCOL_LAB_INCURSA_RAW_QUIC_ADMISSION_PERFORMANCE_CELL_ID", launcher);

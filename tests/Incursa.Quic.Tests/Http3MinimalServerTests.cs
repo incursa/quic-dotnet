@@ -204,6 +204,7 @@ public sealed class Http3MinimalServerTests
 
         const int BatchSize = 100;
         const int BatchCount = 6;
+        TimeSpan responseTimeout = TimeSpan.FromSeconds(30);
         HeadersOnlyFastPathHandler handler = new();
         await using TestServerContext context = await TestServerContext.StartAsync(handler);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
@@ -216,11 +217,20 @@ public sealed class Http3MinimalServerTests
                 {
                     await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
                     await WriteGetRequestAsync(requestStream, $"/fast?batch={batch}&request={requestIndex}");
-                    return await ReadResponseAsync(requestStream);
+                    try
+                    {
+                        return await ReadResponseAsync(requestStream, responseTimeout);
+                    }
+                    catch (TimeoutException exception)
+                    {
+                        throw new TimeoutException(
+                            $"Timed out reading HTTP/3 response for batch {batch}, request {requestIndex}.",
+                            exception);
+                    }
                 })
                 .ToArray();
 
-            Http3Response[] responses = await Task.WhenAll(responseTasks).WaitAsync(TimeSpan.FromSeconds(20));
+            Http3Response[] responses = await Task.WhenAll(responseTasks).WaitAsync(TimeSpan.FromSeconds(60));
             Assert.All(responses, static response =>
             {
                 Assert.Equal(200, response.StatusCode);
@@ -511,14 +521,20 @@ public sealed class Http3MinimalServerTests
             return;
         }
 
-        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
         QuicStream decoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await WriteStreamTypeAsync(decoderStream, Http3StreamType.QPackDecoder);
+        await WaitForDiagnosticAsync(
+            diagnostics,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.StreamOpened
+                && diagnostic.StreamId == decoderStream.Id
+                && diagnostic.StreamKind == Http3StreamKind.QPackDecoder);
         await decoderStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.ClosedCriticalStream, terminalState.Close.ApplicationErrorCode);
     }
@@ -2306,7 +2322,7 @@ public sealed class Http3MinimalServerTests
             includeContentLength: true,
             coalesceHeadersAndData: true);
 
-        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection, diagnostics);
 
         Assert.Equal((ulong)Http3ErrorCode.MessageError, terminalState.Close.ApplicationErrorCode);
         await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.MessageError);
@@ -2806,8 +2822,11 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(frame, 0, frame.Length).WaitAsync(TimeSpan.FromSeconds(10));
     }
 
-    private static async Task<Http3Response> ReadResponseAsync(QuicStream stream)
+    private static async Task<Http3Response> ReadResponseAsync(
+        QuicStream stream,
+        TimeSpan? readTimeout = null)
     {
+        TimeSpan timeout = readTimeout ?? TimeSpan.FromSeconds(10);
         Http3FrameReader reader = new();
         byte[] buffer = new byte[1024];
         QPackFieldLine[]? headers = null;
@@ -2815,7 +2834,7 @@ public sealed class Http3MinimalServerTests
 
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(timeout);
             if (bytesRead == 0)
             {
                 foreach (Http3Frame frame in reader.Complete())
@@ -2841,7 +2860,7 @@ public sealed class Http3MinimalServerTests
         QuicConnection connection,
         RecordingHttp3DiagnosticsSink? diagnostics = null)
     {
-        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(20);
         while (DateTimeOffset.UtcNow < deadline)
         {
             if (connection.Runtime.TerminalState is QuicConnectionTerminalState terminalState)

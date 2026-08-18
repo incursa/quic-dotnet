@@ -368,6 +368,43 @@ internal static class QuicAdaptiveRuntimeStage1ConfiguredPolicy
             allowReviewedAdmissionPerformanceComposition: true);
     }
 
+    internal static QuicAdaptiveRuntimeStage1PolicySnapshot
+        CreateForQueuedSendPerformance(
+            QuicAdaptiveRuntimeQueuedSendPerformanceAuthorization authorization,
+            QuicApplicationSendTurnPolicyMode? sendTurnForced,
+            QuicApplicationSendTurnObservationMode sendTurnObservation,
+            QuicApplicationSendBatchPolicyMode? sendBatchForced,
+            QuicApplicationSendBatchObservationMode sendBatchObservation,
+            QuicQueuedSendBurstPolicyMode? burstForced,
+            QuicQueuedSendBurstObservationMode burstObservation,
+            QuicOversizedWriteAdmissionPolicyMode? oversizedForced,
+            QuicOversizedWriteAdmissionObservationMode oversizedObservation,
+            QuicBufferCopyPolicyValue? bufferCopyForced)
+    {
+        if (!authorization.Authorizes(
+            oversizedForced,
+            sendBatchForced,
+            bufferCopyForced,
+            receiveCreditMode: null,
+            sendTurnForced,
+            burstForced))
+        {
+            throw new InvalidOperationException(
+                "The queued-send performance authorization does not match the requested Stage 1 composition.");
+        }
+
+        return CreateCore(
+            sendTurnForced,
+            sendTurnObservation,
+            sendBatchForced,
+            sendBatchObservation,
+            burstForced,
+            burstObservation,
+            oversizedForced,
+            oversizedObservation,
+            allowReviewedAdmissionPerformanceComposition: false);
+    }
+
     private static QuicAdaptiveRuntimeStage1PolicySnapshot CreateCore(
         QuicApplicationSendTurnPolicyMode? sendTurnForced,
         QuicApplicationSendTurnObservationMode sendTurnObservation,

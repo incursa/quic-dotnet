@@ -78,15 +78,23 @@ param(
     [ValidateRange(1, [long]::MaxValue)]
     [long] $MonotonicTimerFrequencyHz = [Diagnostics.Stopwatch]::Frequency,
 
-    [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
+    [string] $RepositoryRoot = [System.IO.Path]::GetFullPath(
+        (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))),
 
-    [string] $RepositoryCommit = (git -C (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path rev-parse HEAD).Trim(),
+    [string] $RepositoryCommit = (git -C ([System.IO.Path]::GetFullPath(
+        (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)))) rev-parse HEAD).Trim(),
 
     [switch] $RepositoryDirty
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+trap {
+    [Console]::Error.WriteLine($_.Exception.Message)
+    [Console]::Error.WriteLine($_.ScriptStackTrace)
+    exit 1
+}
 
 function ConvertTo-Mask {
     param(
@@ -200,11 +208,11 @@ function ConvertTo-Microseconds {
 }
 
 $rawPath = (Resolve-Path -LiteralPath $RawEvidencePath -ErrorAction Stop).Path
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-application-send-turn-raw-v1.schema.json'
+$rawSchemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-application-send-turn-raw-v1.schema.json'
 if (-not (Test-Path -LiteralPath $rawSchemaPath -PathType Leaf)) {
     throw "Raw send-turn evidence schema was not found: $rawSchemaPath"
 }
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$schemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-policy-epoch-dataset-v1.schema.json'
 if (-not (Test-Path -LiteralPath $schemaPath -PathType Leaf)) {
     throw "Epoch dataset schema was not found: $schemaPath"
 }
@@ -317,8 +325,20 @@ $conditionMap = @{
     ResourceConstrained = 16
 }
 $sourceHash = (Get-FileHash -LiteralPath $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()
-$repositoryBranch = (git -C $RepositoryRoot branch --show-current 2>$null).Trim()
-$repositoryRemoteUrl = (git -C $RepositoryRoot remote get-url origin 2>$null).Trim()
+$repositoryBranchOutput = git -C $RepositoryRoot branch --show-current 2>$null
+$repositoryBranch = if ($null -eq $repositoryBranchOutput) {
+    [string]::Empty
+}
+else {
+    ([string] $repositoryBranchOutput).Trim()
+}
+$repositoryRemoteUrlOutput = git -C $RepositoryRoot remote get-url origin 2>$null
+$repositoryRemoteUrl = if ($null -eq $repositoryRemoteUrlOutput) {
+    [string]::Empty
+}
+else {
+    ([string] $repositoryRemoteUrlOutput).Trim()
+}
 $rowPaths = [System.Collections.Generic.List[string]]::new()
 $pendingRowPaths = [System.Collections.Generic.List[string]]::new()
 $seenIdentity = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -668,7 +688,7 @@ foreach ($connectionGroup in @($records | Group-Object -Property connectionKey))
 for ($rowIndex = 0; $rowIndex -lt $rowPaths.Count; $rowIndex++) {
     Move-Item -LiteralPath $pendingRowPaths[$rowIndex] -Destination $rowPaths[$rowIndex] -ErrorAction Stop
 }
-Remove-Item -LiteralPath $pendingDirectory -ErrorAction Stop
+Remove-Item -LiteralPath $pendingDirectory -Force -ErrorAction Stop
 
 $rowChecksums = @(
     $rowPaths | ForEach-Object {

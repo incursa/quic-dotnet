@@ -14,7 +14,7 @@ public sealed class REQ_QUIC_CRT_0204
     public void CompiledManifestShapeLinksPostBuildIdentityAndKeepsAuthorizationFalse()
     {
         using JsonDocument manifest = AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
-            "tests/fixtures/adaptive-runtime-experiment-plan-compiler/valid/compiled-manifest.fixture.json");
+            "tests/fixtures/adaptive-exp-plan/valid/compiled-manifest.fixture.json");
         JsonElement root = manifest.RootElement;
 
         Assert.Equal(64, root.GetProperty("source_plan_ref").GetProperty("content_sha256").GetString()!.Length);

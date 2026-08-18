@@ -27,12 +27,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -49,7 +49,7 @@ jobs:
           }
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload server-handshake-quic-go artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-server-handshake-quic-go-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/server-handshake-quic-go/
@@ -139,12 +139,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -161,7 +161,7 @@ jobs:
           }
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -209,7 +209,7 @@ jobs:
 
       - name: Upload interop runner artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -224,18 +224,18 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -283,7 +283,7 @@ jobs:
 
       - name: Upload server-zerortt-quic-go artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-server-zerortt-quic-go-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/server-zerortt-quic-go/
@@ -308,18 +308,18 @@ jobs:
             runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -367,7 +367,7 @@ jobs:
 
       - name: Upload connectionmigration proof artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -427,18 +427,18 @@ jobs:
             runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -486,7 +486,7 @@ jobs:
 
       - name: Upload connectionmigration proof artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -645,18 +645,18 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -704,7 +704,7 @@ jobs:
 
       - name: Upload major peer matrix artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -720,7 +720,7 @@ jobs:
 
     steps:
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -787,18 +787,18 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -846,7 +846,7 @@ jobs:
 
       - name: Upload all-implementation matrix artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/

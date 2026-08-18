@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_CRT_0208
     {
         using JsonDocument projection =
             AdaptiveRuntimePolicyScriptTestSupport.ReadRepositoryJson(
-                "tests/fixtures/adaptive-runtime-experiment-runtime-evidence/expected/projection/negative.retained_classification.fixture.projection.json");
+                "tests/fixtures/adaptive-exp-evidence/expected/proj/negative.retained_classification.fixture.projection.json");
         JsonElement root = projection.RootElement;
 
         Assert.Equal(

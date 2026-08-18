@@ -12,14 +12,14 @@ $ErrorActionPreference = 'Stop'
 
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 
-$fixtureRoot = Join-Path $RepoRoot 'tests\fixtures\adaptive-runtime-experiment-runtime-evidence'
+$fixtureRoot = Join-Path $RepoRoot 'tests\fixtures\adaptive-exp-evidence'
 $operationSchema = Join-Path $RepoRoot 'schemas\adaptive-runtime-operation-evidence-v1.schema.json'
 $materializationSchema = Join-Path $RepoRoot 'schemas\adaptive-runtime-effective-behavior-materialization-v1.schema.json'
 $projectionSchema = Join-Path $RepoRoot 'schemas\adaptive-runtime-experiment-evidence-projection-v1.schema.json'
 $catalogPath = Join-Path $RepoRoot 'eng\adaptive-runtime\experiment-control\adaptive-runtime-effective-behavior-catalog-v1.json'
-$planPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\interaction.plan.json'
-$validationPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\interaction.validation.json'
-$manifestPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\compiled-manifest.fixture.json'
+$planPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-exp-plan\valid\interaction.plan.json'
+$validationPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-exp-plan\valid\interaction.validation.json'
+$manifestPath = Join-Path $RepoRoot 'tests\fixtures\adaptive-exp-plan\valid\compiled-manifest.fixture.json'
 
 $catalog = Read-AdaptiveRuntimeJsonDocument $catalogPath
 $plan = Read-AdaptiveRuntimeJsonDocument $planPath
@@ -468,15 +468,15 @@ foreach ($path in Get-ChildItem (Join-Path $fixtureRoot 'valid') -Filter '*.json
     $deterministicCount++
     if ($UpdateExpectedOutputs) {
         Write-AdaptiveRuntimeCanonicalDocument $materialization1 (
-            Join-Path $fixtureRoot "expected\materialization\$($path.BaseName).materialization.json")
+            Join-Path $fixtureRoot "expected\mat\$($path.BaseName).materialization.json")
         Write-AdaptiveRuntimeCanonicalDocument $projection1 (
-            Join-Path $fixtureRoot "expected\projection\$($path.BaseName).projection.json")
+            Join-Path $fixtureRoot "expected\proj\$($path.BaseName).projection.json")
     }
     else {
         $expectedMaterializationPath = Join-Path $fixtureRoot (
-            "expected\materialization\$($path.BaseName).materialization.json")
+            "expected\mat\$($path.BaseName).materialization.json")
         $expectedProjectionPath = Join-Path $fixtureRoot (
-            "expected\projection\$($path.BaseName).projection.json")
+            "expected\proj\$($path.BaseName).projection.json")
         if (-not (Test-Path -LiteralPath $expectedMaterializationPath) -or
             -not (Test-Path -LiteralPath $expectedProjectionPath)) {
             $failures.Add("$($path.Name):expected_output_missing")

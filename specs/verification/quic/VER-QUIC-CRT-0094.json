@@ -42,7 +42,7 @@
     "eng/adaptive-runtime/Compile-AdaptiveRuntimeExperimentPlan.ps1",
     "eng/adaptive-runtime/New-AdaptiveRuntimeCompiledExecutionManifest.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
-    "tests/fixtures/adaptive-runtime-experiment-plan-compiler",
+    "tests/fixtures/adaptive-exp-plan",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0202.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0203.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0204.cs",

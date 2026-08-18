@@ -30,7 +30,7 @@
     "schemas/adaptive-runtime-operation-evidence-v1.schema.json",
     "schemas/adaptive-runtime-effective-behavior-materialization-v1.schema.json",
     "schemas/adaptive-runtime-experiment-evidence-projection-v1.schema.json",
-    "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+    "tests/fixtures/adaptive-exp-evidence"
   ],
   "design_summary": "Each seam emits immutable fixed-field evidence for configured, forced, shadow-recommended, pre-safety candidate, operation eligibility, applied value, mechanism event, legal and applied work, and bounded correlation. Batch decisions latch to one packet plan; buffer decisions latch through the combined owner lifetime and exactly one terminal release. A deterministic PowerShell materializer resolves the reviewed behavior catalog and maps only axis-specific mechanism events to effective behavior IDs. It emits bounded per-epoch aggregates and a rebuildable logical projection whose authority remains the immutable checksummed artifact chain.",
   "data_and_state_considerations": "Connection-local numeric epoch, decision-instance, operation, upstream-plan, and release identities avoid per-operation strings and allocations in the runtime. Operation rows may be retained only by an explicitly bounded diagnostic sink; fixed counters are the normal epoch evidence. Offline documents use canonical UTF-8 JSON and SHA-256 with the root content_sha256 excluded. Invalid, inactive, clamped, fallback, negative, excluded, and diagnostic rows remain append-only inputs to materialization and projection.",

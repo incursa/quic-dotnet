@@ -268,7 +268,7 @@
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentPlanCompiler.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-plan-compiler"
+          "tests/fixtures/adaptive-exp-plan"
         ]
       },
       "notes": [
@@ -327,7 +327,7 @@
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
           "schemas/adaptive-runtime-operation-evidence-v1.schema.json",
           "schemas/adaptive-runtime-effective-behavior-materialization-v1.schema.json",
-          "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+          "tests/fixtures/adaptive-exp-evidence"
         ]
       },
       "notes": [
@@ -355,7 +355,7 @@
         "upstream_refs": [
           "schemas/adaptive-runtime-experiment-evidence-projection-v1.schema.json",
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentRuntimeEvidence.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-runtime-evidence"
+          "tests/fixtures/adaptive-exp-evidence"
         ]
       },
       "notes": [
@@ -556,7 +556,7 @@
         ],
         "upstream_refs": [
           "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
-          "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout"
+          "tests/fixtures/adaptive-exp-evidence-closeout"
         ]
       },
       "notes": [

@@ -25,7 +25,7 @@
     "eng/adaptive-runtime/New-AdaptiveRuntimeExperimentEvidenceProjectionV3.ps1",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
     "eng/adaptive-runtime/experiment-control/adaptive-runtime-classification-compatibility-catalog-v1.json",
-    "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout"
+    "tests/fixtures/adaptive-exp-evidence-closeout"
   ],
   "design_summary": "The effective-behavior catalog owns operation-result-to-outcome derivation and retention requirements. Additive v3 evidence uses structured composite operation and classification target identities; release validation resolves the linked operation and decision before checking the decision epoch and terminal release. A versioned classification-compatibility catalog owns primary and supplemental roles and allowed pairs. Materializations retain composite source identities, and projection v3 validates, links, and records all fifteen immutable inputs after independently recomputing both materializations.",
   "data_and_state_considerations": "All v1 and v2 contracts remain valid without reinterpretation. Composite identity keys are derived deterministically from structured components. The artifact inventory hashes fourteen peer inputs and is itself referenced by the projection to avoid self-reference. All processing remains offline, file-backed, deterministic, bounded, and authorization-frozen.",

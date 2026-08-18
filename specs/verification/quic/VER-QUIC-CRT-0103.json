@@ -41,7 +41,7 @@
   "evidence": [
     "docs/design/adaptive-runtime-experiment-evidence-integrity-closeout.md",
     "eng/adaptive-runtime/Test-AdaptiveRuntimeExperimentEvidenceIntegrityCloseout.ps1",
-    "tests/fixtures/adaptive-runtime-experiment-evidence-integrity-closeout",
+    "tests/fixtures/adaptive-exp-evidence-closeout",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0214.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0215.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0216.cs",

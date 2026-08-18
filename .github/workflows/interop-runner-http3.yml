@@ -21,18 +21,18 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload HTTP/3 interop artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-http3-local-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/http3-local/

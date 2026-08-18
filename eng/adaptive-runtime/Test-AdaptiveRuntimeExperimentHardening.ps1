@@ -278,7 +278,7 @@ Assert-Condition ($ambiguousResult.status -eq 'ambiguous') (
     'Conflicting exclusive catalog rules were not rejected as ambiguous.')
 
 $interactionPlanPath = Join-Path $RepositoryRoot (
-    'tests\fixtures\adaptive-runtime-experiment-plan-compiler\valid\interaction.plan.json')
+    'tests\fixtures\adaptive-exp-plan\valid\interaction.plan.json')
 $verificationPlanPath = Join-Path $RepositoryRoot (
     'tests\fixtures\adaptive-runtime-experiment-hardening\linked\send-verification.plan.v2-input.json')
 $interactionCompile1 = & (Join-Path $PSScriptRoot `

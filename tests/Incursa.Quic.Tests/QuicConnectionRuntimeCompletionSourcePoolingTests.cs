@@ -173,8 +173,28 @@ public sealed class QuicConnectionRuntimeCompletionSourcePoolingTests
 
     private static void InvokeVoidMethod(object instance, string methodName, params object?[] arguments)
     {
-        MethodInfo method = instance.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException($"Could not find {methodName}.");
+        MethodInfo[] matchingMethods = instance.GetType()
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Where(candidate => string.Equals(candidate.Name, methodName, StringComparison.Ordinal))
+            .Where(candidate =>
+            {
+                ParameterInfo[] candidateParameters = candidate.GetParameters();
+                return arguments.Length <= candidateParameters.Length
+                    && candidateParameters
+                        .Take(arguments.Length)
+                        .Select((parameter, index) => (parameter, argument: arguments[index]))
+                        .All(item => item.argument is null
+                            ? !item.parameter.ParameterType.IsValueType
+                                || Nullable.GetUnderlyingType(item.parameter.ParameterType) is not null
+                            : item.parameter.ParameterType.IsInstanceOfType(item.argument))
+                    && candidateParameters.Skip(arguments.Length).All(parameter => parameter.IsOptional);
+            })
+            .ToArray();
+
+        MethodInfo method = matchingMethods.Length == 1
+            ? matchingMethods[0]
+            : throw new InvalidOperationException(
+                $"Expected one compatible {methodName} overload, but found {matchingMethods.Length}.");
 
         ParameterInfo[] parameters = method.GetParameters();
         if (arguments.Length < parameters.Length)

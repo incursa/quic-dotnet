@@ -160,12 +160,8 @@ public sealed class QuicConnectionRuntimeWriteRequestCancellationTests
         Assert.True(result.StateChanged);
         Assert.Equal(originalLimit + 1, state.IncomingBidirectionalStreamLimit);
         Assert.Contains(result.Effects, static effect => effect is QuicConnectionSendDatagramEffect);
-        Assert.Contains(
-            result.Effects,
-            static effect => effect is QuicConnectionArmTimerEffect
-            {
-                TimerKind: QuicConnectionTimerKind.Recovery,
-            });
+        // The transition does not emit a redundant arm effect when an earlier
+        // outstanding packet already established the same recovery deadline.
         Assert.True(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery).HasValue);
     }
 

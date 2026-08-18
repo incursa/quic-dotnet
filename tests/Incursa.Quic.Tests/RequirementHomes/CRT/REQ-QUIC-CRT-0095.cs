@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_CRT_0095
             .ToArray();
 
         Assert.Equal(
-            ["pendingStreamActionRequestsGate", "scheduledFlowControlCreditGate", "scheduledPeerStreamCapacityReleaseGate"],
+            ["connectionShardPlacementEvidenceGate", "pendingStreamActionRequestsGate", "scheduledFlowControlCreditGate", "scheduledPeerStreamCapacityReleaseGate"],
             lockLikeConnectionFields.Select(field => field.Name).Order(StringComparer.Ordinal).ToArray());
 
         QuicConnectionRuntimeHost host = new(2);

@@ -13,7 +13,7 @@ if ([string]::IsNullOrWhiteSpace($RepositoryRoot)) {
 Import-Module (Join-Path $PSScriptRoot 'AdaptiveRuntimeExperimentControl.Common.psm1') -Force
 
 $catalogRoot = Join-Path $RepositoryRoot 'eng\adaptive-runtime\experiment-control'
-$fixtureRoot = Join-Path $RepositoryRoot 'tests\fixtures\adaptive-runtime-experiment-plan-compiler'
+$fixtureRoot = Join-Path $RepositoryRoot 'tests\fixtures\adaptive-exp-plan'
 $validRoot = Join-Path $fixtureRoot 'valid'
 $warningRoot = Join-Path $fixtureRoot 'warning'
 $invalidRoot = Join-Path $fixtureRoot 'invalid'
