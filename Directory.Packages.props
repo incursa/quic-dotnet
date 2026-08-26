@@ -8,8 +8,8 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="coverlet.collector" Version="8.0.1" />
     <PackageVersion Include="coverlet.msbuild" Version="8.0.1" />
-    <PackageVersion Include="FsCheck" Version="3.3.2" />
-    <PackageVersion Include="FsCheck.Xunit" Version="3.3.2" />
+    <PackageVersion Include="FsCheck" Version="3.3.3" />
+    <PackageVersion Include="FsCheck.Xunit" Version="3.3.3" />
     <PackageVersion Include="Incursa.ProtocolLab.Adapter.Contracts" Version="1.0.8" />
     <PackageVersion Include="Incursa.ProtocolLab.Model" Version="1.0.8" />
     <PackageVersion Include="Incursa.Qlog" Version="1.1.3" />
