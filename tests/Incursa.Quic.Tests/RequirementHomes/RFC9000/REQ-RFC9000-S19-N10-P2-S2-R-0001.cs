@@ -3,77 +3,73 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9000-S19-10-P2-S1-R01")]
-public sealed class REQ_QUIC_RFC9000_1275
+[Requirement("REQ-RFC9000-S19-N10-P2-S2-R-0001")]
+public sealed class REQ_QUIC_RFC9000_1276
 {
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="REQ-RFC9000-S19-N10-P2-S2-R-0001">An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void TryApplyMaxStreamDataFrame_AcceptsCreatedLocallyInitiatedStreams()
+    public void TryApplyMaxStreamDataFrame_AcceptsBidirectionalSendCapableStreams()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
             connectionReceiveLimit: 16,
             connectionSendLimit: 16);
 
-        Assert.True(state.TryOpenLocalStream(
-            bidirectional: true,
-            out QuicStreamId streamId,
-            out QuicStreamsBlockedFrame blockedFrame));
-        Assert.Equal(default, blockedFrame);
-
-        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(streamId.Value, 12), out QuicTransportErrorCode errorCode));
+        Assert.True(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(1, 16), out QuicTransportErrorCode errorCode));
         Assert.Equal(default, errorCode);
-
-        Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
-        Assert.Equal(12UL, snapshot.SendLimit);
+        Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(16UL, snapshot.SendLimit);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams()
+    public void TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
             connectionReceiveLimit: 16,
             connectionSendLimit: 16);
 
-        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(0, 12), out QuicTransportErrorCode errorCode));
+        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(3, 16), out QuicTransportErrorCode errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
-        Assert.False(state.TryGetStreamSnapshot(0, out _));
+        Assert.False(state.TryGetStreamSnapshot(3, out _));
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    public void TryApplyMaxStreamDataFrame_RejectsSkippedLocallyInitiatedStreamIds()
+    public void TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreamsAfterTheyWereOpened()
     {
         QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
             connectionReceiveLimit: 16,
             connectionSendLimit: 16);
 
-        Assert.True(state.TryOpenLocalStream(
-            bidirectional: true,
-            out QuicStreamId streamId,
-            out QuicStreamsBlockedFrame blockedFrame));
-        Assert.Equal(0UL, streamId.Value);
-        Assert.Equal(default, blockedFrame);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            QuicStreamTestData.BuildStreamFrame(0x0E, 3, [0x11], offset: 0),
+            out QuicStreamFrame streamFrame));
+        Assert.True(state.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryGetStreamSnapshot(3, out QuicConnectionStreamSnapshot openedSnapshot));
+        Assert.Equal(QuicStreamReceiveState.Recv, openedSnapshot.ReceiveState);
 
-        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(4, 12), out QuicTransportErrorCode errorCode));
+        Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(3, 16), out errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
-        Assert.False(state.TryGetStreamSnapshot(4, out _));
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
-    public void Fuzz_TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams()
+    public void Fuzz_TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams()
     {
         (ulong StreamId, ulong SendLimit)[] cases =
         [
-            (0, 12),
-            (4, 16),
-            (8, 32),
-            (12, 64),
+            (3, 16),
+            (7, 32),
+            (11, 64),
+            (15, 128),
         ];
 
         foreach ((ulong streamId, ulong sendLimit) in cases)

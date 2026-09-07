@@ -1,0 +1,147 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-MIGRATION-0001",
+  "artifact_type": "verification",
+  "title": "SpecTrace Manager flow-control identity migration verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "verifies": [
+    "REQ-RFC9000-S4-N5-P4-R-0001",
+    "REQ-RFC9000-S4-N6-P3-R-0001",
+    "REQ-RFC9000-S4-N6-P3-S1-R-0001",
+    "REQ-RFC9000-S19-N10-P2-S1-R-0001",
+    "REQ-RFC9000-S19-N10-P2-S2-R-0001"
+  ],
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9000",
+    "ARC-QUIC-RFC9000-0001",
+    "ARC-QUIC-RFC9000-0049",
+    "ARC-QUIC-RFC9000-0076",
+    "WI-QUIC-RFC9000-0001",
+    "WI-QUIC-RFC9000-0049",
+    "WI-QUIC-RFC9000-0076"
+  ],
+  "scope": "Five unchanged RFC 9000 final-size, stream-limit, and MAX_STREAM_DATA stream-state statements projected from SpecTrace Manager project quic, each pinned to version 1. Verify current requirement-home tests and reciprocal identity links. This does not certify the complete RFC, overall migration, public interoperability, or release readiness.",
+  "verification_method": "Exact statement comparison, scoped requirement-home test execution, JSON schema and reciprocal trace inspection, and comparison against pre-existing repository validation errors.",
+  "preconditions": [
+    "Manager requirements remain draft at version 1; prior local IDs and verification provenance are retained in each local projection.",
+    "Runtime code and test method bodies are unchanged."
+  ],
+  "procedure": [
+    "Compare each local statement with Manager version 1 and retain its SHA-256.",
+    "Build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj in Release.",
+    "Run only the five existing test classes identified in evidence, retaining the TRX result.",
+    "Check renamed homes, test attributes, and reciprocal architecture, work-item, and verification links.",
+    "Run core, traceable, and auditable validation; compare findings with the unchanged base commit.",
+    "Check whitespace and migration diff scope."
+  ],
+  "expected_result": "All selected tests pass; five local identities and test homes match Manager; statements and test logic remain unchanged; no new validation errors are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N5-P4-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs",
+    "dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --nologo -v minimal",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --filter \"FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_0193.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276.\" --logger \"trx;LogFileName=flow-control.trx\" --results-directory <external-evidence-directory>",
+    "pwsh -Command \"& scripts/Validate-SpecTraceJson.ps1 -Profiles core,traceable,auditable -JsonReportPath <external-evidence-directory>/after-validation.json\"",
+    "git diff --check",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementProofAudit.ps1"
+  ],
+  "status_summary": "Passed locally on 2026-09-07: Release test-project build succeeded with 0 warnings and 0 errors; all 21 selected tests passed with 0 failed and 0 skipped. Five exact statement and unchanged test-logic checks passed; reciprocal trace links and current test paths resolve. Repository core/traceable/auditable validation remains failed with 3386 pre-existing errors and no new or resolved errors. This scoped result does not promote the five Manager requirements from draft or establish full-repository conformance.",
+  "x_requirement_versions": {
+    "REQ-RFC9000-S4-N5-P4-R-0001": 1,
+    "REQ-RFC9000-S4-N6-P3-R-0001": 1,
+    "REQ-RFC9000-S4-N6-P3-S1-R-0001": 1,
+    "REQ-RFC9000-S19-N10-P2-S1-R-0001": 1,
+    "REQ-RFC9000-S19-N10-P2-S2-R-0001": 1
+  },
+  "x_fresh_test_results": [
+    {
+      "requirementId": "REQ-RFC9000-S4-N5-P4-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0193",
+      "passed": 3,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0193.TryReserveSendCapacityFuzz_RejectsDataAtOrBeyondKnownFinalSize",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0193.TryReserveSendCapacity_AllowsBytesBeforeTheKnownFinalSize",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0193.TryReserveSendCapacity_RejectsBytesAtOrBeyondTheKnownFinalSize"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S4-N6-P3-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200",
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200.TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200.Fuzz_TryOpenLocalStream_OpensExactlyThePeerAdvertisedStreamLimit",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200.TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit(bidirectional: True, firstExpectedStreamId: 0, secondExpectedStreamId: 4)",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0200.TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit(bidirectional: False, firstExpectedStreamId: 2, secondExpectedStreamId: 6)"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S4-N6-P3-S1-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201",
+      "passed": 6,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.TryReceiveStreamFrame_RejectsFirstIncomingStreamWhenAdvertisedLimitIsZero(bidirectional: True, streamId: 1)",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.TryReceiveStreamFrame_RejectsFirstIncomingStreamWhenAdvertisedLimitIsZero(bidirectional: False, streamId: 3)",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.Fuzz_TryReceiveStreamFrame_RejectsStreamIdsExceedingAdvertisedLimits",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.TryReceiveStreamFrame_AcceptsStreamIdsWithinTheAdvertisedLimit(bidirectional: False, streamId: 3)",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.TryReceiveStreamFrame_AcceptsStreamIdsWithinTheAdvertisedLimit(bidirectional: True, streamId: 1)",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0201.TryReceiveStreamFrame_RejectsOverLimitStreamIds"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S19-N10-P2-S1-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275",
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275.TryApplyMaxStreamDataFrame_AcceptsCreatedLocallyInitiatedStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275.Fuzz_TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275.TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1275.TryApplyMaxStreamDataFrame_RejectsSkippedLocallyInitiatedStreamIds"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S19-N10-P2-S2-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276",
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276.TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreamsAfterTheyWereOpened",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276.TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276.TryApplyMaxStreamDataFrame_AcceptsBidirectionalSendCapableStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1276.Fuzz_TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams"
+      ]
+    }
+  ],
+  "x_evidence_provenance": {
+    "baseCommit": "54bad19301f8b2dea02edd00d89236db033c6edb",
+    "branch": "codex/quic-requirements-restart-20260907",
+    "sdkVersion": "10.0.204",
+    "localEvidenceDirectory": "C:\\shared\\temp\\quic-dotnet\\restart-20260907\\flow-control-migration",
+    "trxSha256": "8edae2986be66dd9615330ee77860bc486385656ab0ad01e8dcee2e0bed06bb2",
+    "baselineValidationErrors": 3386,
+    "newValidationErrors": 0,
+    "note": "Only five requirement-home classes were executed. Their test bodies and production runtime sources match the base commit. The log bundle is local; it has not been uploaded."
+  },
+  "x_generated_surface_check": {
+    "migratedRequirements": "All five appear under normalized IDs in regenerated coverage and proof indexes; no old home paths remain in either index.",
+    "existingMetadataGaps": [
+      "REQ-QUIC-RFC9000-0799",
+      "REQ-QUIC-RFC9000-S13P3-0018"
+    ],
+    "note": "The two unrelated missing-xref classifications were exposed by refreshing the July indexes. Their requirements and referenced test files are byte-equivalent to the base commit after newline normalization. No full-suite execution is implied. Generated repo_root fields are normalized to . for portability."
+  }
+}

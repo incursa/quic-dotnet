@@ -3,13 +3,13 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9000-S4-6-P3-R01")]
+[Requirement("REQ-RFC9000-S4-N6-P3-R-0001")]
 public sealed class REQ_QUIC_RFC9000_0200
 {
     [Theory]
     [InlineData(true, 0UL, 4UL)]
     [InlineData(false, 2UL, 6UL)]
-    [Requirement("RFC9000-S4-6-P3-R01")]
+    [Requirement("REQ-RFC9000-S4-N6-P3-R-0001")]
     [Requirement("REQ-QUIC-RFC9000-0034")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -43,7 +43,7 @@ public sealed class REQ_QUIC_RFC9000_0200
     }
 
     [Fact]
-    [Requirement("RFC9000-S4-6-P3-R01")]
+    [Requirement("REQ-RFC9000-S4-N6-P3-R-0001")]
     [Requirement("REQ-QUIC-RFC9000-0034")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_0200
     }
 
     [Fact]
-    [Requirement("RFC9000-S4-6-P3-R01")]
+    [Requirement("REQ-RFC9000-S4-N6-P3-R-0001")]
     [Requirement("REQ-QUIC-RFC9000-0034")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]

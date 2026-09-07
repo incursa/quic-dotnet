@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T21:54:45.8259424-06:00",
+    "generated_at": "2026-09-07T15:32:24.7597787-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
@@ -1012,12 +1012,12 @@
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-StreamCrypto-DeferredFuzzClosure.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs::TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs::TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs::TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs::TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IncreasesTheAdvertisedStreamLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs::TryApplyMaxStreamsFrame_IgnoresStaleLimitAfterMultipleIncreases"
       ]
@@ -8172,7 +8172,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-13233.cs",
@@ -13636,7 +13636,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0011.cs",
@@ -13796,7 +13796,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 8,
+      "focused_method_count": 13,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs",
@@ -15387,7 +15387,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 3,
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs"
@@ -23362,7 +23362,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 3,
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P12-0002.cs",
@@ -23852,7 +23852,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 6,
+      "focused_method_count": 8,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
@@ -33613,7 +33613,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 6,
+      "focused_method_count": 10,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P2-0003.cs"
@@ -40255,7 +40255,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 11,
+      "focused_method_count": 13,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs"
@@ -45190,7 +45190,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 20,
+      "focused_method_count": 21,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs"
@@ -46323,7 +46323,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 23,
+      "focused_method_count": 26,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs",
@@ -46378,7 +46378,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 33,
+      "focused_method_count": 36,
       "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
@@ -46497,7 +46497,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 22,
+      "focused_method_count": 23,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs",
@@ -46688,9 +46688,10 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 12,
-      "focused_file_count": 3,
+      "focused_method_count": 15,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/Http3FieldSectionDecodeCacheTests.cs",
         "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
         "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs"
@@ -71301,6 +71302,184 @@
       ]
     },
     {
+      "requirement_id": "REQ-RFC9000-S19-N10-P2-S1-R-0001",
+      "rfc": "RFC9000",
+      "title": "Reject premature MAX_STREAM_DATA for uncreated local streams",
+      "statement": "Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been created MUST be treated as a connection error of type STREAM_STATE_ERROR.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs"
+      ],
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs::TryApplyMaxStreamDataFrame_AcceptsCreatedLocallyInitiatedStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs::TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs::TryApplyMaxStreamDataFrame_RejectsSkippedLocallyInitiatedStreamIds"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S19-N10-P2-S2-R-0001",
+      "rfc": "RFC9000",
+      "title": "Treat MAX_STREAM_DATA on receive-only streams as STREAM_STATE_ERROR",
+      "statement": "An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs"
+      ],
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs::TryApplyMaxStreamDataFrame_AcceptsBidirectionalSendCapableStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreamsAfterTheyWereOpened"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S4-N5-P4-R-0001",
+      "rfc": "RFC9000",
+      "title": "Do not send data at or beyond final size",
+      "statement": "An endpoint MUST NOT send data on a stream at or beyond the final size.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N5-P4-R-0001.cs"
+      ],
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N5-P4-R-0001.cs::TryReserveSendCapacity_AllowsBytesBeforeTheKnownFinalSize"
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S4-N6-P3-R-0001",
+      "rfc": "RFC9000",
+      "title": "Respect peer-advertised stream limits",
+      "statement": "Endpoints MUST NOT exceed the limit set by their peer.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs"
+      ],
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs::TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs::TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S4-N6-P3-S1-R-0001",
+      "rfc": "RFC9000",
+      "title": "Treat excessive stream IDs as stream limit errors",
+      "statement": "An endpoint that receives a frame with a stream ID exceeding the limit it has sent MUST treat this as a connection error of type STREAM_LIMIT_ERROR.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs"
+      ],
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs::TryReceiveStreamFrame_AcceptsStreamIdsWithinTheAdvertisedLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs::TryReceiveStreamFrame_RejectsFirstIncomingStreamWhenAdvertisedLimitIsZero",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs::TryReceiveStreamFrame_RejectsOverLimitStreamIds"
+      ]
+    },
+    {
       "requirement_id": "RFC9000-S10-1-2-P3-S1-R01",
       "rfc": "RFC9000",
       "title": "Application protocols provide idle-timeout guidance",
@@ -73749,7 +73928,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 14,
+      "focused_method_count": 15,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
@@ -76700,80 +76879,6 @@
       ]
     },
     {
-      "requirement_id": "RFC9000-S19-10-P2-S1-R01",
-      "rfc": "RFC9000",
-      "title": "Reject premature MAX_STREAM_DATA for uncreated local streams",
-      "statement": "Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been created MUST be treated as a connection error of type STREAM_STATE_ERROR.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "edge",
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs"
-      ],
-      "spec_test_ref_count": 3,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs::TryApplyMaxStreamDataFrame_AcceptsCreatedLocallyInitiatedStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs::TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs::TryApplyMaxStreamDataFrame_RejectsSkippedLocallyInitiatedStreamIds"
-      ]
-    },
-    {
-      "requirement_id": "RFC9000-S19-10-P2-S2-R01",
-      "rfc": "RFC9000",
-      "title": "Treat MAX_STREAM_DATA on receive-only streams as STREAM_STATE_ERROR",
-      "statement": "An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "edge",
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs"
-      ],
-      "spec_test_ref_count": 3,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs::TryApplyMaxStreamDataFrame_AcceptsBidirectionalSendCapableStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs::TryApplyMaxStreamDataFrame_RejectsReceiveOnlyStreamsAfterTheyWereOpened"
-      ]
-    },
-    {
       "requirement_id": "RFC9000-S19-13-P1-R01",
       "rfc": "RFC9000",
       "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
@@ -79079,38 +79184,6 @@
       ]
     },
     {
-      "requirement_id": "RFC9000-S4-5-P4-R01",
-      "rfc": "RFC9000",
-      "title": "Do not send data at or beyond final size",
-      "statement": "An endpoint MUST NOT send data on a stream at or beyond the final size.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-5-P4-R01.cs"
-      ],
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-5-P4-R01.cs::TryReserveSendCapacity_AllowsBytesBeforeTheKnownFinalSize"
-    },
-    {
       "requirement_id": "RFC9000-S4-5-P5-S2-R01",
       "rfc": "RFC9000",
       "title": "Treat data beyond final size as an error",
@@ -79211,78 +79284,6 @@
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames"
-      ]
-    },
-    {
-      "requirement_id": "RFC9000-S4-6-P3-R01",
-      "rfc": "RFC9000",
-      "title": "Respect peer-advertised stream limits",
-      "statement": "Endpoints MUST NOT exceed the limit set by their peer.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs"
-      ],
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs::TryOpenLocalStream_AllowsStreamsWithinThePeerStreamLimit",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs::TryOpenLocalStream_DoesNotExceedThePeerBidirectionalStreamLimit"
-      ]
-    },
-    {
-      "requirement_id": "RFC9000-S4-6-P3-S1-R01",
-      "rfc": "RFC9000",
-      "title": "Treat excessive stream IDs as stream limit errors",
-      "statement": "An endpoint that receives a frame with a stream ID exceeding the limit it has sent MUST treat this as a connection error of type STREAM_LIMIT_ERROR.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "edge",
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs"
-      ],
-      "spec_test_ref_count": 3,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs::TryReceiveStreamFrame_AcceptsStreamIdsWithinTheAdvertisedLimit",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs::TryReceiveStreamFrame_RejectsFirstIncomingStreamWhenAdvertisedLimitIsZero",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs::TryReceiveStreamFrame_RejectsOverLimitStreamIds"
       ]
     },
     {

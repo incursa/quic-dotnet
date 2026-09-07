@@ -154,7 +154,6 @@
     "REQ-QUIC-RFC9000-S4P5-0002",
     "REQ-QUIC-RFC9000-S4P5-0003",
     "RFC9000-S4-5-P3-S1-R01",
-    "RFC9000-S4-5-P4-R01",
     "REQ-QUIC-RFC9000-0194",
     "REQ-QUIC-RFC9000-S4P5-0007",
     "RFC9000-S4-5-P5-S2-R01",
@@ -165,8 +164,6 @@
     "REQ-QUIC-RFC9000-S4P6-0005",
     "RFC9000-S4-6-P2-S1-R01",
     "RFC9000-S4-6-P2-S2-R01",
-    "RFC9000-S4-6-P3-R01",
-    "RFC9000-S4-6-P3-S1-R01",
     "REQ-QUIC-RFC9000-S4P6-0010",
     "REQ-QUIC-RFC9000-S4P6-0011",
     "RFC9000-S4-6-P6-R01",
@@ -869,9 +866,12 @@
     "RFC9000-S15-P7-S1-R03",
     "REQ-QUIC-RFC9000-0905",
     "REQ-QUIC-RFC9000-0906",
-    "REQ-QUIC-RFC9000-0907", "REQ-QUIC-RFC9000-0908",
+    "REQ-QUIC-RFC9000-0907",
+    "REQ-QUIC-RFC9000-0908",
     "REQ-QUIC-RFC9000-0913",
-    "REQ-QUIC-RFC9000-0914", "REQ-QUIC-RFC9000-0915", "REQ-QUIC-RFC9000-0916",
+    "REQ-QUIC-RFC9000-0914",
+    "REQ-QUIC-RFC9000-0915",
+    "REQ-QUIC-RFC9000-0916",
     "REQ-QUIC-RFC9000-S17-0001",
     "REQ-QUIC-RFC9000-S17P1-0001",
     "RFC9000-S17-1-P3-R01",
@@ -1243,8 +1243,6 @@
     "REQ-QUIC-RFC9000-S19P9-0008",
     "REQ-QUIC-RFC9000-S19P10-0001",
     "REQ-QUIC-RFC9000-S19P10-0002",
-    "RFC9000-S19-10-P2-S1-R01",
-    "RFC9000-S19-10-P2-S2-R01",
     "REQ-QUIC-RFC9000-S19P10-0005",
     "REQ-QUIC-RFC9000-S19P10-0006",
     "REQ-QUIC-RFC9000-S19P10-0007",
@@ -1499,7 +1497,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1282.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1283.cs",
@@ -1633,7 +1631,7 @@
     },
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1282.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1283.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P4-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P5-S1-R01.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicPacketParserTests.cs\n- tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamIdTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1156.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1344.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0816.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0541.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0542.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0545.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0510.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0665.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S3-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0749.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-1-P3-R01.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicStreamParsingBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs"
+      "content": "- tests/Incursa.Quic.Tests/QuicConnectionStreamStateTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStatePropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicConnectionStreamStateFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1282.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1283.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0019.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0024.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P2-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P4-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P5-S1-R01.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart3Tests.cs\n- tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs\n- tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs\n- tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicPacketParserTests.cs\n- tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamFrameTests.cs\n- tests/Incursa.Quic.Tests/QuicStreamIdTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs\n- tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1156.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationPacketTests.cs\n- tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1344.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0816.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0037.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0038.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0011.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0541.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0542.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0545.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0004.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0510.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0665.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0006.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P5-S3-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0749.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P1-0003.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-1-P3-R01.cs\n- benchmarks/QuicHeaderParsingBenchmarks.cs\n- benchmarks/QuicFrameCodecBenchmarks.cs\n- benchmarks/QuicStreamParsingBenchmarks.cs\n- benchmarks/QuicVariableLengthIntegerBenchmarks.cs\n- quality/benchmarks/README.md\n- quality/testing-intent.yaml\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0010.cs"
     },
     {
       "heading": "2026-05-01 S3P3 Terminal And STOP_SENDING Topoff",
@@ -2056,5 +2054,13 @@
       "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S22P1P4_0001|REQ_QUIC_RFC9000_S22P1P4_0002|REQ_QUIC_RFC9000_S22P1P4_0003|REQ_QUIC_RFC9000_S22P1P4_0004|REQ_QUIC_RFC9000_S22P1P4_0005|REQ_QUIC_RFC9000_1507|REQ_QUIC_RFC9000_S22P1P4_0007|REQ_QUIC_RFC9000_S22P1P4_0008\"` passed 8/8.\n- `REQ-QUIC-RFC9000-S22P1P4-0001` through `REQ-QUIC-RFC9000-S22P1P4-0008` now have direct canonical spec-file proof for the permanent-registration policy clauses.\n- Regenerated coverage triage should mark those requirements trace_clean once refreshed.\n- This remains bounded to canonical policy wording and does not claim a live registry-maintenance workflow or broader registry-maintenance automation."
     }
   ],
-  "domain": "quic"
+  "domain": "quic",
+  "x_historical_requirements": [
+    "RFC9000-S4-5-P4-R01",
+    "RFC9000-S4-6-P3-R01",
+    "RFC9000-S4-6-P3-S1-R01",
+    "RFC9000-S19-10-P2-S1-R01",
+    "RFC9000-S19-10-P2-S2-R01"
+  ],
+  "x_identity_migration_note": "The listed prior IDs belong to historical evidence. Their replacement IDs use fresh scoped verification VER-QUIC-MIGRATION-0001. Test paths here follow renamed files; historical execution dates and results are unchanged."
 }

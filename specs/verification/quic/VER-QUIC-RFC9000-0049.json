@@ -15,8 +15,6 @@
   "verifies": [
     "REQ-QUIC-RFC9000-S19P10-0001",
     "REQ-QUIC-RFC9000-S19P10-0002",
-    "RFC9000-S19-10-P2-S1-R01",
-    "RFC9000-S19-10-P2-S2-R01",
     "REQ-QUIC-RFC9000-S19P10-0005",
     "REQ-QUIC-RFC9000-S19P10-0006",
     "REQ-QUIC-RFC9000-S19P10-0007",
@@ -49,8 +47,8 @@
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-10-P2-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S1-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N10-P2-S2-R-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P10-0007.cs",
@@ -77,5 +75,10 @@
       "content": "This verification does not claim public 0-RTT receive admission, server anti-replay support, public receive-window API changes, or endpoint-host close-packet behavior beyond the parser and stream-state seams."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-05. The focused S19P10 filter passed 41/41, regenerated triage reports 14/14 S19P10 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 391 artifacts, the full Release no-build solution suite passed 4180/4180 after the retry-token diagnostic race helper was hardened, and the QuicFrameCodec BenchmarkDotNet Dry run completed 14/14 benchmarks including ParseMaxStreamDataFrame at 758.8 us and FormatMaxStreamDataFrame at 285.7 us with no allocations."
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P10 filter passed 41/41, regenerated triage reports 14/14 S19P10 requirements as trace_clean, Release build passed with 0 warnings and 0 errors, core SpecTrace JSON validation passed for 391 artifacts, the full Release no-build solution suite passed 4180/4180 after the retry-token diagnostic race helper was hardened, and the QuicFrameCodec BenchmarkDotNet Dry run completed 14/14 benchmarks including ParseMaxStreamDataFrame at 758.8 us and FormatMaxStreamDataFrame at 285.7 us with no allocations.",
+  "x_historical_requirements": [
+    "RFC9000-S19-10-P2-S1-R01",
+    "RFC9000-S19-10-P2-S2-R01"
+  ],
+  "x_identity_migration_note": "The listed prior IDs belong to historical evidence. Their replacement IDs use fresh scoped verification VER-QUIC-MIGRATION-0001. Test paths here follow renamed files; historical execution dates and results are unchanged."
 }

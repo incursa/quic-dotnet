@@ -11,9 +11,9 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2677 |
+| trace_clean | 2675 |
 | missing_coverage_contract | 0 |
-| covered_but_missing_xrefs | 0 |
+| covered_but_missing_xrefs | 2 |
 | covered_but_proof_too_broad | 0 |
 | partially_covered | 0 |
 | uncovered_blocked | 0 |
@@ -21,9 +21,9 @@
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2677 |
+| clean | 2675 |
 | coverage_contract_needed | 0 |
-| metadata_only | 0 |
+| metadata_only | 2 |
 | restructure_needed | 0 |
 | new_tests_needed | 0 |
 | blocked | 0 |
@@ -31,7 +31,7 @@
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
-- Metadata-only fixes: 0 requirements. Examples: .
+- Metadata-only fixes: 2 requirements. Examples: REQ-QUIC-RFC9000-0799, REQ-QUIC-RFC9000-S13P3-0018.
 - Restructure-needed proof: 0 requirements. Examples: .
 - New proof or implementation work: 0 requirements. Examples: .
 - Blocked by recorded gap families: 0 requirements. Examples: .
@@ -41,7 +41,7 @@
 | RFC | Total | trace_clean | missing_coverage_contract | missing_xrefs | proof_too_broad | partially_covered | uncovered_blocked | uncovered_unblocked |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 1450 | 0 | 0 | 0 | 0 | 0 | 0 |
+| RFC9000 | 1450 | 1448 | 0 | 2 | 0 | 0 | 0 | 0 |
 | RFC9001 | 96 | 96 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9002 | 226 | 226 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9114 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |

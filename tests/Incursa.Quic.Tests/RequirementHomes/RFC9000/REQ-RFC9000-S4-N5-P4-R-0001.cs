@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9000-S4-5-P4-R01")]
+[Requirement("REQ-RFC9000-S4-N5-P4-R-0001")]
 public sealed class REQ_QUIC_RFC9000_0193
 {
     [Fact]
-    [Requirement("RFC9000-S4-5-P4-R01")]
+    [Requirement("REQ-RFC9000-S4-N5-P4-R-0001")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReserveSendCapacity_AllowsBytesBeforeTheKnownFinalSize()
@@ -58,7 +58,7 @@ public sealed class REQ_QUIC_RFC9000_0193
     }
 
     [Fact]
-    [Requirement("RFC9000-S4-5-P4-R01")]
+    [Requirement("REQ-RFC9000-S4-N5-P4-R-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsBytesAtOrBeyondTheKnownFinalSize()
@@ -112,7 +112,7 @@ public sealed class REQ_QUIC_RFC9000_0193
     }
 
     [Fact]
-    [Requirement("RFC9000-S4-5-P4-R01")]
+    [Requirement("REQ-RFC9000-S4-N5-P4-R-0001")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void TryReserveSendCapacityFuzz_RejectsDataAtOrBeyondKnownFinalSize()

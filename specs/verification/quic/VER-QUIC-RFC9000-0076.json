@@ -13,8 +13,6 @@
   ],
   "verification_method": "Focused S4P6 requirement-home tests over stream-limit local opens, inbound STREAM_LIMIT_ERROR handling, and blocked-open STREAMS_BLOCKED frame production, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "RFC9000-S4-6-P3-R01",
-    "RFC9000-S4-6-P3-S1-R01",
     "RFC9000-S4-6-P6-R01"
   ],
   "scope": "This verification covers the generated non-clean S4P6 stream-limit enforcement and blocked-open tail selected after S5P1P1 closure.",
@@ -35,8 +33,8 @@
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S4-N6-P3-S1-R-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0200|FullyQualifiedName~REQ_QUIC_RFC9000_0201|FullyQualifiedName~REQ_QUIC_RFC9000_0203\"",
@@ -52,5 +50,10 @@
       "content": "This verification does not claim automatic stream-limit autotuning, public stream API widening, broader stream-management parity, hosted interop readiness, or closure of the deferred S4P6-0009 fuzz expectation."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-06. The focused S4P6 filter passed 11/11, the Release build passed with 0 warnings and 0 errors, regenerated coverage triage marks RFC9000-S4-6-P3-R01, RFC9000-S4-6-P3-S1-R01, and RFC9000-S4-6-P6-R01 trace_clean and reports 1,299 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 472 artifacts, the full Release no-build suite passed 4,550/4,550, and git diff --check returned exit code 0 with line-ending warnings only."
+  "status_summary": "Passed locally on 2026-05-06. The focused S4P6 filter passed 11/11, the Release build passed with 0 warnings and 0 errors, regenerated coverage triage marks RFC9000-S4-6-P3-R01, RFC9000-S4-6-P3-S1-R01, and RFC9000-S4-6-P6-R01 trace_clean and reports 1,299 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 472 artifacts, the full Release no-build suite passed 4,550/4,550, and git diff --check returned exit code 0 with line-ending warnings only.",
+  "x_historical_requirements": [
+    "RFC9000-S4-6-P3-R01",
+    "RFC9000-S4-6-P3-S1-R01"
+  ],
+  "x_identity_migration_note": "The listed prior IDs belong to historical evidence. Their replacement IDs use fresh scoped verification VER-QUIC-MIGRATION-0001. Test paths here follow renamed files; historical execution dates and results are unchanged."
 }
