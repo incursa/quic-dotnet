@@ -28,6 +28,6 @@ pwsh -NoProfile -File scripts/quality/run-blocking-tests.ps1
 pwsh -NoProfile -File scripts/compliance/update-notice.ps1
 ```
 
-`Validate-SpecTraceJson.ps1` downloads the upstream SpecTrace schema from [incursa/spec-trace](https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json) by default, so that validation step requires network access unless you override `-SchemaUri`.
+`Validate-SpecTraceJson.ps1` uses the repo-local [`model/model.schema.json`](model/model.schema.json) by default, including its RFC migration compatibility rules. Override `-SchemaUri` explicitly to validate against another schema. Changes to the local schema should also pass `pwsh -NoProfile -File scripts/spec-trace/Test-SpecTraceCandidateIdCompatibility.ps1`.
 
 Unless a file already carries a different notice, treat contributions as licensed under the repository Apache 2.0 license.

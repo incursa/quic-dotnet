@@ -40,3 +40,27 @@ This guide captures the expected order for RFC-derived QUIC work in `Incursa.Qui
 - Generated outputs: [`../specs/generated/README.md`](../specs/generated/README.md)
 
 Canonical artifacts in those families are authored as sibling `.json` files.
+
+## Local Validation During RFC Migration
+
+`scripts/Validate-SpecTraceJson.ps1` uses the repo-local
+[`model/model.schema.json`](../model/model.schema.json) by default. Its existing
+RFC candidate-ID compatibility branch accepts nested numeric paragraph
+components such as `RFC9298-S2-P4-2-R01`, matching the coverage-triage reader.
+This keeps historical candidate references readable while requirements are
+reconciled with SpecTrace Manager; syntax acceptance does not approve a mapping,
+change a statement, or carry verification to a Manager identity.
+
+Run the compatibility regression check when changing this local schema:
+
+```powershell
+pwsh -NoProfile -File scripts/spec-trace/Test-SpecTraceCandidateIdCompatibility.ps1
+```
+
+The check covers current and legacy IDs, malformed candidates, and the existing
+normative-clause rules. The local compatibility branch does not change the
+public SpecTrace standard or the Manager schema.
+
+Coverage triage's `trace_clean` label concerns test coverage and source test
+references. It does not replace the schema and artifact-link checks in the
+`core`, `traceable`, and `auditable` validation profiles.

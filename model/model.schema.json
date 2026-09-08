@@ -91,7 +91,7 @@
     },
     "rfcRequirementCandidateId": {
       "type": "string",
-      "pattern": "^RFC\\d{4,}-S\\d+(?:-\\d+)*(?:-P\\d+(?:-S\\d+)?)?-R\\d{2,}$"
+      "pattern": "^RFC\\d{4,}-S\\d+(?:-\\d+)*(?:-P\\d+(?:-\\d+)*(?:-S\\d+)?)?-R\\d{2,}$"
     },
     "requirementId": {
       "oneOf": [
