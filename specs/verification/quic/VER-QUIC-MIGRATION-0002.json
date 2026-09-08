@@ -1,0 +1,103 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-MIGRATION-0002",
+  "artifact_type": "verification",
+  "title": "SpecTrace Manager stream-state identity migration verification",
+  "domain": "quic",
+  "status": "passed",
+  "owner": "quic-maintainers",
+  "verifies": [
+    "REQ-RFC9000-S19-N4-P3-S1-R-0001",
+    "REQ-RFC9000-S19-N13-P1-R-0001",
+    "REQ-RFC9000-S19-N13-P2-R-0001"
+  ],
+  "scope": "Fresh requirement-home execution and exact-statement identity reconciliation for this bounded version-1 Manager projection. No full RFC, full-suite, performance, interoperability, or release claim.",
+  "verification_method": "Exact statement, test-logic and reciprocal trace inspection; focused Release tests; generated index refresh; comparison against existing repository validation findings.",
+  "preconditions": [
+    "Each selected Manager requirement is draft at version 1. Historical passed evidence is retained separately."
+  ],
+  "procedure": [
+    "Build the Release test project and execute the selected existing classes.",
+    "Compare statements and test logic with the base commit and live Manager versions.",
+    "Resolve all current test references and regenerate coverage/proof indexes.",
+    "Compare core/traceable/auditable validation findings with the recorded baseline."
+  ],
+  "expected_result": "All selected tests pass, IDs and traces resolve, statements and test bodies are unchanged, and no new repository validation errors are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs",
+    "dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --nologo -v minimal",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --filter \"FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.\" --logger \"trx;LogFileName=migration-tests.trx\" --results-directory <external-evidence-directory>",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1",
+    "pwsh -File scripts/spec-trace/Generate-QuicRequirementProofAudit.ps1",
+    "pwsh -Command \"& scripts/Validate-SpecTraceJson.ps1 -Profiles core,traceable,auditable -JsonReportPath <external-evidence-directory>/after-validation.json\"",
+    "git diff --check"
+  ],
+  "status_summary": "Passed locally on 2026-09-07: Release build succeeded with 0 warnings and 0 errors; all 17 tests in the three migrated homes and shared annotation class passed, with 0 failed or skipped. Separately, all 17 tests for two repaired stale metadata references passed. Exact statements, unchanged test bodies, reciprocal traces, and renamed paths verified. Refreshed coverage triage reports 2677/2677 trace_clean, including both repaired metadata entries. These are static coverage labels, not full-suite results. Repository core/traceable/auditable validation remains failed with 3386 existing errors and no new errors. The three Manager requirements remain draft at version 1.",
+  "x_requirement_versions": {
+    "REQ-RFC9000-S19-N4-P3-S1-R-0001": 1,
+    "REQ-RFC9000-S19-N13-P1-R-0001": 1,
+    "REQ-RFC9000-S19-N13-P2-R-0001": 1
+  },
+  "x_fresh_test_results": [
+    {
+      "requirementId": "REQ-RFC9000-S19-N4-P3-S1-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208",
+      "passed": 4,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.Fuzz_TryReceiveResetStreamFrame_RejectsSendOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S19-N13-P1-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298",
+      "passed": 3,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298.TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298.TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298.TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl"
+      ]
+    },
+    {
+      "requirementId": "REQ-RFC9000-S19-N13-P2-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299",
+      "passed": 5,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.Fuzz_TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream"
+      ]
+    }
+  ],
+  "x_evidence_provenance": {
+    "baseCommit": "f6faa796a8089bb523eb6194bdca1fab6478d5d0",
+    "branch": "codex/quic-requirements-restart-20260907",
+    "sdkVersion": "10.0.204",
+    "localEvidenceDirectory": "C:\\shared\\temp\\quic-dotnet\\restart-20260907\\flow-control-migration-2",
+    "trxSha256": "3c79de26f78bb2aab659fdf9280b586baee5af1b58e9012f1511d1cf331f99e1",
+    "baselineValidationErrors": 3386,
+    "newValidationErrors": 0,
+    "note": "Only the selected test classes were executed. Raw logs remain local and have not been uploaded. Generated repo_root fields are normalized to . for portability."
+  },
+  "x_metadata_repairs": {
+    "requirements": [
+      "REQ-QUIC-RFC9000-0799",
+      "REQ-QUIC-RFC9000-S13P3-0018"
+    ],
+    "change": "Replace outdated x_test_refs method names with existing receive-window-threshold tests; no requirement statement or test logic changes.",
+    "testCount": 17,
+    "trxSha256": "0aba4135eb070e6eba9acab5cdd45a03034d1f4e430910f61af4837f85d33263"
+  }
+}

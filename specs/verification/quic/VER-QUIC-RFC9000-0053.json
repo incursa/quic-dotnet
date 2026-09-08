@@ -11,18 +11,16 @@
     "ARC-QUIC-RFC9000-0053",
     "WI-QUIC-RFC9000-0053"
   ],
-  "verification_method": "Focused S19P13-0002 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+  "verification_method": "Fresh focused Release test execution for the normalized Manager requirement at version 1, current trace inspection, and generated-index refresh.",
   "verifies": [
-    "RFC9000-S19-13-P2-R01"
+    "REQ-RFC9000-S19-N13-P2-R-0001"
   ],
   "scope": "This verification covers receiver-side STREAM_DATA_BLOCKED policy for receive-capable streams, opened send-only streams, and uncreated send-only stream IDs on the protected Application Data runtime path.",
   "expected_result": "The requirement-home tests show receive-capable streams accept STREAM_DATA_BLOCKED without error, opened send-only stream IDs produce STREAM_STATE_ERROR at the bookkeeping seam, and protected STREAM_DATA_BLOCKED packets targeting opened or uncreated send-only stream IDs transition the runtime to Closing with a local STREAM_STATE_ERROR close and triggering frame type 0x15.",
   "procedure": [
-    "Run the focused S19P13-0002 requirement-home filter.",
-    "Run a Release build.",
-    "Regenerate QUIC requirement coverage triage.",
-    "Validate canonical SpecTrace JSON.",
-    "Check the resulting diff for whitespace errors."
+    "Build the current Release test project.",
+    "Run the unchanged REQ_QUIC_RFC9000_1299 requirement-home class.",
+    "Verify the exact Manager version-1 statement and reciprocal links."
   ],
   "preconditions": [
     "The existing STREAM_DATA_BLOCKED parser and formatter remain the wire-shape seam under test elsewhere.",
@@ -30,14 +28,9 @@
     "The protected Application Data runtime has 1-RTT open packet-protection material."
   ],
   "evidence": [
-    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
-    "src/Incursa.Quic/QuicConnectionStreamState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs",
-    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_1299\"",
-    "dotnet build Incursa.Quic.slnx -c Release",
-    "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
-    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
-    "git diff --check"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --no-restore --filter \"FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1208.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1298.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.|FullyQualifiedName~Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.\" --logger \"trx;LogFileName=migration-tests.trx\" --results-directory <external-evidence-directory>",
+    "specs/verification/quic/VER-QUIC-MIGRATION-0002.json"
   ],
   "supplemental_sections": [
     {
@@ -45,5 +38,73 @@
       "content": "This verification does not claim STREAM_DATA_BLOCKED parser/formatter closure beyond the existing S19P13 0003 through 0008 proof and does not claim S19P14 STREAMS_BLOCKED behavior."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-05. The focused S19P13-0002 requirement-home filter passed, the Release build passed, regenerated QUIC coverage triage marks RFC9000-S19-13-P2-R01 trace_clean, SpecTrace core validation passed, and git diff --check passed."
+  "status_summary": "Fresh local verification on 2026-09-07: 5/5 tests in REQ_QUIC_RFC9000_1299 passed for normalized Manager requirement version 1. Release build passed with zero warnings and errors; statement and test logic unchanged. The previous verification record is retained in x_previous_verification and is not reused as proof for this result. Full-repository validation still has 3386 existing errors.",
+  "x_previous_verification": {
+    "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+    "artifact_id": "VER-QUIC-RFC9000-0053",
+    "artifact_type": "verification",
+    "title": "QUIC RFC 9000 STREAM_DATA_BLOCKED Send-Only Receive Policy Verification",
+    "domain": "quic",
+    "status": "passed",
+    "owner": "quic-maintainers",
+    "related_artifacts": [
+      "SPEC-QUIC-RFC9000",
+      "ARC-QUIC-RFC9000-0053",
+      "WI-QUIC-RFC9000-0053"
+    ],
+    "verification_method": "Focused S19P13-0002 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
+    "verifies": [
+      "RFC9000-S19-13-P2-R01"
+    ],
+    "scope": "This verification covers receiver-side STREAM_DATA_BLOCKED policy for receive-capable streams, opened send-only streams, and uncreated send-only stream IDs on the protected Application Data runtime path.",
+    "expected_result": "The requirement-home tests show receive-capable streams accept STREAM_DATA_BLOCKED without error, opened send-only stream IDs produce STREAM_STATE_ERROR at the bookkeeping seam, and protected STREAM_DATA_BLOCKED packets targeting opened or uncreated send-only stream IDs transition the runtime to Closing with a local STREAM_STATE_ERROR close and triggering frame type 0x15.",
+    "procedure": [
+      "Run the focused S19P13-0002 requirement-home filter.",
+      "Run a Release build.",
+      "Regenerate QUIC requirement coverage triage.",
+      "Validate canonical SpecTrace JSON.",
+      "Check the resulting diff for whitespace errors."
+    ],
+    "preconditions": [
+      "The existing STREAM_DATA_BLOCKED parser and formatter remain the wire-shape seam under test elsewhere.",
+      "The existing QuicConnectionStreamState receive-capability resolver identifies local unidirectional stream IDs as send-only for this endpoint.",
+      "The protected Application Data runtime has 1-RTT open packet-protection material."
+    ],
+    "evidence": [
+      "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+      "src/Incursa.Quic/QuicConnectionStreamState.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs",
+      "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_1299\"",
+      "dotnet build Incursa.Quic.slnx -c Release",
+      "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
+      "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+      "git diff --check"
+    ],
+    "supplemental_sections": [
+      {
+        "heading": "Boundary",
+        "content": "This verification does not claim STREAM_DATA_BLOCKED parser/formatter closure beyond the existing S19P13 0003 through 0008 proof and does not claim S19P14 STREAMS_BLOCKED behavior."
+      }
+    ],
+    "status_summary": "Passed locally on 2026-05-05. The focused S19P13-0002 requirement-home filter passed, the Release build passed, regenerated QUIC coverage triage marks RFC9000-S19-13-P2-R01 trace_clean, SpecTrace core validation passed, and git diff --check passed."
+  },
+  "x_requirement_versions": {
+    "REQ-RFC9000-S19-N13-P2-R-0001": 1
+  },
+  "x_fresh_test_results": [
+    {
+      "requirementId": "REQ-RFC9000-S19-N13-P2-R-0001",
+      "requirementVersion": 1,
+      "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299",
+      "passed": 5,
+      "failed": 0,
+      "tests": [
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.Fuzz_TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams",
+        "Incursa.Quic.Tests.REQ_QUIC_RFC9000_1299.ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream"
+      ]
+    }
+  ]
 }

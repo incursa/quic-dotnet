@@ -21,7 +21,6 @@
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S13P3-0024",
     "REQ-QUIC-RFC9000-S13P3-0025",
-    "RFC9000-S19-13-P1-R01",
     "REQ-QUIC-RFC9000-S19P13-0006",
     "REQ-QUIC-RFC9000-S19P13-0007",
     "REQ-QUIC-RFC9000-S19P13-0008"
@@ -61,5 +60,9 @@
       "content": "The existing `QuicFrameCodecPart4FuzzSupport.FuzzStreamDataBlockedFrame` coverage remains the fuzz proof for untrusted STREAM_DATA_BLOCKED parse/format boundaries. The permanent `QuicConnectionStreamStateBenchmarks` suite now includes the stream-level `STREAM_DATA_BLOCKED` helper branch; Dry validation proves the benchmark harness executes but is not treated as a stable performance baseline."
     }
   ],
-  "status_summary": "Passed locally for the focused requirement-home coverage, STREAM_DATA_BLOCKED frame-codec fuzz linkage, BenchmarkDotNet Dry validation, and SpecTrace render/check. The proof remains limited to advisory runtime emission on the supported active path."
+  "status_summary": "Passed locally for the focused requirement-home coverage, STREAM_DATA_BLOCKED frame-codec fuzz linkage, BenchmarkDotNet Dry validation, and SpecTrace render/check. The proof remains limited to advisory runtime emission on the supported active path.",
+  "x_historical_requirements": [
+    "RFC9000-S19-13-P1-R01"
+  ],
+  "x_identity_migration_note": "Listed prior IDs belong to historical evidence. Each normalized requirement points to its own fresh scoped verification. Test paths here follow renamed files; historical execution dates and results are unchanged."
 }

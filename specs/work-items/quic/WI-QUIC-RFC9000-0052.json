@@ -31,7 +31,7 @@
   "out_of_scope": [
     "Changing STREAM_DATA_BLOCKED runtime emission scheduling.",
     "Changing sender/recovery retransmission policy.",
-    "Closing receiver-side send-only stream termination for RFC9000-S19-13-P2-R01.",
+    "Closing receiver-side send-only stream termination for REQ-RFC9000-S19-N13-P2-R-0001.",
     "Adding public flow-control tuning or receive-window APIs.",
     "Replacing the span-backed frame-codec hot path."
   ],

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-09-07T15:32:24.7597787-06:00",
+    "generated_at": "2026-09-07T19:11:46.8964319-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
@@ -5241,7 +5241,7 @@
       ],
       "spec_test_ref_count": 6,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReadStreamData_UpdatesTheCurrentConnectionMaximumDataWhenAdditionalBytesAreRead",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReadStreamData_PublishesAccumulatedConnectionCreditWhenTheReceiveWindowThresholdIsReached",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReceiveResetStreamFrame_SendsTheUpdatedConnectionMaximumDataWhenTheResetReleasesBufferedBytes",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReceiveResetStreamFrame_LeavesTheConnectionMaximumDataUnchangedWhenNoBufferedBytesAreReleased",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged",
@@ -13804,7 +13804,7 @@
       ],
       "spec_test_ref_count": 7,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_UpdatesTheCurrentStreamDataOffsetWhenAdditionalBytesAreRead",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_PublishesAccumulatedStreamCreditWhenTheReceiveWindowThresholdIsReached",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsUpdatedMaxStreamDataAndMaxDataAfterRepeatedReads",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed",
@@ -71376,6 +71376,121 @@
       ]
     },
     {
+      "requirement_id": "REQ-RFC9000-S19-N13-P1-R-0001",
+      "rfc": "RFC9000",
+      "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
+      "statement": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [
+        "positive"
+      ],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs"
+      ],
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S19-N13-P2-R-0001",
+      "rfc": "RFC9000",
+      "title": "Terminate on STREAM_DATA_BLOCKED for send-only stream",
+      "statement": "An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs"
+      ],
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams"
+      ]
+    },
+    {
+      "requirement_id": "REQ-RFC9000-S19-N4-P3-S1-R-0001",
+      "rfc": "RFC9000",
+      "title": "Error on RESET_STREAM for send-only streams",
+      "statement": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
+      "proof_state": "full_executable_proof",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "required_kinds": [
+        "positive",
+        "negative"
+      ],
+      "deferred_kinds": [
+        "fuzz"
+      ],
+      "focused_kinds": [
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
+      ],
+      "broad_kinds": [],
+      "missing_required_focused_kinds": [],
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 1,
+      "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs"
+      ],
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream"
+      ]
+    },
+    {
       "requirement_id": "REQ-RFC9000-S4-N5-P4-R-0001",
       "rfc": "RFC9000",
       "title": "Do not send data at or beyond final size",
@@ -76879,84 +76994,6 @@
       ]
     },
     {
-      "requirement_id": "RFC9000-S19-13-P1-R01",
-      "rfc": "RFC9000",
-      "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
-      "statement": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [
-        "positive"
-      ],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs"
-      ],
-      "spec_test_ref_count": 4,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight"
-      ]
-    },
-    {
-      "requirement_id": "RFC9000-S19-13-P2-R01",
-      "rfc": "RFC9000",
-      "title": "Terminate on STREAM_DATA_BLOCKED for send-only stream",
-      "statement": "An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "edge",
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 5,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs"
-      ],
-      "spec_test_ref_count": 4,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams"
-      ]
-    },
-    {
       "requirement_id": "RFC9000-S19-15-P10-S2-R01",
       "rfc": "RFC9000",
       "title": "Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO...",
@@ -77251,43 +77288,6 @@
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P2-S2-R01.cs::TryReceiveResetStreamFrame_DiscardsBufferedDataAfterReset"
-    },
-    {
-      "requirement_id": "RFC9000-S19-4-P3-S1-R01",
-      "rfc": "RFC9000",
-      "title": "Error on RESET_STREAM for send-only streams",
-      "statement": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
-      "proof_state": "full_executable_proof",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "required_kinds": [
-        "positive",
-        "negative"
-      ],
-      "deferred_kinds": [
-        "fuzz"
-      ],
-      "focused_kinds": [
-        "edge",
-        "fuzz",
-        "negative",
-        "positive"
-      ],
-      "broad_kinds": [],
-      "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
-      "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs"
-      ],
-      "spec_test_ref_count": 3,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream"
-      ]
     },
     {
       "requirement_id": "RFC9000-S19-5-P2-R01",

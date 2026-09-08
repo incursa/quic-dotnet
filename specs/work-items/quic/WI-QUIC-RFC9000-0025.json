@@ -20,7 +20,7 @@
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S13P3-0024",
     "REQ-QUIC-RFC9000-S13P3-0025",
-    "RFC9000-S19-13-P1-R01",
+    "REQ-RFC9000-S19-N13-P1-R-0001",
     "REQ-QUIC-RFC9000-S19P13-0006",
     "REQ-QUIC-RFC9000-S19P13-0007",
     "REQ-QUIC-RFC9000-S19P13-0008"
@@ -29,7 +29,8 @@
   "planned_changes": "- Multi-tag the existing protected-packet write proof so the stream-level blocked-signal requirements point at a real outbound STREAM_DATA_BLOCKED packet.\n- Keep negative runtime coverage proving an in-flight ack-eliciting packet suppresses duplicate blocked-signal emission while the write still fails honestly for lack of credit.\n- Confirm the protected advisory packet remains retained by the sender/recovery ledger and can be retransmitted after loss.\n- Add a permanent BenchmarkDotNet case for the stream-state helper branch that publishes `STREAM_DATA_BLOCKED`.\n- Add focused architecture and verification artifacts for the bounded `STREAM_DATA_BLOCKED` runtime emission slice.",
   "verification_plan": "Run the focused RFC 9000 S3P1/S4P1/S4P2/S13P3/S19P13 requirement-home tests, run the STREAM_DATA_BLOCKED frame-codec fuzz coverage, run the `QuicConnectionStreamStateBenchmarks` BenchmarkDotNet suite with the Dry job, render/check the touched SpecTrace artifacts, and preserve evidence under `artifacts/v/20260425-rfc9000-stream-data-blocked-runtime/`.",
   "verification_links": [
-    "VER-QUIC-RFC9000-0025"
+    "VER-QUIC-RFC9000-0025",
+    "VER-QUIC-MIGRATION-0002"
   ],
   "design_links": [
     "ARC-QUIC-RFC9000-0025"

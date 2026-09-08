@@ -7834,7 +7834,7 @@
           "VER-QUIC-RFC9000-0009"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReadStreamData_UpdatesTheCurrentConnectionMaximumDataWhenAdditionalBytesAreRead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReadStreamData_PublishesAccumulatedConnectionCreditWhenTheReceiveWindowThresholdIsReached",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReceiveResetStreamFrame_SendsTheUpdatedConnectionMaximumDataWhenTheResetReleasesBufferedBytes",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryReceiveResetStreamFrame_LeavesTheConnectionMaximumDataUnchangedWhenNoBufferedBytesAreReleased",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0799.cs::TryRegisterLoss_QueuesTheMostRecentMaxDataPacketForRepairUntilAcknowledged",
@@ -10486,7 +10486,7 @@
       ]
     },
     {
-      "id": "RFC9000-S19-4-P3-S1-R01",
+      "id": "REQ-RFC9000-S19-N4-P3-S1-R-0001",
       "title": "Error on RESET_STREAM for send-only streams",
       "statement": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "coverage": {
@@ -10503,12 +10503,12 @@
           "WI-QUIC-RFC9000-0001"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001"
+          "VER-QUIC-MIGRATION-0002"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs::TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_AcceptsReceiveCapableStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N4-P3-S1-R-0001.cs::TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream"
         ],
         "upstream_refs": [
           "RFC 9000 19.4 RFC9000-S19P4-B3-P3-S1",
@@ -10517,7 +10517,21 @@
       },
       "notes": [
         "Kept the error handling behavior intact and independently testable."
-      ]
+      ],
+      "x_spec_trace_manager": {
+        "authority": "https://spectrace.incursa.com",
+        "projectId": "quic",
+        "requirementId": "REQ-RFC9000-S19-N4-P3-S1-R-0001",
+        "requirementVersion": 1,
+        "status": "draft",
+        "candidateId": "RFC9000-S19-4-P3-S1-R01",
+        "previousLocalId": "RFC9000-S19-4-P3-S1-R01",
+        "statementSha256": "e4f5e93b9ffb6dc623ccdccd45a434d4923bf2c9f427c62733ece2e2c795d48c",
+        "previousVerificationIds": [
+          "VER-QUIC-RFC9000-0001"
+        ],
+        "note": "Identity-only local projection of SpecTrace Manager version 1. Statement unchanged; historical verification is not carried forward. Fresh scoped evidence is recorded in VER-QUIC-MIGRATION-0002."
+      }
     },
     {
       "id": "RFC9000-S19-5-P2-R01",
@@ -11188,7 +11202,7 @@
       }
     },
     {
-      "id": "RFC9000-S19-13-P1-R01",
+      "id": "REQ-RFC9000-S19-N13-P1-R-0001",
       "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
       "statement": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.",
       "coverage": {
@@ -11207,23 +11221,37 @@
           "WI-QUIC-RFC9000-0025"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001",
-          "VER-QUIC-RFC9000-0025"
+          "VER-QUIC-MIGRATION-0002"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P1-R01.cs::TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacity_GeneratesStreamDataBlockedWhenBlockedByStreamFlowControl",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P1-R-0001.cs::TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0177.cs::WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight"
         ],
         "upstream_refs": [
           "RFC 9000 19.13 RFC9000-S19P13-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ]
+      },
+      "x_spec_trace_manager": {
+        "authority": "https://spectrace.incursa.com",
+        "projectId": "quic",
+        "requirementId": "REQ-RFC9000-S19-N13-P1-R-0001",
+        "requirementVersion": 1,
+        "status": "draft",
+        "candidateId": "RFC9000-S19-13-P1-R01",
+        "previousLocalId": "RFC9000-S19-13-P1-R01",
+        "statementSha256": "4b48328afe4fc6729982e7b4518bcb6af27d1f18c9f20b7d7c5b029c72a7fdca",
+        "previousVerificationIds": [
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0025"
+        ],
+        "note": "Identity-only local projection of SpecTrace Manager version 1. Statement unchanged; historical verification is not carried forward. Fresh scoped evidence is recorded in VER-QUIC-MIGRATION-0002."
       }
     },
     {
-      "id": "RFC9000-S19-13-P2-R01",
+      "id": "REQ-RFC9000-S19-N13-P2-R-0001",
       "title": "Terminate on STREAM_DATA_BLOCKED for send-only stream",
       "statement": "An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "coverage": {
@@ -11242,19 +11270,34 @@
           "WI-QUIC-RFC9000-0053"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-MIGRATION-0002",
           "VER-QUIC-RFC9000-0053"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForOpenedSendOnlyStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::ProtectedStreamDataBlockedFrame_ClosesWithStreamStateErrorForUncreatedSendOnlyStream",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::TryReceiveStreamDataBlockedFrame_AcceptsReceiveCapableStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-RFC9000-S19-N13-P2-R-0001.cs::TryReceiveStreamDataBlockedFrame_RejectsSendOnlyStreams"
         ],
         "upstream_refs": [
           "RFC9000-S19P13-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.13"
         ]
+      },
+      "x_spec_trace_manager": {
+        "authority": "https://spectrace.incursa.com",
+        "projectId": "quic",
+        "requirementId": "REQ-RFC9000-S19-N13-P2-R-0001",
+        "requirementVersion": 1,
+        "status": "draft",
+        "candidateId": "RFC9000-S19-13-P2-R01",
+        "previousLocalId": "RFC9000-S19-13-P2-R01",
+        "statementSha256": "0bf103baa3a016bbd245c57e8c51c6b810514b56a5173d61286eb20284831df0",
+        "previousVerificationIds": [
+          "VER-QUIC-RFC9000-0001",
+          "VER-QUIC-RFC9000-0053"
+        ],
+        "note": "Identity-only local projection of SpecTrace Manager version 1. Statement unchanged; historical verification is not carried forward. Fresh scoped evidence is recorded in VER-QUIC-MIGRATION-0002."
       }
     },
     {
@@ -18726,7 +18769,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_UpdatesTheCurrentStreamDataOffsetWhenAdditionalBytesAreRead",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::TryReadStreamData_PublishesAccumulatedStreamCreditWhenTheReceiveWindowThresholdIsReached",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsTheCurrentMaxStreamDataAndMaxDataUpdatesAfterBytesAreConsumed",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_EmitsUpdatedMaxStreamDataAndMaxDataAfterRepeatedReads",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0018.cs::ReadAsync_DoesNotEmitCreditUpdatesWhenNoBytesAreConsumed",

@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9000-S19-13-P1-R01")]
+[Requirement("REQ-RFC9000-S19-N13-P1-R-0001")]
 public sealed class REQ_QUIC_RFC9000_1298
 {
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="RFC9000-S19-13-P1-R01">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-RFC9000-S19-N13-P1-R-0001">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -48,10 +48,10 @@ public sealed class REQ_QUIC_RFC9000_1298
     }
 
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="RFC9000-S19-13-P1-R01">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-RFC9000-S19-N13-P1-R-0001">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
-    [Requirement("RFC9000-S19-13-P1-R01")]
+    [Requirement("REQ-RFC9000-S19-N13-P1-R-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_DoesNotGenerateStreamDataBlockedWhenConnectionFlowControlBlocksFirst()
@@ -81,10 +81,10 @@ public sealed class REQ_QUIC_RFC9000_1298
     }
 
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="RFC9000-S19-13-P1-R01">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-RFC9000-S19-N13-P1-R-0001">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
-    [Requirement("RFC9000-S19-13-P1-R01")]
+    [Requirement("REQ-RFC9000-S19-N13-P1-R-0001")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void TryReserveSendCapacityFuzz_GeneratesStreamDataBlockedForStreamFlowControlLimits()

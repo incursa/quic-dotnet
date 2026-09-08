@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9000-S19-13-P2-R01")]
+[Requirement("REQ-RFC9000-S19-N13-P2-R-0001")]
 public sealed class REQ_QUIC_RFC9000_1299
 {
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="RFC9000-S19-13-P2-R01">An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="REQ-RFC9000-S19-N13-P2-R-0001">An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

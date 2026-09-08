@@ -1171,7 +1171,6 @@
     "REQ-QUIC-RFC9000-S19P3P2-0007",
     "REQ-QUIC-RFC9000-1205",
     "RFC9000-S19-4-P2-S2-R01",
-    "RFC9000-S19-4-P3-S1-R01",
     "REQ-QUIC-RFC9000-S19P4-0004",
     "REQ-QUIC-RFC9000-S19P4-0005",
     "REQ-QUIC-RFC9000-S19P4-0006",
@@ -1272,8 +1271,6 @@
     "REQ-QUIC-RFC9000-S19P12-0004",
     "REQ-QUIC-RFC9000-S19P12-0005",
     "REQ-QUIC-RFC9000-S19P12-0006",
-    "RFC9000-S19-13-P1-R01",
-    "RFC9000-S19-13-P2-R01",
     "REQ-QUIC-RFC9000-S19P13-0003",
     "REQ-QUIC-RFC9000-S19P13-0004",
     "REQ-QUIC-RFC9000-S19P13-0005",
@@ -2060,7 +2057,10 @@
     "RFC9000-S4-6-P3-R01",
     "RFC9000-S4-6-P3-S1-R01",
     "RFC9000-S19-10-P2-S1-R01",
-    "RFC9000-S19-10-P2-S2-R01"
+    "RFC9000-S19-10-P2-S2-R01",
+    "RFC9000-S19-4-P3-S1-R01",
+    "RFC9000-S19-13-P1-R01",
+    "RFC9000-S19-13-P2-R01"
   ],
-  "x_identity_migration_note": "The listed prior IDs belong to historical evidence. Their replacement IDs use fresh scoped verification VER-QUIC-MIGRATION-0001. Test paths here follow renamed files; historical execution dates and results are unchanged."
+  "x_identity_migration_note": "Listed prior IDs belong to historical evidence. Each normalized requirement points to its own fresh scoped verification. Test paths here follow renamed files; historical execution dates and results are unchanged."
 }
