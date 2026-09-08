@@ -4303,6 +4303,86 @@
         "RFC9000 S16 split-merge adopted incoming staged IDs as canonical."
       ],
       "x_lineage": "REQ-QUIC-RFC9000-0914, REQ-QUIC-RFC9000-0915, REQ-QUIC-RFC9000-0916 derived_from and supersedes this retired ID."
+    },
+    {
+      "id": "RFC9000-S4-5-P4-R01",
+      "title": "Do not send data at or beyond final size",
+      "replaced_by": [
+        "REQ-RFC9000-S4-N5-P4-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S4-6-P3-R01",
+      "title": "Respect peer-advertised stream limits",
+      "replaced_by": [
+        "REQ-RFC9000-S4-N6-P3-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S4-6-P3-S1-R01",
+      "title": "Treat excessive stream IDs as stream limit errors",
+      "replaced_by": [
+        "REQ-RFC9000-S4-N6-P3-S1-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S19-10-P2-S1-R01",
+      "title": "Reject premature MAX_STREAM_DATA for uncreated local streams",
+      "replaced_by": [
+        "REQ-RFC9000-S19-N10-P2-S1-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S19-10-P2-S2-R01",
+      "title": "Treat MAX_STREAM_DATA on receive-only streams as STREAM_STATE_ERROR",
+      "replaced_by": [
+        "REQ-RFC9000-S19-N10-P2-S2-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S19-4-P3-S1-R01",
+      "title": "Error on RESET_STREAM for send-only streams",
+      "replaced_by": [
+        "REQ-RFC9000-S19-N4-P3-S1-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S19-13-P1-R01",
+      "title": "Send STREAM_DATA_BLOCKED when blocked by stream flow control",
+      "replaced_by": [
+        "REQ-RFC9000-S19-N13-P1-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
+    },
+    {
+      "id": "RFC9000-S19-13-P2-R01",
+      "title": "Terminate on STREAM_DATA_BLOCKED for send-only stream",
+      "replaced_by": [
+        "REQ-RFC9000-S19-N13-P2-R-0001"
+      ],
+      "notes": [
+        "Historical local candidate ID normalized to SpecTrace Manager project quic version 1; the statement is unchanged. This alias preserves resolution through earlier retirement entries and does not carry historical verification."
+      ]
     }
   ]
 }

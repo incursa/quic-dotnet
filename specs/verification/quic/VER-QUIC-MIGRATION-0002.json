@@ -99,5 +99,24 @@
     "change": "Replace outdated x_test_refs method names with existing receive-window-threshold tests; no requirement statement or test logic changes.",
     "testCount": 17,
     "trxSha256": "0aba4135eb070e6eba9acab5cdd45a03034d1f4e430910f61af4837f85d33263"
+  },
+  "x_shared_test_results": {
+    "testClass": "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177",
+    "passed": 5,
+    "failed": 0,
+    "tests": [
+      "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.WriteAsync_DoesNotEmitABlockedSignalWhileAnAckElicitingPacketIsStillInFlight",
+      "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.TryReserveSendCapacity_ReemitsBlockedFramesWhileTheLimitRemainsClosed",
+      "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.WriteAsync_EmitsStreamDataBlockedWhenTheSenderIsFlowControlLimitedAndNothingAckElicitingIsInFlight",
+      "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.WriteAsync_DoesNotEmitDataBlockedWhileAnAckElicitingPacketIsStillInFlight",
+      "Incursa.Quic.Tests.REQ_QUIC_RFC9000_0177.WriteAsync_EmitsDataBlockedWhenConnectionFlowControlLimitedAndNothingAckElicitingIsInFlight"
+    ],
+    "requirementId": "REQ-RFC9000-S19-N13-P1-R-0001",
+    "note": "The blocked-emission method is shared with this migrated requirement; the other four cases are adjacent regression coverage, not additional requirement claims."
+  },
+  "x_retired_alias_verification": {
+    "aliasesAdded": 8,
+    "scope": "Three current migrations and five earlier migration predecessors. Every new alias and incoming earlier retirement entry resolves through to a live normalized requirement; existing retirement records are preserved.",
+    "ledger": "specs/generated/quic/rfc9000-migration-retired-requirements.json"
   }
 }
