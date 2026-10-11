@@ -14,15 +14,16 @@ param(
 
     [switch] $AllowLegacyResultLevelEnvironmentExclusions,
 
-    [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+    [string] $RepositoryRoot = [System.IO.Path]::GetFullPath(
+        (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)))
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$localResultSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-local-result-v1.schema.json'
-$epochDatasetSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
-$constructionDatasetSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-construction-dataset-v1.schema.json'
+$localResultSchemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-policy-local-result-v1.schema.json'
+$epochDatasetSchemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$constructionDatasetSchemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-policy-construction-dataset-v1.schema.json'
 $failures = [System.Collections.Generic.List[string]]::new()
 $validatedLocalResults = [System.Collections.Generic.List[object]]::new()
 $validatedEpochRows = [System.Collections.Generic.List[object]]::new()

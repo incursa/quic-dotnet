@@ -78,9 +78,11 @@ param(
     [ValidateRange(1, [long]::MaxValue)]
     [long] $MonotonicTimerFrequencyHz = [Diagnostics.Stopwatch]::Frequency,
 
-    [string] $RepositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path,
+    [string] $RepositoryRoot = [System.IO.Path]::GetFullPath(
+        (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))),
 
-    [string] $RepositoryCommit = (git -C (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path rev-parse HEAD).Trim(),
+    [string] $RepositoryCommit = (git -C ([System.IO.Path]::GetFullPath(
+        (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)))) rev-parse HEAD).Trim(),
 
     [switch] $RepositoryDirty
 )
@@ -200,11 +202,11 @@ function ConvertTo-Microseconds {
 }
 
 $rawPath = (Resolve-Path -LiteralPath $RawEvidencePath -ErrorAction Stop).Path
-$rawSchemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-application-send-turn-raw-v1.schema.json'
+$rawSchemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-application-send-turn-raw-v1.schema.json'
 if (-not (Test-Path -LiteralPath $rawSchemaPath -PathType Leaf)) {
     throw "Raw send-turn evidence schema was not found: $rawSchemaPath"
 }
-$schemaPath = Join-Path $RepositoryRoot 'schemas\adaptive-runtime-policy-epoch-dataset-v1.schema.json'
+$schemaPath = Join-Path (Join-Path $RepositoryRoot 'schemas') 'adaptive-runtime-policy-epoch-dataset-v1.schema.json'
 if (-not (Test-Path -LiteralPath $schemaPath -PathType Leaf)) {
     throw "Epoch dataset schema was not found: $schemaPath"
 }
@@ -317,8 +319,10 @@ $conditionMap = @{
     ResourceConstrained = 16
 }
 $sourceHash = (Get-FileHash -LiteralPath $rawPath -Algorithm SHA256).Hash.ToLowerInvariant()
-$repositoryBranch = (git -C $RepositoryRoot branch --show-current 2>$null).Trim()
-$repositoryRemoteUrl = (git -C $RepositoryRoot remote get-url origin 2>$null).Trim()
+$repositoryBranch = [string] (git -C $RepositoryRoot branch --show-current 2>$null)
+$repositoryBranch = $repositoryBranch.Trim()
+$repositoryRemoteUrl = [string] (git -C $RepositoryRoot remote get-url origin 2>$null)
+$repositoryRemoteUrl = $repositoryRemoteUrl.Trim()
 $rowPaths = [System.Collections.Generic.List[string]]::new()
 $pendingRowPaths = [System.Collections.Generic.List[string]]::new()
 $seenIdentity = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
