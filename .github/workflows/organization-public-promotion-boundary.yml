@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   construct:
-    uses: incursa/.github/.github/workflows/nuget-construct.yml@208b81071d0a4abfe3a5a8e7d2c2aeb6793c4394
+    uses: incursa/.github/.github/workflows/nuget-construct.yml@7e76885d745484c11ea00a7b74a71af45b007171
     with:
       audience: public
       solution: src/Incursa.Quic/Incursa.Quic.csproj
@@ -24,7 +24,7 @@ jobs:
 
   promote:
     needs: construct
-    uses: incursa/.github/.github/workflows/public-nuget-promote.yml@208b81071d0a4abfe3a5a8e7d2c2aeb6793c4394
+    uses: incursa/.github/.github/workflows/public-nuget-promote.yml@7e76885d745484c11ea00a7b74a71af45b007171
     with:
       artifact_name: ${{ needs.construct.outputs.artifact_name }}
       expected_package_ids_json: '["Incursa.Quic"]'
