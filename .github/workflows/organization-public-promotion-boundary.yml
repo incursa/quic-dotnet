@@ -1,0 +1,32 @@
+name: Organization public NuGet promotion boundary proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New immutable SemVer candidate; publication requires separate approval
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  construct:
+    uses: incursa/.github/.github/workflows/nuget-construct.yml@208b81071d0a4abfe3a5a8e7d2c2aeb6793c4394
+    with:
+      audience: public
+      solution: src/Incursa.Quic/Incursa.Quic.csproj
+      package_projects_json: '[{"id":"Incursa.Quic","project":"src/Incursa.Quic/Incursa.Quic.csproj"}]'
+      test_projects_json: '["tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj"]'
+      version_strategy: explicit
+      version: ${{ inputs.version }}
+
+  promote:
+    needs: construct
+    uses: incursa/.github/.github/workflows/public-nuget-promote.yml@208b81071d0a4abfe3a5a8e7d2c2aeb6793c4394
+    with:
+      artifact_name: ${{ needs.construct.outputs.artifact_name }}
+      expected_package_ids_json: '["Incursa.Quic"]'
+    secrets:
+      NUGET_ORG_API_KEY: ${{ secrets.NUGET_API_KEY }}
