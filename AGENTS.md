@@ -34,6 +34,7 @@ Every protocol slice MUST define how it will be proven before code review is con
 - Do not create sibling repository copies, dated snapshot directories, or worktree roots under `C:\shared\src\incursa`.
 - Do not commit exact-tree archives, review packages, command logs, upload bundles, preservation patches, promotion-patch drafts, generated handoff reports, or one-run evidence exports. Keep them under the external temporary root and delete them after review.
 - Keep `docs/testing` for durable testing contracts and reusable verification guidance. Record authoritative proof in SpecTrace verification artifacts, deterministic tests, schemas, fixtures, and reproducible validators rather than dated review summaries.
+- Keep durable documentation free of branch, commit, deployment, point-in-time validation, test-count, package-count, exact-latest-version, temporary-blocker, and unfinished-work status. Use release notes, issues, pull requests, and verification artifacts for that evidence.
 - Keep scripts under `eng/` only when they are reusable, deterministic tooling for a maintained workflow or regression. A script written solely to export or package one checkpoint belongs with that checkpoint under `C:\shared\temp`.
 - Before removing a temporary worktree, prove it is clean and its terminal commit is represented on the intended branch. Remove obsolete worktrees and branches promptly after integration.
 
