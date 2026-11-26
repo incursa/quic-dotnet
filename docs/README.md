@@ -19,7 +19,7 @@ edit mirrored output in the central docs repository.
 ## Core Guides
 
 - [Quickstart](quickstart.md)
-- [Current repository status](current-status.md)
+- [Readiness and evidence](current-status.md)
 - [All-implementation handshake interop report](interop-all-implementation-handshake-local-report.md)
 - [Packaging](packaging.md)
 - [Requirements workflow](requirements-workflow.md)
@@ -48,7 +48,7 @@ edit mirrored output in the central docs repository.
 ## Suggested Reading Order
 
 1. [Quickstart](quickstart.md)
-2. [Current repository status](current-status.md)
+2. [Readiness and evidence](current-status.md)
 3. [Packaging](packaging.md)
 4. [Requirements workflow](requirements-workflow.md)
 5. [SpecTrace prep](spec-trace-prep.md)

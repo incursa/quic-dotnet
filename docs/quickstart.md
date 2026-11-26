@@ -13,7 +13,7 @@ Use this guide to validate the repository and produce local packages.
 
 ## Validate The Repository
 
-See [Current repository status](current-status.md) before interpreting these
+See [Readiness and evidence](current-status.md) before interpreting these
 commands. As of 2026-04-30, the local Release build, full no-build test suite,
 repo-local SpecTrace validation, Workbench core validation, Dry and Short
 benchmark baselines, and final local trace/gap closure checks are green across

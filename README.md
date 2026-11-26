@@ -94,14 +94,14 @@ behavior or surface change.
 - GitHub workflows read credentials from repository secrets; local validation
   does not prove those secrets or branch protections are configured.
 
-## Readiness And Known Gaps
+## Readiness and evidence
 
-- [`docs/current-status.md`](docs/current-status.md) is the date-stamped status
-  snapshot for local and hosted evidence.
+- [`docs/current-status.md`](docs/current-status.md) explains how requirements,
+  gaps, verification artifacts, and reproducible checks establish readiness.
 - Implementation changes should remain traceable through `specs/` before
   behavior changes are reviewed.
 - Broader production hosting, MASQUE, CONNECT-UDP, trailers, server push, and
-  other future HTTP/3 work remain outside the stable documented surface until
+  other HTTP/3 work remain outside the stable documented surface until
   the owning requirements and verification artifacts close.
 
 ## License

@@ -35,7 +35,7 @@ This green local baseline does not make the repository QUIC-complete or
 interop-ready. Treat older landed status notes below as trace intent, and keep
 external runner corroboration and any public-surface widening as separate work.
 
-See [`docs/current-status.md`](../current-status.md) for the current status
+See [`docs/current-status.md`](../current-status.md) for the readiness and evidence rules
 snapshot.
 
 ## Remaining-Work Buckets
